@@ -1,6 +1,8 @@
 # Blox
 
-Blox provides a modular framework for implementing research schedulers. Blox includes all infrastructure which is needed to implement a scheduler for deep learning jobs. More than just including infrastructure blox provides modular abstractions which can easily swapped/modified to enable researchers to implement novel scheduling policies.
+This repository contains the source code implementation of the Eurosys 2024 paper "Blox: A Modular Toolkit for Deep Learning Schedulers". This work was done as part of Microsoft Research's [Project Fiddle](https://https://aka.ms/msr-fiddle). This source code is available under the [MIT License](LICENSE.txt).
+
+Blox provides a modular framework for implementing deep learning research schedulers. Blox provides modular abstractions which can be easily swapped/modified to enable researchers to implement novel scheduling and placement policies.
 
 ### Abstraction Provided
 * Job Admission Policy - Allows researchers to implement any admission policy and provides an interface to accept jobs.
@@ -87,10 +89,3 @@ In second terminal
 ```
 PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python python blox_new_flow_multi_run.py --simulate --load 6 --exp-prefix test
 ```
-
-
-### License
-
-Copyright (c) Microsoft Corporation. All rights reserved.
-
-Licensed under the [MIT](LICENSE.txt) license.
