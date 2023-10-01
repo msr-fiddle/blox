@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+service RMServer {
+  // Node Manager calls registers with resource manager
+  rpc RegisterWorker(RegisterRequest) returns(BooleanResponse) {}
+  rpc AcceptJob(JsonResponse) returns (BooleanResponse) {}
+  rpc ReturnTime(EmptyMsg) returns (IntVal) {}
+}
+
+// string which directly allows us to return a JSON
+message JsonResponse{
+  string response = 1;
+}
+
+message RegisterRequest{
+  string ipaddr = 1;
+  int32 numGPUs = 2;
+  int32 numCPUcores =3;
+  int32 memoryCapacity =4;
+  bool numaAvailable = 5;
+  map <int32, int32> cpuMaping = 6; 
+}
+
+message BooleanResponse{
+  bool value = 1;
+}
+
+message IntVal{
+  int32 value = 1;
+}
+
+message EmptyMsg{}

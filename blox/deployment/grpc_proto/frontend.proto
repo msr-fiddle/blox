@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "rm.proto";
+
+service FrontEndServicer{
+    rpc GetPredictions(JsonResponse) returns (BooleanResponse) {}
+}

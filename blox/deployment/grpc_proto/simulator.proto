@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+import "rm.proto";
+
+service SimServer{
+    rpc GetJobs(IntVal) returns (JsonResponse) {}
+    rpc GetConfig(IntVal) returns (JsonResponse) {}
+}
