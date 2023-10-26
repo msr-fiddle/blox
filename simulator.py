@@ -292,9 +292,9 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         Preprocesses the job for simulations.
         Cleans some fields and non serializable input
         """
-        new_job_time = random.randint(36000, 86400)
-        new_job["job_total_iteration"] = new_job_time
-        new_job["job_duration"] = new_job_time
+        # new_job_time = random.randint(36000, 86400)
+        # new_job["job_total_iteration"] = new_job_time
+        # new_job["job_duration"] = new_job_time
         new_job["simulation"] = True
         new_job["submit_time"] = new_job["job_arrival_time"]
         # temporary fix not sure why this is happening though
@@ -428,7 +428,7 @@ def launch_server(args) -> grpc.Server:
     simulator_pb2_grpc.add_SimServerServicer_to_server(
         SimulatorRunner(
             args.cluster_job_log,
-            np.arange(1, 8, 1.0).tolist(),
+            np.arange(1, 9, 1.0).tolist(),
             (args.start_job_track, args.end_job_track),
             [
                 "Tiresias",
