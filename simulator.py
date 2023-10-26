@@ -428,11 +428,15 @@ def launch_server(args) -> grpc.Server:
     simulator_pb2_grpc.add_SimServerServicer_to_server(
         SimulatorRunner(
             args.cluster_job_log,
-            np.arange(8, 14, 1.0).tolist(),
+            np.arange(1, 8, 1.0).tolist(),
             (args.start_job_track, args.end_job_track),
-            ["Srtf", "Las", "Fifo"],
+            [
+                "Tiresias",
+                "Optimus",
+                "Fifo",
+            ],
             ["Place"],
-            ["AcceptAll", "LoadBasedAccept-1.2x", "LoadBasedAccept-1.4x"],
+            ["AcceptAll"],
             exp_prefix=args.exp_prefix,
         ),
         server,

@@ -37,11 +37,11 @@ class RMServer(rm_pb2_grpc.RMServerServicer):
         Accepts the information from the node manager.
         This registers the workers and the information we need
         """
-        print("Called R worker")
+        # print("Called R worker")
         message_processed = MessageToDict(request, including_default_value_fields=True)
         # TODO: Put a lock here
         self.added_servers.put(message_processed)
-        print("Length of added server queue {}".format(self.added_servers.qsize()))
+        # print("Length of added server queue {}".format(self.added_servers.qsize()))
         return rm_pb2.BooleanResponse(value=True)
 
     def AcceptJob(self, request, context):
@@ -86,11 +86,11 @@ class RMServer(rm_pb2_grpc.RMServerServicer):
         """
         Threadsafe copy of new jobs
         """
-        print("In get new jobs")
+        # print("In get new jobs")
         # TODO: Put a lock here
         new_jobs_copy = copy.deepcopy(self.new_jobs)
         self.new_jobs = list()
-        print("After got new jobs")
+        # print("After got new jobs")
         return new_jobs_copy
 
     def get_new_nodes(self) -> List[dict]:
@@ -104,7 +104,7 @@ class RMServer(rm_pb2_grpc.RMServerServicer):
         added_servers_copy = list()
         while self.added_servers.qsize() > 0:
             added_servers_copy.append(self.added_servers.get())
-        print("Length of added servers {}".format(len(added_servers_copy)))
+        # print("Length of added servers {}".format(len(added_servers_copy)))
         return added_servers_copy
 
     def get_new_sim_config(self):
@@ -131,11 +131,11 @@ class RMServer(rm_pb2_grpc.RMServerServicer):
         sim_time.value = simulator_time
         # the training starts with
         options = [("grpc.max_receive_message_length", 10 * 1024 * 1024)]
-        print("Called rpc server")
+        # print("Called rpc server")
         with grpc.insecure_channel("127.0.0.1:50050", options=options) as channel:
             stub = sim_pb2_grpc.SimServerStub(channel)
             response = stub.GetJobs(sim_time)
-        print("Rpc server return")
+        # print("Rpc server return")
         jobs_to_run = json.loads(response.response)
         job_list = list(jobs_to_run.values())
         # for j in job_list:

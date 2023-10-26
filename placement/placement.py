@@ -231,19 +231,19 @@ class JobPlacement(object):
                                     )
                                 if found:
                                     # we found an assignment
-                                    print(
-                                        f"Placed {job_id} by determining to terminate{job_order[-rev_idx][0]}"
-                                    )
+                                    # print(
+                                    # f"Placed {job_id} by determining to terminate{job_order[-rev_idx][0]}"
+                                    # )
                                     break
                 if found:
                     new_scheduled_jobs += 1
                     job_to_launch[job_id] = placement
                     mark_gpu_in_use(gpu_df, placement, job_id)
                 else:
-                    print(f"New Jobs scheduled {new_scheduled_jobs}")
-                    print(f"Jobs previously running {running_jobs}")
-                    print(f"Jobs terminated {len(jobs_to_terminate)}")
-                    print(f"Jobs in queue {len(job_order)-idx}")
+                    # print(f"New Jobs scheduled {new_scheduled_jobs}")
+                    # print(f"Jobs previously running {running_jobs}")
+                    # print(f"Jobs terminated {len(jobs_to_terminate)}")
+                    # print(f"Jobs in queue {len(job_order)-idx}")
                     break
             return (jobs_to_terminate, job_to_launch)
 

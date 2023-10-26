@@ -11,6 +11,19 @@ class SchedulingPolicy(object):
         def function_wrapper(self, job_state, cluster_state):
             return function(
                 self,
+                job_state.active_jobs,
+                cluster_state.server_map,
+                cluster_state.gpu_df,
+                # **copy.deepcopy(kwargs)
+            )
+
+        return function_wrapper
+
+    @staticmethod
+    def copy_arguments_old(function):
+        def function_wrapper(self, job_state, cluster_state):
+            return function(
+                self,
                 copy.deepcopy(job_state.active_jobs),
                 copy.deepcopy(cluster_state.server_map),
                 copy.deepcopy(cluster_state.gpu_df),

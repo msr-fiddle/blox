@@ -66,7 +66,7 @@ class BloxManager(object):
         """
         Shut down grpc server
         """
-        print("In terminate")
+        # print("In terminate")
         self.server.stop(0)
 
     def update_cluster(self, cluster_state):
@@ -221,11 +221,11 @@ class BloxManager(object):
         }
 
         # find the jobs have been finished
-        print(
-            "Not finished job {}".format(
-                list(set(job_state.job_ids_to_track) - set(job_state.finished_job))
-            )
-        )
+        # print(
+        # "Not finished job {}".format(
+        # list(set(job_state.job_ids_to_track) - set(job_state.finished_job))
+        # )
+        # )
 
         if all(jid in job_state.finished_job for jid in job_state.job_ids_to_track):
             with open(

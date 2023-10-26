@@ -65,13 +65,22 @@ def main(args):
             elif args.scheduler_name == "Srtf":
                 scheduling_policy = schedulers.Srtf(args)
 
+            elif args.scheduler_name == "Optimus":
+                scheduling_policy = schedulers.Optimus(args)
+            elif args.scheduler_name == "Tiresias":
+                scheduling_policy = schedulers.Tiresias(args)
+
             else:
                 raise NotImplemented(f"{args.scheduler_name} not Implemented")
 
             simulator_time = 0
 
+            os.environ["sched_policy"] = args.scheduler_name
+            os.environ["sched_load"] = str(args.load)
+
             while True:
                 if blox_mgr.terminate:
+                    # print JCT and Avg
                     blox_mgr.terminate_server()
                     print("Terminate current config {}".format(args))
                     break
