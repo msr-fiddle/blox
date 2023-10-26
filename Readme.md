@@ -63,7 +63,7 @@ We suggest the users to create a virtual environment to install the dependencies
 ```
 pip install grpcio
 pip install matplotlib
-pip install pandas==1.4.0
+pip install pandas==1.3.0
 pip install grpcio-tools
 ```
 
