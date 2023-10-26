@@ -1,3 +1,6 @@
+import warnings
+
+warnings.simplefilter(action="ignore", category=FutureWarning)
 import os
 import argparse
 import schedulers
@@ -168,6 +171,20 @@ def parse_args(parser):
 
     args = parser.parse_args()
     return args
+
+
+def _get_avg_jct(time_dict):
+    """
+    Fetch the avg jct from the dict
+    """
+    values = list(time_dict.values())
+    count = 0
+    jct_time = 0
+    for v in values:
+        jct_time += v[1] - v[0]
+        count += 1
+
+    return jct_time / count
 
 
 if __name__ == "__main__":
