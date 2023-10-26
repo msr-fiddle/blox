@@ -246,9 +246,9 @@ class BloxManager(object):
                 "w",
             ) as fopen:
                 # fopen.write(json.dumps(self.job_completion_stats))
-                avg_jct = _get_avg_jct(job_state.job_completion_stats)
+                avg_jct = self._get_avg_jct(job_state.job_completion_stats)
                 print(
-                    f"Scheduler: {self.scheduler_name}, Acceptance Policy: {self.acceptance_policy}, Avg JCT {avg_jct}"
+                    f"Scheduler: {self.scheduler_name}, Acceptance Policy: {self.acceptance_policy}, Load: {self.load}, Avg JCT {avg_jct}"
                 )
                 json.dump(job_state.job_completion_stats, fopen)
 
@@ -271,9 +271,11 @@ class BloxManager(object):
                 "w",
             ) as fopen:
                 # fopen.write(json.dumps(self.cluster_stats))
-                avg_responsiveness = _get_avg_jct(job_state.job_responsiveness_stats)
+                avg_responsiveness = self._get_avg_jct(
+                    job_state.job_responsiveness_stats
+                )
                 print(
-                    f"Scheduler: {self.scheduler_name}, Acceptance Policy: {self.acceptance_policy}, Avg JCT {avg_responsiveness}"
+                    f"Scheduler: {self.scheduler_name}, Acceptance Policy: {self.acceptance_policy}, Load: {self.load}, Avg responsiveness {avg_responsiveness}"
                 )
                 json.dump(job_state.job_responsiveness_stats, fopen)
             with open(
