@@ -28,7 +28,11 @@ def main(args):
                 # when the blox manager sends no name we terminate
                 blox_mgr.terminate_server()
                 break
+            import ipdb
 
+            ipdb.set_trace()
+            if new_config["scheduler"] == "":
+                break
             args.scheduler_name = new_config["scheduler"]
             args.load = new_config["load"]
             args.placement_name = new_config["placement_policy"]

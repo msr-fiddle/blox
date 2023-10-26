@@ -4,7 +4,6 @@ import json
 import grpc
 import argparse
 import numpy as np
-
 from workload import Workload
 from concurrent import futures
 from typing import Tuple
@@ -120,7 +119,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
             job_config_send = rm_pb2.JsonResponse()
             job_config_send.response = json.dumps(job_config)
             # self.setup_cluster()
-            self._plot_graphs()
+            # self._plot_graphs()
             return job_config_send
 
     def GetJobs(self, request, context) -> rm_pb2.JsonResponse:
@@ -428,7 +427,7 @@ def launch_server(args) -> grpc.Server:
     simulator_pb2_grpc.add_SimServerServicer_to_server(
         SimulatorRunner(
             args.cluster_job_log,
-            np.arange(1, 8, 1.0).tolist(),
+            np.arange(1, 9, 1.0).tolist(),
             (args.start_job_track, args.end_job_track),
             [
                 "Tiresias",

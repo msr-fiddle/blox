@@ -54,13 +54,13 @@ class Optimus(SchedulingPolicy):
         # the jobs are already stored in the order they will converge
         if len(sorted_job_order) > 0:
             while free_gpus > 0:
-                print("Outside")
-                print(free_gpus)
+                # print("Outside")
+                # print(free_gpus)
                 for jobs in sorted_job_order:
                     # keep adding the number of GPUs needed by each job
                     jobs[1]["job_gpu_demand"] += 1
                     free_gpus = free_gpus - 1
-                    print(free_gpus)
+                    # print(free_gpus)
                     if free_gpus == 0:
                         break
 
