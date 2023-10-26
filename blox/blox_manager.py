@@ -83,6 +83,19 @@ class BloxManager(object):
         cluster_state.update(new_nodes)
         return new_nodes
 
+    def _get_avg_jct(self, time_dict):
+        """
+        Fetch the avg jct from the dict
+        """
+        values = list(time_dict.values())
+        count = 0
+        jct_time = 0
+        for v in values:
+            jct_time += v[1] - v[0]
+            count += 1
+
+        return jct_time / count
+
     def update_metrics(self, cluster_state, job_state):
         """
         Perform metric collection also prunes the jobs.
@@ -233,6 +246,10 @@ class BloxManager(object):
                 "w",
             ) as fopen:
                 # fopen.write(json.dumps(self.job_completion_stats))
+                avg_jct = _get_avg_jct(job_state.job_completion_stats)
+                print(
+                    f"Scheduler: {self.scheduler_name}, Acceptance Policy: {self.acceptance_policy}, Avg JCT {avg_jct}"
+                )
                 json.dump(job_state.job_completion_stats, fopen)
 
             with open(
@@ -254,6 +271,10 @@ class BloxManager(object):
                 "w",
             ) as fopen:
                 # fopen.write(json.dumps(self.cluster_stats))
+                avg_responsiveness = _get_avg_jct(job_state.job_responsiveness_stats)
+                print(
+                    f"Scheduler: {self.scheduler_name}, Acceptance Policy: {self.acceptance_policy}, Avg JCT {avg_responsiveness}"
+                )
                 json.dump(job_state.job_responsiveness_stats, fopen)
             with open(
                 f"{self.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{self.scheduler_name}_{self.acceptance_policy}_load_{self.load}_custom_metrics.json",
