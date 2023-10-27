@@ -427,7 +427,7 @@ def launch_server(args) -> grpc.Server:
     simulator_pb2_grpc.add_SimServerServicer_to_server(
         SimulatorRunner(
             args.cluster_job_log,
-            np.arange(1, 9, 1.0).tolist(),
+            np.arange(1, 10, 1.0).tolist(),
             (args.start_job_track, args.end_job_track),
             [
                 "Tiresias",
