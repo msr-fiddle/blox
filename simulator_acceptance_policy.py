@@ -120,7 +120,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
             job_config_send = rm_pb2.JsonResponse()
             job_config_send.response = json.dumps(job_config)
             # self.setup_cluster()
-            self._plot_graphs()
+            # self._plot_graphs()
             return job_config_send
 
     def GetJobs(self, request, context) -> rm_pb2.JsonResponse:
@@ -292,9 +292,9 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         Preprocesses the job for simulations.
         Cleans some fields and non serializable input
         """
-        new_job_time = random.randint(36000, 86400)
-        new_job["job_total_iteration"] = new_job_time
-        new_job["job_duration"] = new_job_time
+        # new_job_time = random.randint(36000, 86400)
+        # new_job["job_total_iteration"] = new_job_time
+        # new_job["job_duration"] = new_job_time
         new_job["simulation"] = True
         new_job["submit_time"] = new_job["job_arrival_time"]
         # temporary fix not sure why this is happening though
@@ -434,7 +434,12 @@ def launch_server(args) -> grpc.Server:
                 "Las",
             ],
             ["Place"],
-            ["AcceptAll", "LoadBasedAccept-1.2x", "LoadBasedAccept-1.4x"],
+            [
+                "AcceptAll",
+                "LoadBasedAccept-1.5x",
+                "LoadBasedAccept-1.2x",
+                "LoadBasedAccept-1.0x",
+            ],
             exp_prefix=args.exp_prefix,
         ),
         server,
