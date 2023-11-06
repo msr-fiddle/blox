@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.swp
+*.swo
+
+*pb2*.py
+
+*.pickle
+
+
