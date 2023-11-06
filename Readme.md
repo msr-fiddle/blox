@@ -27,32 +27,50 @@ Simulator for blox is implemented in _simulator.py_. Researchers can configure t
 
 Blox already has several plotting and metric parsing utilities. Based on configurations, blox will automatically output metrics like Job Completion Time and Job Completion CDFs. 
 
+### Writing a simulator in Blox
+
+For implementing a new scheduler in Blox, a user first needs to determine in what part of the scheduler do they want to modify. 
+
+Once the user has determined the specific location of their contribution. They can look at the following guide to determine, what code do they need to modidy. 
+Following is the location of files - 
+Scheduling Policy - /schedulers
+Placement Policy - /placement
+Workload Policy - /workload
+Admission Policy - /admission_control
+
+
+For an example users should look at `las_scheduler.py` which implements Least Attained Service scheduler.
 
 ### Running Blox
 
 Blox has two modes for running. One real cluster workload and second simulator. 
 
+##### Simulation Mode
+
+The simplest way to get started with Blox is in simulation mode. 
+
+The following code will run LAS scheduling policy in simulation mode on the Philly Trace with jobs sent with load average of 1.0
+
+On one terminal launch - 
+
+```
+PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python python simulator_simple.py --cluster-job-log ./cluster_job_log --sim-type trace-synthetic --jobs-per-hour 1 --exp-prefix test
+```
+
+On the second terminal launch - 
+
+```
+PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python python las_scheduler.py --simulate --load 1 --exp-prefix test
+
+```
+
+Make sure only one instance of each is running on a machine/docker container. We use fixed GRPC ports to communicate, if more than one are launched there could be some unintended consequences.
+
+
 ##### Cluster mode
 
-1. For running in cluster mode. First on one of the nodes in the cluster launch the resource manager with following command. 
-```
-python resource_manager.py --scheduler fifo --plot --exp-prefix test --round-duration 300
-```
-2. On each of the nodes launch the node manager.
-```
-python node_manager.py --ipaddr resource_managers_ip
-```
-3. Post this you can use the *deployment/job_submit_scripts.py* to launch jobs on each node
+#TODO: Fix this, the launch API has changed.
 
-##### Simulation mode
-1. For running in the simulation model. We will launch the resource manager in the simulator mode. 
-```
-python resource_manager.py --scheduler fifo --plot --exp-prefix test --round-duration 300 --simulate
-```
-2. Post this launch the simulator to send load to simulate. 
-```
-python simulator.py --cluster-job-log microsof_job_log_file --sim-type trace-synthetic --jobs-per-hour integer_value --exp-prefix test
-```
 
 ### Details for reproducing results for artifacts
 These are instructions for reproducing artifacts for Blox.
