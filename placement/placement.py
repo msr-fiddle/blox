@@ -43,42 +43,6 @@ class JobPlacement(object):
         scheduler = new_job_schedule.get("scheduler")
         jobs_to_terminate = list()
         job_to_launch = dict()
-        # for jobid, _ in job_order:
-        # job = active_jobs[jobid]  # dict of job parameters
-        # if job["is_running"] == True:
-
-        # # Let's not complicate this for now.
-
-        # # I want to wrap up an end to end round first and complicate
-        # # this later.
-
-        # # But the algorithm will go like this -
-        # # if the scheduler provides placement well and good.
-
-        # # Check if those GPUs are free, terminate/pack them to run on
-        # # the same GPU.
-
-        # # job is already running need to check if there is change in
-        # # placement or number of gpus reqired
-
-        # # for now I am disregarding this and keeping it simple
-
-        # # the placement policy is either consolidate or no effect
-
-        # # if a job is already running do nothing
-        # # if it is not first check if there are empty GPUs
-        # if "placement_location" in job:
-        # # job comes with GPU_IDs
-        # # need to check from GPU DF where is training happening
-        # already_running_loc = find_gpus(jobid, gpu_df)
-        # assert (
-        # len(running_loc) > 0
-        # ), "Something wrong, job running in job dict but location"
-        # if already_running_loc.sort() != job["placement_location"].sort():
-        # jobs_to_terminate.append(jobid)
-        # jobs_to_launch[jobid] = job['placement_location']
-        # else:
-        # # placement is not provided
         launched_job_ids = list()
         # go over jobs in job order
         if scheduler == "Gavel":

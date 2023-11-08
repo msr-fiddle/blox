@@ -47,6 +47,8 @@ class ResourceManagerComm(object):
                 launch_dict = dict()
                 launch_dict["job_id"] = job_id
                 launch_dict["local_GPU_ID"] = lgid
+                if "launch_command" not in job_description:
+                    raise Exception("Missing Launch Command")
                 launch_dict["launch_command"] = job_description["launch_command"]
                 if "suspended" in job_description:
                     launch_dict["should_resume"] = job_description["suspended"]

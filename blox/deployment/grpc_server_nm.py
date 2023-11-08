@@ -26,7 +26,6 @@ from google.protobuf.json_format import MessageToDict
 
 class NMServer(nm_pb2_grpc.NMServerServicer):
     def __init__(self, use_redis, redis_host, redis_port):
-
         self.job_mapping = dict()  # Job ID to GPU mapping
         if use_redis:
             # configuring local data store with redis
@@ -45,14 +44,18 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         received_job = json.loads(request.response)
         command_to_run = received_job["launch_command"]
         local_gpu_id = received_job["local_GPU_ID"]
+        resume_iter = received_job["resume_iter"]
+        job_id = received_job["job_id"]
         self.local_data_store.set_lease_status(received_job["job_id"], True)
         os.environ["BLOX_JOB_ID"] = str(received_job["job_id"])
         os.environ["GPU_ID"] = str(received_job["local_GPU_ID"])
         os.environ["BLOX_LOG_DIR"] = "temp"
         os.environ["SHOULD_RESUME"] = str(received_job["should_resume"])
         os.environ["START_ITER"] = "0"
+        # BloxIterator saves the checkpoint in the format {jobid_iternum.ckpt}
+        # TODO: Support Model Parallel/Pipeline Parallel job checkpoints
         proc = subprocess.Popen(
-            f"python test_mnist_job.py {local_gpu_id}",
+            f"{command_to_run} --local_gpu_id {local_gpu_id} --jid {job_id} --resume_iter {resume_iter}",
             stdout=subprocess.PIPE,
             # stderr=subprocess.STDOUT,
             shell=True,

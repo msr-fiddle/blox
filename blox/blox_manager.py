@@ -40,7 +40,7 @@ class BloxManager(object):
         self.comm_node_manager = rm_client.ResourceManagerComm()
         self.priority_thresh = 3600 * 1000  # above this we will have priority thresh
         self.server, self.rmserver = launch_server()
-        self.simulator_time = 0
+        self.time = 0
         self.terminate = False
         return None
 
@@ -58,7 +58,7 @@ class BloxManager(object):
         # self.comm_node_manager = rm_client.ResourceManagerComm()
         # self.priority_thresh = 3600 * 1000  # above this we will have priority thresh
         # self.server, self.rmserver = launch_server()
-        self.simulator_time = 0
+        self.time = 0
         self.terminate = False
         return None
 
@@ -147,7 +147,7 @@ class BloxManager(object):
                                     # log the exit
                                     job_state.job_completion_stats[jid] = [
                                         job_state.active_jobs[jid]["submit_time"],
-                                        self.simulator_time,
+                                        self.time,
                                     ]
 
                                     job_state.job_runtime_stats[jid] = copy.deepcopy(
@@ -180,7 +180,7 @@ class BloxManager(object):
                                 # log the exit
                                 job_state.job_responsiveness_stats[jid] = [
                                     job_state.active_jobs[jid]["submit_time"],
-                                    self.simulator_time,
+                                    self.time,
                                 ]
 
         for jid in jid_to_terminate:
@@ -201,7 +201,7 @@ class BloxManager(object):
         for jid in job_state.active_jobs:
             gpu_demand += job_state.active_jobs[jid]["num_GPUs"]
 
-        cluster_state.cluster_stats[cluster_state.simulator_time] = {
+        cluster_state.cluster_stats[cluster_state.time] = {
             "total_jobs": total_jobs,
             "jobs_in_queue": jobs_in_queue,
             "jobs_running": jobs_running,
@@ -225,7 +225,7 @@ class BloxManager(object):
         for jid in job_state.active_jobs:
             gpu_demand += job_state.active_jobs[jid]["num_GPUs"]
 
-        cluster_state.cluster_stats[cluster_state.simulator_time] = {
+        cluster_state.cluster_stats[cluster_state.time] = {
             "total_jobs": total_jobs,
             "jobs_in_queue": jobs_in_queue,
             "jobs_running": jobs_running,
@@ -295,7 +295,7 @@ class BloxManager(object):
 
         if is_simulation:
             # get jobs for simulation
-            new_jobs = self.rmserver.get_jobs_sim(self.simulator_time)
+            new_jobs = self.rmserver.get_jobs_sim(self.time)
 
         else:
             # get jobs for real cluster

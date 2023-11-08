@@ -35,7 +35,7 @@ class JobState(object):
         self.job_runtime_stats = dict()
         self.finished_job = dict()  # keys are ids of the jobs which have finished
         self.job_ids_to_track = list(range(args.start_id_track, args.stop_id_track + 1))
-        self.simulator_time = 0
+        self.time = 0
 
     # def get_new_jobs(self):
     # """

@@ -68,8 +68,22 @@ Make sure only one instance of each is running on a machine/docker container. We
 
 
 ##### Cluster mode
+On the node where we are running the scheduler
 
-#TODO: Fix this, the launch API has changed.
+```
+PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python python las_scheduler.py --expe-prefix cluster_run
+```
+
+On each node in the cluster launch 
+```
+PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python python node_manager.py --ipaddr ip_address_scheduler
+ ```
+In certain cases you would want to specifically give the interface you want the node manager to bind. For ex- on AWS to bind to the local ip for communication you might want to select eth0, similarly on Cloudlab the preferred interface will be enp94s0f0.
+In those cases launch node_manager in the following way. 
+
+```
+PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python python node_manager.py --ipaddr ip_address_scheduler --interface interface_name
+```
 
 
 ### Details for reproducing results for artifacts

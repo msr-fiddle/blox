@@ -137,9 +137,9 @@ def main(args):
             blox_instance.exec_jobs(to_launch, to_suspend, cluster_state, job_state)
             # update time
             simulator_time += args.round_duration
-            job_state.simulator_time += args.round_duration
-            cluster_state.simulator_time += args.round_duration
-            blox_instance.simulator_time += args.round_duration
+            job_state.time += args.round_duration
+            cluster_state.time += args.round_duration
+            blox_instance.time += args.round_duration
 
 
 if __name__ == "__main__":

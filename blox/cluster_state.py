@@ -43,7 +43,7 @@ class ClusterState(object):
                 "JOB_IDS",
             ]
         )
-        self.simulator_time = 0
+        self.time = 0
         self.cluster_stats = dict()
 
     # def get_new_nodes(self):
