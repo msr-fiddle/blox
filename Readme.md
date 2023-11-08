@@ -32,11 +32,11 @@ Blox already has several plotting and metric parsing utilities. Based on configu
 For implementing a new scheduler in Blox, a user first needs to determine in what part of the scheduler do they want to modify. 
 
 Once the user has determined the specific location of their contribution. They can look at the following guide to determine, what code do they need to modidy. 
-Following is the location of files - 
-Scheduling Policy - /schedulers
-Placement Policy - /placement
-Workload Policy - /workload
-Admission Policy - /admission_control
+- Following is the location of files - 
+- Scheduling Policy - /schedulers
+- Placement Policy - /placement
+- Workload Policy - /workload
+- :Admission Policy - /admission_control
 
 
 For an example users should look at `las_scheduler.py` which implements Least Attained Service scheduler.
