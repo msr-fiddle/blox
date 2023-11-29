@@ -198,7 +198,7 @@ def collect_cluster_job_metrics(
     for jid in job_state.active_jobs:
         gpu_demand += job_state.active_jobs[jid]["num_GPUs"]
 
-    cluster_state.cluster_stats[cluster_state.simulator_time] = {
+    cluster_state.cluster_stats[cluster_state.time] = {
         "total_jobs": total_jobs,
         "jobs_in_queue": jobs_in_queue,
         "jobs_running": jobs_running,
