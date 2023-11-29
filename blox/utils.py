@@ -175,7 +175,7 @@ def collect_custom_metrics(job_state, cluster_state, custom_metrics):
     """
     Collect any custom metrics
     """
-    job_state.custom_metrics[job_state.simulator_time] = custom_metrics
+    job_state.custom_metrics[job_state.time] = custom_metrics
 
     return None
 
