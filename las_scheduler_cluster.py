@@ -145,7 +145,8 @@ def main(args):
         cluster_state.time += args.round_duration
         blox_instance.time += args.round_duration
         if not args.simulate:
-            time.sleep(300)
+            print("Time sleep")
+            time.sleep(args.duration)
 
 
 if __name__ == "__main__":
