@@ -113,7 +113,7 @@ def main(args):
             print("Terminate current config {}".format(args))
             break
         blox_instance.update_cluster(cluster_state)
-        print("State of cluster {}".format(blox_instance.gpu_df))
+        print("State of cluster {}".format(cluster_state.gpu_df))
         blox_instance.update_metrics(cluster_state, job_state)
         new_jobs = blox_instance.pop_wait_queue(args.simulate)
         # get simulator jobs
