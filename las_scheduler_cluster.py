@@ -146,7 +146,7 @@ def main(args):
         blox_instance.time += args.round_duration
         if not args.simulate:
             print("Time sleep")
-            time.sleep(args.duration)
+            time.sleep(args.round_duration)
 
 
 if __name__ == "__main__":
