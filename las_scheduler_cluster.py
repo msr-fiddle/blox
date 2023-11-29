@@ -1,4 +1,5 @@
 import os
+import time
 import warnings
 import sys
 import copy
@@ -137,11 +138,14 @@ def main(args):
         # execute jobs
         blox_instance.exec_jobs(to_launch, to_suspend, cluster_state, job_state)
         # update time
+
         simulator_time += args.round_duration
         # if args.simulate:
         job_state.time += args.round_duration
         cluster_state.time += args.round_duration
         blox_instance.time += args.round_duration
+        if not args.simulate:
+            time.sleep(300)
 
 
 if __name__ == "__main__":
