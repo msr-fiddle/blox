@@ -64,9 +64,6 @@ class NodeManagerComm(object):
                 .strip()
             )
             ipaddr = self.ip_extract.findall(out)[0]
-            import ipdb
-
-            ipdb.set_trace()
         # getting number of GPUs
         if os.path.isdir("/proc/driver/nvidia"):
             numgpus = (
