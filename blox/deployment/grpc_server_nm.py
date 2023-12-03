@@ -44,7 +44,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         received_job = json.loads(request.response)
         command_to_run = received_job["launch_command"]
         local_gpu_id = received_job["local_GPU_ID"]
-        resume_iter = received_job["resume_iter"]
+        # resume_iter = received_job["resume_iter"]
         job_id = received_job["job_id"]
         self.local_data_store.set_lease_status(received_job["job_id"], True)
         os.environ["BLOX_JOB_ID"] = str(received_job["job_id"])
