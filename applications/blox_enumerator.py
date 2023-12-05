@@ -1,5 +1,5 @@
 # grpc
-import grpc_client_blox_iterator as bloxComm
+import blox.deployment.grpc_client_blox_iterator as bloxComm
 
 
 class bloxEnumerate(enumerate):
