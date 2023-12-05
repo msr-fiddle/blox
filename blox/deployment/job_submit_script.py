@@ -18,7 +18,7 @@ def submit_dummy_job(ipaddr: str):
 
     job_dict = {
         "launch_method": "file",
-        "launch_command": "python /global/homes/s/songbian/blox/applications/test_application.py",
+        "launch_command": "python /global/homes/s/songbian/blox/applications/testing_application.py",
         "container_location": "temp",
         "config_parser_name": "temp",  # if parsing a config get this
         # which params to read from the config
