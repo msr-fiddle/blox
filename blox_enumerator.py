@@ -11,10 +11,11 @@ class bloxEnumerate(enumerate):
     def __next__(self):
         # check lease
         out = super().__next__()
-        status =  self._rpc_client.check_lease()
+        status = self._rpc_client.check_lease()
         return out, status
 
 
 if __name__ == "__main__":
     # Example usage:
-    for ictr, key in bloxEnumerate(["a", "b", "c",:
+    for ictr, key in bloxEnumerate(["a", "b", "c"]):
+        pass
