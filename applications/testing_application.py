@@ -1,6 +1,8 @@
 import sys
 from blox_enumerator import bloxEnumerate
 
-for ictr, key in enumerate(range(int(sys.argv[1]))):
+run_times = 2
+enumerator = bloxEnumerate(range(2))
+for ictr, key in enumerator:
     print(ict, key)
     time.sleep(10)
