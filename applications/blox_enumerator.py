@@ -6,7 +6,7 @@ class bloxEnumerate(enumerate):
     def __init__(self, x, start=0):
         self.x_ = x
         self.len_ = len(x)
-        self._rpc_client = bloxComm.BloxIterator()
+        self._rpc_client = bloxComm.BloxIteratorComm()
 
     def __next__(self):
         # check lease
