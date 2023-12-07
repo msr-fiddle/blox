@@ -25,6 +25,8 @@ def parse_args(parser):
 
 
 if __name__ == "__main__":
+    print("In Main")
     args = parse_args(
         argparse.ArgumentParser(description="Arguments for Starting the scheduler")
     )
+    main(args)
