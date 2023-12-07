@@ -22,6 +22,9 @@ def parse_args(parser):
     parser.add_argument(
         "--jid", default="Las", type=str, help="Name of the scheduling strategy"
     )
+    args = parser.parse_args()
+
+    return args
 
 
 if __name__ == "__main__":
