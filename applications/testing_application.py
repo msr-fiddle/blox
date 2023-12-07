@@ -7,7 +7,7 @@ def main(args):
     run_times = 2
     print("Job ID {}".format(args.jid))
     print("Iterator initilized")
-    enumerator = bloxEnumerate(range(2))
+    enumerator = bloxEnumerate(range(2), args.jid)
     print("Initialized enumerator")
     for ictr, key in enumerator:
         print(ict, key)
