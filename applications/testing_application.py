@@ -20,7 +20,7 @@ def parse_args(parser):
     return a parser with arguments
     """
     parser.add_argument(
-        "--jid", default="Las", type=str, help="Name of the scheduling strategy"
+        "--jid", required=True, type=str, help="Name of the scheduling strategy"
     )
     args = parser.parse_args()
 
