@@ -5,10 +5,13 @@ import argparse
 
 def main(args):
     run_times = 2
+    print("Job ID {}".format(args.jid))
+    print("Iterator initilized")
     enumerator = bloxEnumerate(range(2))
+    print("Initialized enumerator")
     for ictr, key in enumerator:
         print(ict, key)
-        time.sleep(10)
+        time.sleep(1)
 
 
 def parse_args(parser):
