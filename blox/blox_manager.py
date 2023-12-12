@@ -122,6 +122,7 @@ class BloxManager(object):
             self.round_duration,
             job_state.active_jobs,
         )
+        print("Metric Data {}".format(metric_data))
 
         job_state.update_metrics(metric_data)
         # prune jobs which have been completed
