@@ -9,11 +9,10 @@ def main(args):
     print("Job ID {}".format(args.jid))
     print("Iterator initilized")
     print("Initialized enumerator")
-    while True:
-        enumerator = bloxEnumerate(range(100), args.jid)
-        for ictr, key in enumerator:
-            print(ictr, key)
-            time.sleep(1)
+    enumerator = bloxEnumerate(range(100), args.jid)
+    for ictr, key in enumerator:
+        print(ictr, key)
+        time.sleep(1)
 
 
 def parse_args(parser):
