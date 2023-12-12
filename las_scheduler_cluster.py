@@ -120,9 +120,6 @@ def main(args):
         accepted_jobs = admission_policy.accept(new_jobs, cluster_state, job_state)
         job_state.add_new_jobs(accepted_jobs)
         print("Jobs in cluster {}".format(job_state.active_jobs))
-        new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
-        # prune jobs - get rid of finished jobs
-        print("New job Schedule {}".format(new_job_schedule))
         utils.prune_jobs(job_state, cluster_state, blox_instance)
         # perform scheduling
         new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
