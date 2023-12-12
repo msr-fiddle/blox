@@ -121,7 +121,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
                     pass
             if key == "per_iteration_time":
                 if key in previous_metrics:
-                    job_metrics[key] = (job_metric[key] + previous_metrics[key]) / 2
+                    job_metrics[key] = (job_metrics[key] + previous_metrics[key]) / 2
                 else:
                     pass
         self.local_data_store.set_job_metrics(job_id, job_metrics)
