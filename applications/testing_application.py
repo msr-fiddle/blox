@@ -10,7 +10,7 @@ def main(args):
     enumerator = bloxEnumerate(range(2), args.jid)
     print("Initialized enumerator")
     for ictr, key in enumerator:
-        print(ict, key)
+        print(ictr, key)
         time.sleep(1)
 
 
