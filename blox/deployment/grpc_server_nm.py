@@ -112,6 +112,18 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         job_id = recevied_data["Job_ID"]
         job_metrics = recevied_data["metrics"]
         # print(f"Set metrics {job_metrics})")
+        previous_metrics = self.local_data_store.get_job_metrics(job_id)
+        for key in job_metrics:
+            if key == "attained_service":
+                if key in previous_metrics:
+                    job_metrics[key] += previous_metrics[key]
+                else:
+                    pass
+            if key == "per_iteration_time":
+                if key in previous_metrics:
+                    job_metrics[key] = (job_metric[key] + previous_metrics[key]) / 2
+                else:
+                    pass
         self.local_data_store.set_job_metrics(job_id, job_metrics)
         return rm_pb2.BooleanResponse(value=True)
 

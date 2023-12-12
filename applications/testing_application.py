@@ -13,6 +13,7 @@ def main(args):
     for ictr, key in enumerator:
         print(ictr, key)
         enumerator.push_metrics({"attained_service": 10})
+        enumerater.push_metrics({"per_iteration_time": 1})
         if ictr is False:
             print("Time to exit")
         time.sleep(1)
