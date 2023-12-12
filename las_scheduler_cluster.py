@@ -122,6 +122,7 @@ def main(args):
         print("Jobs in cluster {}".format(job_state.active_jobs))
         new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
         # prune jobs - get rid of finished jobs
+        print("New job Schedule {}".format(new_job_schedule))
         utils.prune_jobs(job_state, cluster_state, blox_instance)
         # perform scheduling
         new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
@@ -129,6 +130,8 @@ def main(args):
         to_suspend, to_launch = placement_policy.place(
             job_state, cluster_state, new_job_schedule
         )
+        print("Jobs to suspend {}".format(to_suspend))
+        print("Jobs to launch {}".format(to_launch))
 
         utils.collect_custom_metrics(
             job_state, cluster_state, {"num_preemptions": len(to_suspend)}
