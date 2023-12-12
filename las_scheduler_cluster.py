@@ -127,6 +127,7 @@ def main(args):
         # perform scheduling
         new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
         # get placement
+        print("Job schedule {}".format(new_job_schedule))
         to_suspend, to_launch = placement_policy.place(
             job_state, cluster_state, new_job_schedule
         )
