@@ -1,4 +1,5 @@
 import sys
+import time
 from blox_enumerator import bloxEnumerate
 import argparse
 
@@ -7,11 +8,12 @@ def main(args):
     run_times = 2
     print("Job ID {}".format(args.jid))
     print("Iterator initilized")
-    enumerator = bloxEnumerate(range(2), args.jid)
     print("Initialized enumerator")
-    for ictr, key in enumerator:
-        print(ictr, key)
-        time.sleep(1)
+    while True:
+        enumerator = bloxEnumerate(range(100), args.jid)
+        for ictr, key in enumerator:
+            print(ictr, key)
+            time.sleep(1)
 
 
 def parse_args(parser):
