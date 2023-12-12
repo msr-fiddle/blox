@@ -41,7 +41,9 @@ def parse_args(parser: argparse.ArgumentParser) -> argparse.PARSER:
     Return:
         args: Parsed arguments
     """
-    parser.add_argument("--ipaddr", type=str, help="IP of the central scheduler")
+    parser.add_argument(
+        "--ipaddr", required=True, type=str, help="IP of the central scheduler"
+    )
     parser.add_argument(
         "--interface", type=str, help="The interface to get the ipaddr from"
     )

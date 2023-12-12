@@ -15,6 +15,9 @@ class bloxEnumerate(enumerate):
         status = self._rpc_client.check_lease(1)
         return out, status
 
+    def push_metrics(self, metric_dict):
+        self._rpc_client.push_metrics(metric_dict)
+
 
 if __name__ == "__main__":
     # Example usage:

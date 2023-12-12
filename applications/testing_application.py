@@ -12,6 +12,9 @@ def main(args):
     enumerator = bloxEnumerate(range(100), args.jid)
     for ictr, key in enumerator:
         print(ictr, key)
+        enumerator.push_metrics({"attained_service": 10})
+        if ictr is False:
+            print("Time to exit")
         time.sleep(1)
 
 
