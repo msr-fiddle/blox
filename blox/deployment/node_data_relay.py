@@ -59,7 +59,10 @@ class DataRelay(object):
         if self.use_redis:
             pass
         else:
-            del self.data_dict[job_id]
+            if job_id in data_dict:
+                del self.data_dict[job_id]
+            else:
+                pass
         return None
 
     def get_job_metrics(self, job_id: int) -> dict:
