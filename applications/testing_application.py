@@ -16,6 +16,7 @@ def main(args):
         enumerator.push_metrics({"per_iter_time": 1})
         if ictr is False:
             print("Time to exit")
+            sys.exit()
         time.sleep(0.1)
     enumerator.job_exit_notify()
 
