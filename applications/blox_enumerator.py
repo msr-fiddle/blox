@@ -19,6 +19,7 @@ class bloxEnumerate(enumerate):
         self._rpc_client.push_metrics(metric_dict)
 
     def job_exit_notify(self):
+        print("Called exit")
         self._rpc_client.job_exity_notify()
 
 
