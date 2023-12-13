@@ -131,9 +131,6 @@ class ResourceManagerComm(object):
                 # make sure we update and not overwrite
                 print("Job id {} Recieved Metric Data {}".format(job_id, metric_data))
                 previous_metric = active_job_dict[job_id]["tracked_metrics"]
-                import ipdb
-
-                ipdb.set_trace()
                 for key in metric_data:
                     if key == "attained_service":
                         metric_data[key] += previous_metric[key]
