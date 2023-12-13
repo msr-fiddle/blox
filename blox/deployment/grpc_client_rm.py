@@ -129,6 +129,7 @@ class ResourceManagerComm(object):
                     response = stub.GetMetrics(metric_request)
                 metric_data = json.loads(response.response)
                 # make sure we update and not overwrite
+                print("Recieved Metric Data {}".format(metric_data))
                 previous_metric = active_job_dict[job_id]["tracked_metrics"]
                 for key in metric_data:
                     if key == "attained_service":
