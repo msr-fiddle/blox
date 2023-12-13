@@ -138,7 +138,7 @@ class ResourceManagerComm(object):
                     if key == "attained_service":
                         metric_data[key] += previous_metric[key]
                         # keys with their default values are assigned
-                    if key == "per_iteration_time":
+                    if key == "per_iter_time":
                         if previous_metric[key] != 0:
                             metric_data[key] = (
                                 metric_data[key] + previous_metric[key]
@@ -151,7 +151,7 @@ class ResourceManagerComm(object):
                     for key in metric_data:
                         if key == "attained_service":
                             metric_data_dict[job_id][key] += metric_data[key]
-                        if key == "per_iteration_time":
+                        if key == "per_iter_time":
                             # average key
                             if key in metric_data_dict[job_id]:
                                 metric_data_dict[job_id][key] = (

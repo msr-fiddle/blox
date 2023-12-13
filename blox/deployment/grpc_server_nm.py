@@ -120,7 +120,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
                     job_metrics[key] += previous_metrics[key]
                 else:
                     pass
-            if key == "per_iteration_time":
+            if key == "per_iter_time":
                 if key in previous_metrics:
                     job_metrics[key] = (job_metrics[key] + previous_metrics[key]) / 2
                 else:
