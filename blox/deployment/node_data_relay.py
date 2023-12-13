@@ -59,7 +59,7 @@ class DataRelay(object):
         if self.use_redis:
             pass
         else:
-            if job_id in data_dict:
+            if job_id in self.data_dict:
                 del self.data_dict[job_id]
             else:
                 pass
