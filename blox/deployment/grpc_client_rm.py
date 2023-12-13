@@ -136,12 +136,10 @@ class ResourceManagerComm(object):
                 ipdb.set_trace()
                 for key in metric_data:
                     if key == "attained_service":
-                        if key in previous_metric:
-                            metric_data[key] += previous_metric[key]
-                        else:
-                            pass
+                        metric_data[key] += previous_metric[key]
+                        # keys with their default values are assigned
                     if key == "per_iteration_time":
-                        if key in previous_metric:
+                        if previous_metric[key] != 0:
                             metric_data[key] = (
                                 metric_data[key] + previous_metric[key]
                             ) / 2
@@ -152,10 +150,7 @@ class ResourceManagerComm(object):
                 if job_id in metric_data_dict:
                     for key in metric_data:
                         if key == "attained_service":
-                            if key in metric_data_dict[job_id]:
-                                metric_data_dict[job_id][key] += metric_data[key]
-                            else:
-                                pass
+                            metric_data_dict[job_id][key] += metric_data[key]
                         if key == "per_iteration_time":
                             # average key
                             if key in metric_data_dict[job_id]:

@@ -40,13 +40,27 @@ class DataRelay(object):
         Set lease status for a given job_id
         Args:
             job_id: The job ID of the associated job
-            stauts : Status of the lease for the associated job_id
+            status : Status of the lease for the associated job_id
         """
         key_to_set = "{}_lease".format(job_id)
         if self.use_redis:
             self.redis_client.set(key_to_set, status)
         else:
             self.data_dict[key_to_set] = status
+
+    def reset_job_metrics(self, job_id: int):
+        """
+        Reset Job Metrics.
+
+        We usually call it after reading job status everytime.
+        Args:
+            job_id: The job ID of the associated job
+        """
+        if self.use_redis:
+            pass
+        else:
+            del self.data_dict[job_id]
+        return None
 
     def get_job_metrics(self, job_id: int) -> dict:
         """

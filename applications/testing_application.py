@@ -9,14 +9,14 @@ def main(args):
     print("Job ID {}".format(args.jid))
     print("Iterator initilized")
     print("Initialized enumerator")
-    enumerator = bloxEnumerate(range(100), args.jid)
+    enumerator = bloxEnumerate(range(200), args.jid)
     for ictr, key in enumerator:
         print(ictr, key)
-        enumerator.push_metrics({"attained_service": 10})
+        enumerator.push_metrics({"attained_service": 5})
         enumerator.push_metrics({"per_iteration_time": 1})
         if ictr is False:
             print("Time to exit")
-        time.sleep(1)
+        time.sleep(0.5)
     enumerator.job_exit_notify()
 
 
