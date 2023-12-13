@@ -79,8 +79,11 @@ class DataRelay(object):
             # TODO: For redis handle dictionary update parameter
             self.redis_client.set(job_id, json.dumps(metrics))
         else:
+            # metrics are comming ready to push
             # TODO: Get rid of bad hack for job
-            # if job_id not in self.data_dict:
+            # already getting
+            if job_id not in self.data_dict:
+                self.data_dict[job_id] = metrics
             # if "per_iter_time" in metrics:
             # metrics["attained_service"] = metrics["per_iter_time"]
             # self.data_dict[job_id] = metrics
@@ -90,7 +93,8 @@ class DataRelay(object):
             # self.data_dict[job_id]["attained_service"]
             # + metrics["per_iter_time"]
             # )
-            self.data_dict[job_id].update(metrics)
+            else:
+                self.data_dict[job_id].update(metrics)
         # print("set job metrics data dict {}".format(self.data_dict))
         print("Self Data dict {}".format(self.data_dict))
         return None
