@@ -80,18 +80,19 @@ class DataRelay(object):
             self.redis_client.set(job_id, json.dumps(metrics))
         else:
             # TODO: Get rid of bad hack for job
-            if job_id not in self.data_dict:
-                if "per_iter_time" in metrics:
-                    metrics["attained_service"] = metrics["per_iter_time"]
-                self.data_dict[job_id] = metrics
-            else:
-                if "per_iter_time" in metrics:
-                    metrics["attained_service"] = (
-                        self.data_dict[job_id]["attained_service"]
-                        + metrics["per_iter_time"]
-                    )
-                self.data_dict[job_id].update(metrics)
+            # if job_id not in self.data_dict:
+            # if "per_iter_time" in metrics:
+            # metrics["attained_service"] = metrics["per_iter_time"]
+            # self.data_dict[job_id] = metrics
+            # else:
+            # if "per_iter_time" in metrics:
+            # metrics["attained_service"] = (
+            # self.data_dict[job_id]["attained_service"]
+            # + metrics["per_iter_time"]
+            # )
+            self.data_dict[job_id].update(metrics)
         # print("set job metrics data dict {}".format(self.data_dict))
+        print("Self Data dict {}".format(self.data_dict))
         return None
 
     def get_rm_metrics(self, job_id: int, metric_to_fetch: str) -> dict:
