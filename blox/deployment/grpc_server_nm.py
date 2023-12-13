@@ -136,6 +136,15 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         self.local_data_store.set_job_metrics(jobs_to_terminate, {"job_exit": True})
         return rm_pb2.BooleanResponse(value=True)
 
+    def NotifySuspend(self, request, context) -> rm_pb2.BooleanResponse:
+        """
+        Blox iterator notfies the node manager on successful exit.
+        """
+        jobs_to_terminate = request.value
+        # TODO: Need to decide how to handel this
+        self.local_data_store.set_job_metrics(jobs_to_terminate, {"job_suspend": True})
+        return rm_pb2.BooleanResponse(value=True)
+
     def SetMetricsFromRM(self, request, context) -> rm_pb2.BooleanResponse:
         """
         Set metrics pushed from resource manager.

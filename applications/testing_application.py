@@ -17,6 +17,7 @@ def main(args):
         if ictr is False:
             print("Time to exit")
         time.sleep(1)
+    enumerator.job_exit_notify()
 
 
 def parse_args(parser):

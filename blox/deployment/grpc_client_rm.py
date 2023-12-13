@@ -128,7 +128,41 @@ class ResourceManagerComm(object):
                     stub = nm_pb2_grpc.NMServerStub(channel)
                     response = stub.GetMetrics(metric_request)
                 metric_data = json.loads(response.response)
-                metric_data_dict[job_id] = metric_data
+                # make sure we update and not overwrite
+                previous_metric = active_job_dict[job_id]["tracked_metrics"]
+                for key in metric_data:
+                    if key == "attained_service":
+                        if key in previous_metric:
+                            metric_data[key] += previous_metric[key]
+                        else:
+                            pass
+                    if key == "per_iteration_time":
+                        if key in previous_metric:
+                            metric_data[key] = (
+                                metric_data[key] + previous_metric[key]
+                            ) / 2
+                        else:
+                            pass
+
+                # Same job ids can be running at multiple ip addr
+                if job_id in metric_data_dict:
+                    for key in metric_data:
+                        if key == "attained_service":
+                            if key in metric_data_dict[job_id]:
+                                metric_data_dict[job_id][key] += metric_data[key]
+                            else:
+                                pass
+                        if key == "per_iteration_time":
+                            # average key
+                            if key in metric_data_dict[job_id]:
+                                metric_data_dict[job_id][key] = (
+                                    metric_data_dict[job_id][key] + metric_data[key]
+                                ) / 2
+                            else:
+                                pass
+
+                else:
+                    metric_data_dict[job_id] = metric_data
             else:
                 # this is a simulation
                 # profile scaling by number of GPUs

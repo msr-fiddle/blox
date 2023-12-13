@@ -18,6 +18,9 @@ class bloxEnumerate(enumerate):
     def push_metrics(self, metric_dict):
         self._rpc_client.push_metrics(metric_dict)
 
+    def job_exit_notify(self):
+        self._rpc_client.job_exity_notify()
+
 
 if __name__ == "__main__":
     # Example usage:
