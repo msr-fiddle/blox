@@ -53,6 +53,7 @@ class BloxIteratorComm(object):
         metrics_request.response = json.dumps(
             {"Job_ID": self.jobid, "metrics": metrics}
         )
+        print(f"Input Metrics {metrics}")
         with grpc.insecure_channel(self.node_manager_ip) as channel:
             stub = nm_pb2_grpc.NMServerStub(channel)
             response = stub.SetMetrics(metrics_request)
