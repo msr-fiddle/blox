@@ -113,6 +113,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         job_metrics = recevied_data["metrics"]
         # print(f"Set metrics {job_metrics})")
         previous_metrics = self.local_data_store.get_job_metrics(job_id)
+        print("Previous Metric {}".format(previous_metric))
         for key in job_metrics:
             if key == "attained_service":
                 if key in previous_metrics:
