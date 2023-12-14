@@ -34,6 +34,7 @@ def submit_dummy_job(ipaddr: str):
         "num_total_iterations": 2000,
         "simulation": False,
     }
+    # this is final. Metric collection and termination work
     for i in range(int(sys.argv[1])):
         with grpc.insecure_channel(ipaddr) as channel:
             stub = rm_pb2_grpc.RMServerStub(channel)
