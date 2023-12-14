@@ -121,6 +121,14 @@ def main(args):
         job_state.add_new_jobs(accepted_jobs)
         print("Jobs in cluster {}".format(job_state.active_jobs))
         utils.prune_jobs(job_state, cluster_state, blox_instance)
+        # perform scheduler based pruning of jobs
+        remove_jobs = utils.prune_jobs_based_on_runtime(
+            job_state, cluster_state, blox_instance
+        )
+        # actually kill jobs
+        blox_instance.exec_jobs([], remove_jobs, cluster_state, job_state)
+        # modify state to account for removal of jobs
+        utils.remove_post_termination(remove_jobs, job_state, cluster_state)
         # perform scheduling
         new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
         # get placement

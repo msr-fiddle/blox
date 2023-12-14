@@ -31,6 +31,7 @@ def submit_dummy_job(ipaddr: str):
         "default_values": [0, 0],  # default values for params to track
         # "parsing_params" : [AVG, S\UM]
         "num_GPUs": 2,
+        "num_iterations": 2000,
         "simulation": False,
     }
     for i in range(int(sys.argv[1])):

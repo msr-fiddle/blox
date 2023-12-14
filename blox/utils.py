@@ -107,10 +107,63 @@ def execute_jobs(
                 active_jobs.active_jobs[jid]["job_priority"] = 1
 
 
+def prune_jobs_based_on_runtime(
+    job_state: JobState, cluster_state: ClusterState, blr: BloxManager
+):
+    """
+    Special function. In regular cases jobs themselves exit based on some exit condition.
+    The scheduler is not the one to decide when to terminate a job.
+    However, for research we sometime will like to terminate jobs by the scheduler.
+
+    There should be a key which says number_of_iteration to end
+    """
+    jid_to_terminate = list()
+
+    for jid in job_state.active_jobs:
+        if job_state.active_jobs[jid]["is_running"] == True:
+            if jid in job_state.active_jobs:
+                if "tracked_metrics" in job_state.active_jobs[jid]:
+                    num_iterations = (
+                        job_state.active_jobs[jid]["attained_service"]
+                        / job_state.active_jobs[jid]["per_iter_time"]
+                    )
+
+                    if "num_total_iterations" in job_state.active_jobs[jid]:
+                        if num_iterations > job_state.active_jobs[jid]:
+                            # TODO: put a condition to check if need
+                            # plotting
+                            if (
+                                jid >= job_state.job_ids_to_track[0]
+                                and jid <= job_state.job_ids_to_track[-1]
+                            ):
+                                # log the exit
+                                job_state.job_completion_stats[jid] = [
+                                    job_state.active_jobs[jid]["submit_time"],
+                                    blr.simulator_time,
+                                ]
+
+                                job_state.job_runtime_stats[jid] = copy.deepcopy(
+                                    job_state.active_jobs[jid]
+                                )
+
+                            jid_to_terminate.append(jid)
+                            # delete GPU utilization
+    return jid_to_terminate
+
+
+def remove_post_termination(jobs_terminated, job_state, cluster_state):
+    for jid in jobs_terminated:
+        _free_gpu_by_jobid(jid, cluster_state.gpu_df)
+        # log the finished jobs
+        job_state.finished_job[jid] = 1
+        job_state.active_jobs.pop(jid)
+
+
 def prune_jobs(job_state: JobState, cluster_state: ClusterState, blr: BloxManager):
     """
     Delete jobs which have exited.
     """
+    # terminate jobs based on seeing a job_exit key
     jid_to_terminate = list()
     for jid in job_state.active_jobs:
         if job_state.active_jobs[jid]["is_running"] == True:
