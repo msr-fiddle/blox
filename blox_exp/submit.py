@@ -40,6 +40,9 @@ def main():
     current_time = 0
     jcounter = 0
     current_job = None
+    import ipdb
+
+    ipdb.set_trace()
     while True:
         if current_job is None:
             new_job = preprocess_job(jobs[jcounter].__dict__)
