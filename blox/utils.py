@@ -124,8 +124,10 @@ def prune_jobs_based_on_runtime(
             if jid in job_state.active_jobs:
                 if "tracked_metrics" in job_state.active_jobs[jid]:
                     num_iterations = (
-                        job_state.active_jobs[jid]["attained_service"]
-                        / job_state.active_jobs[jid]["per_iter_time"]
+                        job_state.active_jobs[jid]["tracked_metrics"][
+                            "attained_service"
+                        ]
+                        / job_state.active_jobs[jid]["tracked_metrics"]["per_iter_time"]
                     )
 
                     if "num_total_iterations" in job_state.active_jobs[jid]:
