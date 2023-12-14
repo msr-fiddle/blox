@@ -40,12 +40,12 @@ def main():
     current_time = 0
     jcounter = 0
     current_job = None
-    import ipdb
-
-    ipdb.set_trace()
     while True:
         if current_job is None:
             new_job = preprocess_job(jobs[jcounter].__dict__)
+            import ipdb
+
+            ipdb.set_trace()
             current_job = new_job
             print(current_job)
         if current_job["submit_time"] <= current_time:
