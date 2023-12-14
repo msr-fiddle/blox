@@ -138,9 +138,11 @@ def prune_jobs_based_on_runtime(
                         )
                     else:
                         num_iterations = 0
-
                     if "num_total_iterations" in job_state.active_jobs[jid]:
-                        if num_iterations > job_state.active_jobs[jid]:
+                        if (
+                            num_iterations
+                            > job_state.active_jobs[jid]["num_total_iterations"]
+                        ):
                             # TODO: put a condition to check if need
                             # plotting
                             if (
