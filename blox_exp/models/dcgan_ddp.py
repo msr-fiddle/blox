@@ -48,6 +48,7 @@ parser.add_argument('--outf', default='.', help='folder to output images and mod
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 parser.add_argument('--classes', default='bedroom', help='comma separated list of classes for the lsun data set')
 parser.add_argument('--local_rank', type=int)
+parser.add_argument("--job-id", type=int, default=0, help='job-id for blox scheduler')
 
 args = parser.parse_args()
 
@@ -55,6 +56,7 @@ args = parser.parse_args()
 # Training
 def benchmark_dcgan(model_name, batch_size):
     cudnn.benchmark = True
+    job_id = args.job_id
 
     world_size = int(os.environ['WORLD_SIZE'])
     rank = int(os.environ['RANK'])
@@ -176,7 +178,7 @@ def benchmark_dcgan(model_name, batch_size):
     if args.dry_run:
         args.niter = 1
 
-    def benchmark_step():
+    def benchmark_step(job_id):
         iter_num = 0
         # Prevent total batch number < warmup+benchmark situation
         while True:
@@ -215,9 +217,11 @@ def benchmark_dcgan(model_name, batch_size):
                 errG.backward()
                 optimizerG.step()
                 iter_num += 1
+                print(f"iter_num: {iter_num}")
+                print(f"job_id: {job_id}")
 
     print(f'==> Training {model_name} model with {batch_size} batchsize')
-    benchmark_step()
+    benchmark_step(job_id)
 
 
 if __name__ == "__main__":

@@ -39,12 +39,14 @@ parser.add_argument(
 )
 parser.add_argument('--batch-size', type=int, default=64, help='batch size')
 parser.add_argument('--local_rank', type=int)
+parser.add_argument('--job-id', type=int, default=0, help='job-id for blox scheduler')
 
 args = parser.parse_args()
 
 
 def benchmark_pointnet(model_name, batch_size):
     cudnn.benchmark = True
+    job_id = args.job_id
 
     world_size = int(os.environ['WORLD_SIZE'])
     rank = int(os.environ['RANK'])
@@ -83,7 +85,7 @@ def benchmark_pointnet(model_name, batch_size):
     criterion = nn.CrossEntropyLoss().to(local_rank)
 
     # Train
-    def benchmark_step():
+    def benchmark_step(job_id):
         iter_num = 0
         model.train()
         # Prevent total batch number < warmup+benchmark situation
@@ -100,9 +102,11 @@ def benchmark_pointnet(model_name, batch_size):
                 loss.backward()
                 optimizer.step()
                 iter_num += 1
+                print(f"iter_num: {iter_num}")
+                print(f"job_id: {job_id}")
 
     print(f'==> Training {model_name} model with {batch_size} batchsize')
-    benchmark_step()
+    benchmark_step(job_id)
 
 
 if __name__ == '__main__':

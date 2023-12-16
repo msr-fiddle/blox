@@ -43,7 +43,8 @@ BERT_ARGS="
     --fp16 \
     --no-async-tensor-model-parallel-allreduce \
     --is-manual-pipeline True \
-    --manual-pipeline-list $5
+    --manual-pipeline-list $5 \
+    --job-id $6
 "
 
 DATA_ARGS="

@@ -6,4 +6,5 @@ python -m torch.distributed.launch \
     --nnodes=1 \
     --node_rank=0 \
     /global/homes/s/songbian/Megatron-Resource/blox_exp/models/pointnet_ddp.py \
-    --batch-size=$4
+    --batch-size=$4 \
+    --job-id=$5
