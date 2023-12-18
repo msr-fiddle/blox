@@ -24,6 +24,7 @@ sys.path.append(os.path.abspath(
 
 from torch.nn import DataParallel
 from workloads.lucid.cifar.models import *
+from applications.blox_enumerator import bloxEnumerate
 
 # Benchmark settings
 parser = argparse.ArgumentParser(
@@ -87,17 +88,31 @@ def benchmark_imagenet(model_name, batch_size):
 
     def benchmark_step(job_id):
         iter_num = 0
+        enumerator = bloxEnumerate(range(1000), args.jid)
         while True:
             for inputs, targets in train_loader:
+                start = time.time()
                 inputs, targets = inputs.to(local_rank), targets.to(local_rank)
                 optimizer.zero_grad()
                 outputs = model(inputs)
                 loss = criterion(outputs, targets)
                 loss.backward()
                 optimizer.step()
+                end = time.time()
                 iter_num += 1
                 print(f"iter_num: {iter_num}")
                 print(f"job_id: {job_id}")
+                try:
+                    ictr, key = enumerator.__next__()
+                except:
+                    break
+                enumerator.push_metrics({"attained_service": world_size * (end - start)})
+                enumerator.push_metrics({"per_iter_time": end - start})
+                if ictr is False:
+                    print("Time to exit")
+                    sys.exit()
+                time.sleep(0.1)
+            enumerator.job_exit_notify()
 
     # Benchmark
     print(f'==> Training {model_name} model with {batch_size} batchsize')
