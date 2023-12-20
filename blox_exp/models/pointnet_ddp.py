@@ -13,11 +13,13 @@ import pandas as pd
 import torchvision
 import time
 
-sys.path.append(os.path.abspath(
-    os.path.join(
-        os.path.join(os.path.dirname(__file__), os.path.pardir),
-        os.path.pardir)
-))
+sys.path.append(
+    os.path.abspath(
+        os.path.join(
+            os.path.join(os.path.dirname(__file__), os.path.pardir), os.path.pardir
+        )
+    )
+)
 
 from torch.nn import DataParallel
 from torchvision import transforms
@@ -27,20 +29,30 @@ from applications.blox_enumerator import bloxEnumerate
 
 # Benchmark settings
 parser = argparse.ArgumentParser(
-    description="PyTorch Profile pointnet", formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    description="PyTorch Profile pointnet",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
-parser.add_argument("--amp-fp16", action="store_true", default=False, help="Enables FP16 training with Apex.")
-parser.add_argument("--feature_transform", action="store_true", help="use feature transform")
-parser.add_argument("--num_points", type=int, default=2500, help="num of points for dataset")
 parser.add_argument(
-    '--data_dir',
+    "--amp-fp16",
+    action="store_true",
+    default=False,
+    help="Enables FP16 training with Apex.",
+)
+parser.add_argument(
+    "--feature_transform", action="store_true", help="use feature transform"
+)
+parser.add_argument(
+    "--num_points", type=int, default=2500, help="num of points for dataset"
+)
+parser.add_argument(
+    "--data_dir",
     type=str,
     default="/global/cfs/cdirs/m4207/song/shapenetcore_partanno_segmentation_benchmark_v0/",
-    help='Data directory'
+    help="Data directory",
 )
-parser.add_argument('--batch-size', type=int, default=64, help='batch size')
-parser.add_argument('--local_rank', type=int)
-parser.add_argument('--job-id', type=int, default=0, help='job-id for blox scheduler')
+parser.add_argument("--batch-size", type=int, default=64, help="batch size")
+parser.add_argument("--local_rank", type=int)
+parser.add_argument("--job-id", type=int, default=0, help="job-id for blox scheduler")
 
 args = parser.parse_args()
 
@@ -49,9 +61,9 @@ def benchmark_pointnet(model_name, batch_size):
     cudnn.benchmark = True
     job_id = args.job_id
 
-    world_size = int(os.environ['WORLD_SIZE'])
-    rank = int(os.environ['RANK'])
-    local_rank = int(os.environ['LOCAL_RANK'])
+    world_size = int(os.environ["WORLD_SIZE"])
+    rank = int(os.environ["RANK"])
+    local_rank = int(os.environ["LOCAL_RANK"])
     # initialize the process group
     dist.init_process_group(backend="nccl", rank=rank, world_size=world_size)
 
@@ -59,7 +71,9 @@ def benchmark_pointnet(model_name, batch_size):
 
     # specify dataset
     # print('==> Preparing data..')
-    trainset = ShapeNetDataset(root=args.data_dir, classification=True, npoints=args.num_points)
+    trainset = ShapeNetDataset(
+        root=args.data_dir, classification=True, npoints=args.num_points
+    )
     trainsampler = torch.utils.data.distributed.DistributedSampler(trainset)
     trainloader = torch.utils.data.DataLoader(
         trainset,
@@ -67,7 +81,7 @@ def benchmark_pointnet(model_name, batch_size):
         shuffle=(trainsampler is None),
         sampler=trainsampler,
         num_workers=2,
-        pin_memory=False
+        pin_memory=False,
     )
     num_classes = len(trainset.classes)
     # print("classes", num_classes)
@@ -76,10 +90,7 @@ def benchmark_pointnet(model_name, batch_size):
     # print('==> Building model..')
     model = PointNetCls(k=num_classes, feature_transform=args.feature_transform)
     model = model.to(local_rank)
-    torch.nn.parallel.DistributedDataParallel(
-        model,
-        device_ids=[local_rank]
-    )
+    torch.nn.parallel.DistributedDataParallel(model, device_ids=[local_rank])
 
     optimizer = optim.Adam(model.parameters(), lr=0.01)
 
@@ -112,19 +123,18 @@ def benchmark_pointnet(model_name, batch_size):
                     ictr, key = enumerator.__next__()
                 except:
                     break
-                enumerator.push_metrics({"attained_service": world_size * (end - start)})
+                enumerator.push_metrics({"attained_service": (end - start)})
                 enumerator.push_metrics({"per_iter_time": end - start})
                 if ictr is False:
                     print("Time to exit")
                     sys.exit()
-                time.sleep(0.1)
             enumerator.job_exit_notify()
 
-    print(f'==> Training {model_name} model with {batch_size} batchsize')
+    print(f"==> Training {model_name} model with {batch_size} batchsize")
     benchmark_step(job_id)
 
 
-if __name__ == '__main__':
-    model_name = 'PointNet'
+if __name__ == "__main__":
+    model_name = "PointNet"
     batch_size = args.batch_size
     benchmark_pointnet(model_name, batch_size)

@@ -54,6 +54,10 @@ class ResourceManagerComm(object):
                     launch_dict["should_resume"] = job_description["suspended"]
                 else:
                     launch_dict["should_resume"] = "0"
+                launch_command = job_description["launch_params"]
+                launch_dict["launch_command"] = " ".join(
+                    launch_command
+                )  # ["0,", "6001", "1", "resnet50", "64" ]
                 launch_request = rm_pb2.JsonResponse()
                 launch_request.response = json.dumps(launch_dict)
                 with grpc.insecure_channel(ipaddr) as channel:

@@ -1,7 +1,15 @@
+import grpc
 import pandas as pd
 import time
 
 from job import Job
+
+
+sys.path.append(
+    os.path.join(os.path.dirname(__file__), "../blox/deployment/grpc_stubs")
+)
+import grpc_stubs.rm_pb2 as rm_pb2
+import grpc_stubs.rm_pb2_grpc as rm_pb2_grpc
 
 
 def preprocess_job(new_job):
@@ -11,7 +19,12 @@ def preprocess_job(new_job):
     return new_job
 
 
-def main():
+def main(scheduler_ipaddr):
+    """
+    Parse the files from the given csv file and submit it to the central scheduler.
+    Args:
+        scheduler_ipaddr: IP-Address of the scheduler code.
+    """
     df = pd.read_csv(
         filepath_or_buffer="/global/homes/s/songbian/Megatron-Resource/blox_exp/workload/poisson_trace_10+0.5.csv",
         dtype={
@@ -50,9 +63,16 @@ def main():
             print(current_job)
         if current_job["submit_time"] <= current_time:
             # submit_job
-            import ipdb
-
-            ipdb.set_trace()
+            job_dict["params_to_track"] = ["per_iter_time", "attained_service"]
+            job_dict["default_values"] = [0, 0]
+            # my lazy way of getting things done
+            job_dict["num_GPUs"] = job_dict["num_gpus"]
+            with grpc.insecure_channel(scheduler_ipaddr) as channel:
+                stub = rm_pb2_grpc.RMServerStub(channel)
+                response = stub.AcceptJob(
+                    rm_pb2.JsonResponse(response=json.dumps(job_dict))
+                )
+                print(f"Job Accepted: {response.value}")
             jcounter += 1
             if jcounter == len(jobs):
                 break
