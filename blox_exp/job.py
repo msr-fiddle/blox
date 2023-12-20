@@ -139,6 +139,7 @@ class Job:
                 str(6000 + self.job_id), 
                 str(self.job_gpu_demand),
                 split_strategy,
+                self.job_id
             ]
         elif self.job_model == "GPT2-Medium":
             if self.job_gpu_demand == 2:
@@ -155,6 +156,7 @@ class Job:
                 str(6000 + self.job_id), 
                 str(self.job_gpu_demand),
                 split_strategy,
+                self.job_id
             ]
         elif self.job_model == "resnet50" or self.job_model == "vgg19":
             self.launch_command = "bash /global/homes/s/songbian/Megatron-Resource/blox_exp/scripts/run_imagetnet.sh"
@@ -164,6 +166,7 @@ class Job:
                 str(self.job_gpu_demand),
                 self.job_model,
                 self.batch_size,
+                self.job_id
             ]
         elif self.job_model == "DCGAN":
             self.launch_command = "bash /global/homes/s/songbian/Megatron-Resource/blox_exp/scripts/run_dcgan.sh"
@@ -172,6 +175,7 @@ class Job:
                 str(6000 + self.job_id), 
                 str(self.job_gpu_demand),
                 self.batch_size,
+                self.job_id
             ]
         elif self.job_model == "PointNet":
             self.launch_command = "bash /global/homes/s/songbian/Megatron-Resource/blox_exp/scripts/run_pointnet.sh"
@@ -180,6 +184,7 @@ class Job:
                 str(6000 + self.job_id), 
                 str(self.job_gpu_demand),
                 self.batch_size,
+                self.job_id
             ]
         else:
             raise ValueError("the model is not considered now!!!")

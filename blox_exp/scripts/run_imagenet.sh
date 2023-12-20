@@ -7,4 +7,5 @@ python -m torch.distributed.launch \
     --node_rank=0 \
     /global/homes/s/songbian/Megatron-Resource/blox_exp/models/imagenet_ddp.py \
     --model-name=$4 \
-    --batch-size=$5
+    --batch-size=$5 \
+    --job-id=$6

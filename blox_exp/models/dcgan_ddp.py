@@ -24,6 +24,8 @@ sys.path.append(os.path.abspath(
     )
 )
 
+from applications.blox_enumerator import bloxEnumerate
+
 # Benchmark settings
 parser = argparse.ArgumentParser(
     description="PyTorch DP Synthetic Benchmark", formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -48,6 +50,7 @@ parser.add_argument('--outf', default='.', help='folder to output images and mod
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 parser.add_argument('--classes', default='bedroom', help='comma separated list of classes for the lsun data set')
 parser.add_argument('--local_rank', type=int)
+parser.add_argument("--job-id", type=int, default=0, help='job-id for blox scheduler')
 
 args = parser.parse_args()
 
@@ -55,6 +58,7 @@ args = parser.parse_args()
 # Training
 def benchmark_dcgan(model_name, batch_size):
     cudnn.benchmark = True
+    job_id = args.job_id
 
     world_size = int(os.environ['WORLD_SIZE'])
     rank = int(os.environ['RANK'])
@@ -176,11 +180,13 @@ def benchmark_dcgan(model_name, batch_size):
     if args.dry_run:
         args.niter = 1
 
-    def benchmark_step():
+    def benchmark_step(job_id):
         iter_num = 0
+        enumerator = bloxEnumerate(range(1000), args.jid)
         # Prevent total batch number < warmup+benchmark situation
         while True:
             for i, data in enumerate(dataloader, 0):
+                start = time.time()
                 ############################
                 # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
                 ###########################
@@ -214,10 +220,25 @@ def benchmark_dcgan(model_name, batch_size):
                 errG = criterion(output, label)
                 errG.backward()
                 optimizerG.step()
+                end = time.time()
                 iter_num += 1
+                print(f"iter_num: {iter_num}")
+                print(f"job_id: {job_id}")
+                try:
+                    ictr, key = enumerator.__next__()
+                except:
+                    break
+                enumerator.push_metrics({"attained_service": world_size * (end - start)})
+                enumerator.push_metrics({"per_iter_time": end - start})
+                if ictr is False:
+                    print("Time to exit")
+                    sys.exit()
+                time.sleep(0.1)
+            enumerator.job_exit_notify()
+
 
     print(f'==> Training {model_name} model with {batch_size} batchsize')
-    benchmark_step()
+    benchmark_step(job_id)
 
 
 if __name__ == "__main__":

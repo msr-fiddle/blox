@@ -23,6 +23,7 @@ from torch.nn import DataParallel
 from torchvision import transforms
 from workloads.lucid.pointnet.dataset import ShapeNetDataset
 from workloads.lucid.pointnet.pointnet import PointNetCls, feature_transform_regularizer
+from applications.blox_enumerator import bloxEnumerate
 
 # Benchmark settings
 parser = argparse.ArgumentParser(
@@ -39,12 +40,14 @@ parser.add_argument(
 )
 parser.add_argument('--batch-size', type=int, default=64, help='batch size')
 parser.add_argument('--local_rank', type=int)
+parser.add_argument('--job-id', type=int, default=0, help='job-id for blox scheduler')
 
 args = parser.parse_args()
 
 
 def benchmark_pointnet(model_name, batch_size):
     cudnn.benchmark = True
+    job_id = args.job_id
 
     world_size = int(os.environ['WORLD_SIZE'])
     rank = int(os.environ['RANK'])
@@ -83,12 +86,14 @@ def benchmark_pointnet(model_name, batch_size):
     criterion = nn.CrossEntropyLoss().to(local_rank)
 
     # Train
-    def benchmark_step():
+    def benchmark_step(job_id):
         iter_num = 0
+        enumerator = bloxEnumerate(range(1000), args.jid)
         model.train()
         # Prevent total batch number < warmup+benchmark situation
         while True:
             for inputs, targets in trainloader:
+                start = time.time()
                 optimizer.zero_grad()
                 targets = targets[:, 0]
                 inputs = inputs.transpose(2, 1)
@@ -99,10 +104,24 @@ def benchmark_pointnet(model_name, batch_size):
                     loss += feature_transform_regularizer(trans_feat) * 0.001
                 loss.backward()
                 optimizer.step()
+                end = time.time()
                 iter_num += 1
+                print(f"iter_num: {iter_num}")
+                print(f"job_id: {job_id}")
+                try:
+                    ictr, key = enumerator.__next__()
+                except:
+                    break
+                enumerator.push_metrics({"attained_service": world_size * (end - start)})
+                enumerator.push_metrics({"per_iter_time": end - start})
+                if ictr is False:
+                    print("Time to exit")
+                    sys.exit()
+                time.sleep(0.1)
+            enumerator.job_exit_notify()
 
     print(f'==> Training {model_name} model with {batch_size} batchsize')
-    benchmark_step()
+    benchmark_step(job_id)
 
 
 if __name__ == '__main__':
