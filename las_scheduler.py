@@ -23,6 +23,24 @@ def parse_args(parser):
     parser.add_argument(
         "--scheduler", default="Las", type=str, help="Name of the scheduling strategy"
     )
+
+    parser.add_argument(
+        "--node-manager-port", default=50052, type=int, help="Node Manager RPC port"
+    )
+    parser.add_argument(
+        "--central-scheduler-port",
+        default=50051,
+        type=int,
+        help="Central Scheduler RPC Port",
+    )
+
+    parser.add_argument(
+        "--simulator-rpc-port",
+        default=50050,
+        type=int,
+        help="Simulator RPC port to fetch ",
+    )
+
     parser.add_argument(
         "--scheduler-name",
         default="Las",

@@ -37,9 +37,11 @@ class BloxManager(object):
         self.exp_prefix = args.exp_prefix
         self.load = args.load
         self.round_duration = args.round_duration
-        self.comm_node_manager = rm_client.ResourceManagerComm()
+        self.comm_node_manager = rm_client.ResourceManagerComm(
+            rpc_port=args.node_manager_port
+        )
         self.priority_thresh = 3600 * 1000  # above this we will have priority thresh
-        self.server, self.rmserver = launch_server()
+        self.server, self.rmserver = launch_server(rpc_port=args.central_scheduler_port)
         self.time = 0
         self.terminate = False
         return None
@@ -480,7 +482,9 @@ def _find_local_gpu_id(global_gpu_ids: List[int], gpu_df: pd.DataFrame) -> List[
 
 # print(metric_data)
 # utility functions
-def launch_server() -> Tuple[grpc.Server, rm_serve.RMServer]:
+def launch_server(
+    rpc_port: int, simulator_rpc_port: int
+) -> Tuple[grpc.Server, rm_serve.RMServer]:
     """
     Launches GRPC server and returns the server object
     Args:
@@ -490,6 +494,6 @@ def launch_server() -> Tuple[grpc.Server, rm_serve.RMServer]:
         rmserver : The class object to work with rmserver
     """
     rmserver = rm_serve.RMServer()
-    server = rm_serve.start_server(rmserver)
+    server = rm_serve.start_server(rmserver, rpc_port=rpc_port)
     print("Server started")
     return server, rmserver
