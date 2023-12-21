@@ -54,7 +54,9 @@ class ResourceManagerComm(object):
                     launch_dict["should_resume"] = job_description["suspended"]
                 else:
                     launch_dict["should_resume"] = "0"
-                launch_command = job_description["launch_params"]
+                launch_params = job_description["launch_params"]
+                launch_params.append(launch_dict["job_id"])
+                launch_params_string = " ".join(launch_params)
                 launch_dict["launch_command"] = " ".join(
                     launch_command
                 )  # ["0,", "6001", "1", "resnet50", "64" ]
