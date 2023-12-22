@@ -137,3 +137,25 @@ In second terminal
 ```
 PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python python blox_new_flow_multi_run.py --simulate --load 6 --exp-prefix test
 ```
+
+
+#### Running Multiple Solutions in Parallel 
+Blox supports running multiple simulations on the same machine. The authors will need to specify the port numbers correctly. 
+Here is an example to run multiple simulations. Run the following commands in different terminals. 
+
+Running First simulation.
+```
+python simulator_simple.py --cluster-job-log ./cluster_job_log --sim-type trace-synthetic --jobs-per-hour 1 --exp-prefix test --simulator-rpc-port 50511
+```
+```
+python las_scheduler.py --simulate --load 1 --exp-prefix test --simulator-rpc-port 50511
+```
+
+Running Second Simulation.
+```
+python simulator_simple.py --cluster-job-log ./cluster_job_log --sim-type trace-synthetic --jobs-per-hour 1 --exp-prefix test --simulator-rpc-port 50501
+```
+```
+python las_scheduler.py --simulate --load 1 --exp-prefix test --simulator-rpc-port 50501
+```
+
