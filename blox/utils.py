@@ -132,7 +132,7 @@ def prune_jobs(job_state: JobState, cluster_state: ClusterState, blr: BloxManage
                                 # log the exit
                                 job_state.job_completion_stats[jid] = [
                                     job_state.active_jobs[jid]["submit_time"],
-                                    blr.simulator_time,
+                                    blr.time,
                                 ]
 
                                 job_state.job_runtime_stats[jid] = copy.deepcopy(
@@ -163,7 +163,7 @@ def prune_jobs(job_state: JobState, cluster_state: ClusterState, blr: BloxManage
                             # log the exit
                             job_state.job_responsiveness_stats[jid] = [
                                 job_state.active_jobs[jid]["submit_time"],
-                                blr.simulator_time,
+                                blr.time,
                             ]
 
     for jid in jid_to_terminate:
@@ -175,7 +175,7 @@ def collect_custom_metrics(job_state, cluster_state, custom_metrics):
     """
     Collect any custom metrics
     """
-    job_state.custom_metrics[job_state.simulator_time] = custom_metrics
+    job_state.custom_metrics[job_state.time] = custom_metrics
 
     return None
 
@@ -198,7 +198,7 @@ def collect_cluster_job_metrics(
     for jid in job_state.active_jobs:
         gpu_demand += job_state.active_jobs[jid]["num_GPUs"]
 
-    cluster_state.cluster_stats[cluster_state.simulator_time] = {
+    cluster_state.cluster_stats[cluster_state.time] = {
         "total_jobs": total_jobs,
         "jobs_in_queue": jobs_in_queue,
         "jobs_running": jobs_running,

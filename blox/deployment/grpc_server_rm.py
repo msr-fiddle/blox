@@ -153,18 +153,18 @@ class RMServer(rm_pb2_grpc.RMServerServicer):
         return job_list
 
 
-def server(rpc_port: int):
+def server(rm_server_rpc_port: int):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
     rm_pb2_grpc.add_RMServerServicer_to_server(RMServer(), server)
-    server.add_insecure_port(f"[::]:{rpc_port}")
+    server.add_insecure_port(f"[::]:{rm_server_rpc_port}")
     server.start()
     server.wait_for_termination()
 
 
-def start_server(rmserver: RMServer, rpc_port: int) -> grpc.server:
+def start_server(rmserver: RMServer, rm_server_rpc_port: int) -> grpc.server:
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
     rm_pb2_grpc.add_RMServerServicer_to_server(rmserver, server)
-    server.add_insecure_port("[::]:{rpc_port}")
+    server.add_insecure_port(f"[::]:{rm_server_rpc_port}")
     server.start()
     return server
 
