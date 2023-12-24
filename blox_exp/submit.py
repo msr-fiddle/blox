@@ -59,9 +59,6 @@ def main(scheduler_ipaddr):
     while True:
         if current_job is None:
             new_job = preprocess_job(jobs[jcounter].__dict__)
-            import ipdb
-
-            ipdb.set_trace()
             current_job = new_job
             print(current_job)
         if current_job["submit_time"] <= current_time:
