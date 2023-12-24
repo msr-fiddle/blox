@@ -66,7 +66,7 @@ def main(scheduler_ipaddr):
             current_job["params_to_track"] = ["per_iter_time", "attained_service"]
             current_job["default_values"] = [0, 0]
             # my lazy way of getting things done
-            current_job["num_GPUs"] = job_dict["num_gpus"]
+            current_job["num_GPUs"] = current_job["num_gpus"]
             with grpc.insecure_channel(scheduler_ipaddr) as channel:
                 stub = rm_pb2_grpc.RMServerStub(channel)
                 response = stub.AcceptJob(
