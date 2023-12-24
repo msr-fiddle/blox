@@ -70,7 +70,7 @@ def main(scheduler_ipaddr):
             with grpc.insecure_channel(scheduler_ipaddr) as channel:
                 stub = rm_pb2_grpc.RMServerStub(channel)
                 response = stub.AcceptJob(
-                    rm_pb2.JsonResponse(response=json.dumps(job_dict))
+                    rm_pb2.JsonResponse(response=json.dumps(current_job_dict))
                 )
                 print(f"Job Accepted: {response.value}")
             jcounter += 1
