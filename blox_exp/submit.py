@@ -1,6 +1,8 @@
-import grpc
-import pandas as pd
+import sys
 import time
+import grpc
+import argparse
+import pandas as pd
 
 from job import Job
 
@@ -82,5 +84,23 @@ def main(scheduler_ipaddr):
             current_time += 1
 
 
+def parse_args(parser):
+    """
+    parser : argparse.ArgumentParser
+    return a parser with arguments
+    """
+    parser.add_argument(
+        "--scheduler-ipaddr",
+        default="localhost:50051",
+        type=str,
+        help="Name of the scheduling strategy",
+    )
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == "__main__":
-    main()
+    args = parse_args(
+        argparse.ArgumentParser(description="Arguments for Submitting jobs")
+    )
+    main(args.scheduler_ipaddr)
