@@ -46,6 +46,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
 
         ipdb.set_trace()
         command_to_run = received_job["launch_command"]
+        launch_params = recieved_job["launch_params"]
         local_gpu_id = received_job["local_GPU_ID"]
         # resume_iter = received_job["resume_iter"]
         resume_iter = 0
@@ -59,8 +60,10 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         os.environ["START_ITER"] = "0"
         # BloxIterator saves the checkpoint in the format {jobid_iternum.ckpt}
         # TODO: Support Model Parallel/Pipeline Parallel job checkpoints
+        print("Launching Command")
+        print(f"{command_to_run}  {" ".join(str(i) for i in launch_params)}  2>&1 | tee {job_id}.log")
         proc = subprocess.Popen(
-            f"{command_to_run}  {*job_params} 2>&1 | tee {job_id}.log",
+            f"{command_to_run}  {" ".join(str(i) for i in launch_params)}  2>&1 | tee {job_id}.log",
             stdout=subprocess.PIPE,
             # stderr=subprocess.STDOUT,
             shell=True,

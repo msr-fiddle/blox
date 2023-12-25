@@ -59,8 +59,8 @@ class ResourceManagerComm(object):
                 import ipdb
 
                 ipdb.set_trace()
-                launch_params_string = ",".join(launch_params)
-                launch_dict["launch_command"] = launch_params_string
+                # launch_params_string = ",".join(launch_params)
+                launch_dict["launch_params"] = launch_params
                 # ["0,", "6001", "1", "resnet50", "64" ]
                 launch_request = rm_pb2.JsonResponse()
                 launch_request.response = json.dumps(launch_dict)
