@@ -61,9 +61,11 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         # BloxIterator saves the checkpoint in the format {jobid_iternum.ckpt}
         # TODO: Support Model Parallel/Pipeline Parallel job checkpoints
         print("Launching Command")
-        print(f"{command_to_run}  {" ".join(str(i) for i in launch_params)}  2>&1 | tee {job_id}.log")
+        print(
+            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee {job_id}.log"
+        )
         proc = subprocess.Popen(
-            f"{command_to_run}  {" ".join(str(i) for i in launch_params)}  2>&1 | tee {job_id}.log",
+            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee {job_id}.log",
             stdout=subprocess.PIPE,
             # stderr=subprocess.STDOUT,
             shell=True,
