@@ -57,9 +57,8 @@ class ResourceManagerComm(object):
                 launch_params = job_description["launch_params"]
                 launch_params.append(str(launch_dict["job_id"]))
                 launch_params_string = " ".join(launch_params)
-                launch_dict["launch_command"] = " ".join(
-                    launch_command
-                )  # ["0,", "6001", "1", "resnet50", "64" ]
+                launch_dict["launch_command"] = launch_params_string
+                # ["0,", "6001", "1", "resnet50", "64" ]
                 launch_request = rm_pb2.JsonResponse()
                 launch_request.response = json.dumps(launch_dict)
                 with grpc.insecure_channel(ipaddr) as channel:
