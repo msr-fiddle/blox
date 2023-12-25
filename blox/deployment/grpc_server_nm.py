@@ -42,6 +42,9 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         """
         # TODO: Add launching from docker
         received_job = json.loads(request.response)
+        import ipdb
+
+        ipdb.set_trace()
         command_to_run = received_job["launch_command"]
         local_gpu_id = received_job["local_GPU_ID"]
         # resume_iter = received_job["resume_iter"]
