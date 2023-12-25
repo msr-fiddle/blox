@@ -56,6 +56,9 @@ class ResourceManagerComm(object):
                     launch_dict["should_resume"] = "0"
                 launch_params = job_description["launch_params"]
                 launch_params.append(str(launch_dict["job_id"]))
+                import ipdb
+
+                ipdb.set_trace()
                 launch_params_string = ",".join(launch_params)
                 launch_dict["launch_command"] = launch_params_string
                 # ["0,", "6001", "1", "resnet50", "64" ]
