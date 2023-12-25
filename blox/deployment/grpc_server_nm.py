@@ -50,6 +50,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         # resume_iter = received_job["resume_iter"]
         resume_iter = 0
         job_id = received_job["job_id"]
+        job_params = recieved_job["launch_params"]
         self.local_data_store.set_lease_status(received_job["job_id"], True)
         os.environ["BLOX_JOB_ID"] = str(received_job["job_id"])
         os.environ["GPU_ID"] = str(received_job["local_GPU_ID"])
@@ -59,7 +60,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         # BloxIterator saves the checkpoint in the format {jobid_iternum.ckpt}
         # TODO: Support Model Parallel/Pipeline Parallel job checkpoints
         proc = subprocess.Popen(
-            f"{command_to_run}  --jid {job_id} 2>&1 | tee {job_id}.log",
+            f"{command_to_run}  {*job_params} 2>&1 | tee {job_id}.log",
             stdout=subprocess.PIPE,
             # stderr=subprocess.STDOUT,
             shell=True,
