@@ -46,12 +46,11 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
 
         ipdb.set_trace()
         command_to_run = received_job["launch_command"]
-        launch_params = recieved_job["launch_params"]
+        launch_params = received_job["launch_params"]
         local_gpu_id = received_job["local_GPU_ID"]
         # resume_iter = received_job["resume_iter"]
         resume_iter = 0
         job_id = received_job["job_id"]
-        job_params = recieved_job["launch_params"]
         self.local_data_store.set_lease_status(received_job["job_id"], True)
         os.environ["BLOX_JOB_ID"] = str(received_job["job_id"])
         os.environ["GPU_ID"] = str(received_job["local_GPU_ID"])
