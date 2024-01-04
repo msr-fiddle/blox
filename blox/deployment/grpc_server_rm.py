@@ -24,13 +24,14 @@ from google.protobuf.json_format import MessageToDict
 
 
 class RMServer(rm_pb2_grpc.RMServerServicer):
-    def __init__(self):
+    def __init__(self, simulator_rpc_port):
         # new servers added
         self.added_servers = queue.Queue()
         # new jobs submitted
         self.new_jobs = list()
         # time at resource manager
         self.time_rm_queue = queue.Queue()
+        self.simulator_rpc_port = simulator_rpc_port
 
     def RegisterWorker(self, request, context) -> rm_pb2.BooleanResponse:
         """
@@ -114,7 +115,7 @@ class RMServer(rm_pb2_grpc.RMServerServicer):
         """
         dummy_val = rm_pb2.IntVal()
         dummy_val.value = 10
-        with grpc.insecure_channel("localhost:50050") as channel:
+        with grpc.insecure_channel(f"localhost:{self.simulator_rpc_port}") as channel:
             stub = sim_pb2_grpc.SimServerStub(channel)
             response = stub.GetConfig(dummy_val)
         new_config = json.loads(response.response)
@@ -132,7 +133,9 @@ class RMServer(rm_pb2_grpc.RMServerServicer):
         # the training starts with
         options = [("grpc.max_receive_message_length", 10 * 1024 * 1024)]
         # print("Called rpc server")
-        with grpc.insecure_channel("127.0.0.1:50050", options=options) as channel:
+        with grpc.insecure_channel(
+            f"127.0.0.1:{self.simulator_rpc_port}", options=options
+        ) as channel:
             stub = sim_pb2_grpc.SimServerStub(channel)
             response = stub.GetJobs(sim_time)
         # print("Rpc server return")
@@ -150,18 +153,18 @@ class RMServer(rm_pb2_grpc.RMServerServicer):
         return job_list
 
 
-def server():
+def server(rm_server_rpc_port: int):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
     rm_pb2_grpc.add_RMServerServicer_to_server(RMServer(), server)
-    server.add_insecure_port("[::]:50051")
+    server.add_insecure_port(f"[::]:{rm_server_rpc_port}")
     server.start()
     server.wait_for_termination()
 
 
-def start_server(rmserver: RMServer) -> grpc.server:
+def start_server(rmserver: RMServer, rm_server_rpc_port: int) -> grpc.server:
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
     rm_pb2_grpc.add_RMServerServicer_to_server(rmserver, server)
-    server.add_insecure_port("[::]:50051")
+    server.add_insecure_port(f"[::]:{rm_server_rpc_port}")
     server.start()
     return server
 

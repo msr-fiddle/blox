@@ -21,8 +21,8 @@ class ResourceManagerComm(object):
     Resource Manager communication class
     """
 
-    def __init__(self, rpc_port=50052) -> None:
-        self.rpc_port = rpc_port
+    def __init__(self, node_manager_port) -> None:
+        self.rpc_port = node_manager_port
         return None
 
     def launch_job(

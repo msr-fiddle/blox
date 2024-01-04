@@ -18,8 +18,8 @@ class BloxIteratorComm(object):
     Class to connect to node manager
     """
 
-    def __init__(self, jobid):
-        self.node_manager_ip = "localhost:50052"
+    def __init__(self, jobid, node_manager_port=50052):
+        self.node_manager_ip = f"localhost:{node_manager_port}"
         self.jobid = jobid
         return None
 

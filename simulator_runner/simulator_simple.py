@@ -414,6 +414,12 @@ def parse_args(parser):
         type=str,
         help="Unique name for prefix log files, makes sure it is the same as resource manager",
     )
+    parser.add_argument(
+        "--simulator-rpc-port",
+        default=50050,
+        type=int,
+        help="Simulator RPC port to fetch jobs",
+    )
     args = parser.parse_args()
     return args
 
@@ -438,7 +444,7 @@ def launch_server(args) -> grpc.Server:
         ),
         server,
     )
-    server.add_insecure_port("[::]:50050")
+    server.add_insecure_port(f"[::]:{args.simulator_rpc_port}")
     server.start()
     print("Print Server started")
     return server

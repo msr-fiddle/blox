@@ -16,14 +16,17 @@ class NodeManagerMain(object):
     Main node manager class
     """
 
-    def __init__(self, ipaddr: str) -> None:
+    def __init__(self, ipaddr: str, central_scheduler_port: int) -> None:
         """
         Initializes node manager main class
         Args:
         ipaddr: IPaddress of the central scheduler
+        central_scheduler_rpc_port: Central Scheduler RPC port
         """
         self.ipaddr = ipaddr
-        self.node_manager_comm = nm_client.NodeManagerComm(self.ipaddr)
+        self.node_manager_comm = nm_client.NodeManagerComm(
+            self.ipaddr, central_scheduler_port
+        )
 
     def register_with_scheduler(self, interface: str) -> None:
         """
@@ -46,6 +49,20 @@ def parse_args(parser: argparse.ArgumentParser) -> argparse.PARSER:
     )
     parser.add_argument(
         "--interface", type=str, help="The interface to get the ipaddr from"
+    )
+
+    parser.add_argument(
+        "--node-manager-port",
+        default=50052,
+        type=int,
+        help="Node Manager RPC Port, should be same as specified as specified in the central scheduler",
+    )
+
+    parser.add_argument(
+        "--central-scheduler-port",
+        default=50051,
+        type=int,
+        help="Central Scheduler Port, should be same as specified in the central scheduler port",
     )
 
     parser.add_argument(
@@ -82,7 +99,7 @@ def launch_server(args) -> Tuple[grpc.Server, nm_serve.NMServer]:
         nmserver: The class object to work with rmserver
     """
     nmserver = nm_serve.NMServer(args.use_redis, args.redis_host, args.redis_port)
-    server = nm_serve.start_server(nmserver)
+    server = nm_serve.start_server(nmserver, args.node_manager_port)
     return (server, nmserver)
 
 
@@ -93,9 +110,8 @@ def main(args):
     2. Registers the node with resource manager
     """
     server, nmserver = launch_server(args)
-    node_manager_main = NodeManagerMain(args.ipaddr)
-    node_manager_main.register_with_scheduler(interface=args.interface)
-
+    node_manager_main = NodeManagerMain(args.ipaddr, args.central_scheduler_port)
+    node_manager_main.register_with_scheduler(args.interface)
     try:
         while True:
             pass

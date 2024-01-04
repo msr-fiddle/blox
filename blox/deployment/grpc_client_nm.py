@@ -20,14 +20,14 @@ class NodeManagerComm(object):
     Node Manager communication class
     """
 
-    def __init__(self, ipaddr: str) -> None:
+    def __init__(self, ipaddr: str, central_scheduler_port: int) -> None:
         """
         Initializes Node Manager Communication module.
         Args:
          ipaddr: IP-address and the port for resource managers GRPC server.
                  Format - ip:port
         """
-        self.ipaddr = f"{ipaddr}:50051"
+        self.ipaddr = f"{ipaddr}:{central_scheduler_port}"
         self.ip_extract = re.compile(".?inet ([0-9.]+)")
         self.memory_extract = re.compile(".?MemAvailable:\s+([0-9]+)")
 
