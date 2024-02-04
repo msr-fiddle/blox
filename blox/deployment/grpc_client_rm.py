@@ -41,6 +41,9 @@ class ResourceManagerComm(object):
         Returns:
             None
         """
+        import ipdb
+
+        ipdb.set_trace()
         if job_description["simulation"] == False:
             for ipaddr, lgid in zip(ipaddr_list, local_gpu_ids):
                 ipaddr = f"{ipaddr}:{self.rpc_port}"
