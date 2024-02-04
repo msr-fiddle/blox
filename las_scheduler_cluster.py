@@ -66,6 +66,22 @@ def parse_args(parser):
         "--stop-id-track", type=int, default=4000, help="Stop ID to track"
     )
 
+    parser.add_argument(
+        "--node-manager-port", default=50052, type=int, help="Node Manager RPC port"
+    )
+    parser.add_argument(
+        "--central-scheduler-port",
+        default=50051,
+        type=int,
+        help="Central Scheduler RPC Port",
+    )
+
+    parser.add_argument(
+        "--simulator-rpc-port",
+        default=50050,
+        type=int,
+        help="Simulator RPC port to fetch ",
+    )
     args = parser.parse_args()
     return args
 
