@@ -41,9 +41,6 @@ class ResourceManagerComm(object):
         Returns:
             None
         """
-        import ipdb
-
-        ipdb.set_trace()
         if job_description["simulation"] == False:
             for ipaddr, lgid in zip(ipaddr_list, local_gpu_ids):
                 ipaddr = f"{ipaddr}:{self.rpc_port}"
@@ -60,6 +57,7 @@ class ResourceManagerComm(object):
                 launch_params = job_description["launch_params"]
                 launch_params.append(str(launch_dict["job_id"]))
                 # launch_params_string = ",".join(launch_params)
+                launch_params[0] = lgid
                 launch_dict["launch_params"] = launch_params
                 # ["0,", "6001", "1", "resnet50", "64" ]
                 launch_request = rm_pb2.JsonResponse()
