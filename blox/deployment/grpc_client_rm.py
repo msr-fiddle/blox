@@ -46,6 +46,10 @@ class ResourceManagerComm(object):
                 ipaddr = f"{ipaddr}:{self.rpc_port}"
                 launch_dict = dict()
                 launch_dict["job_id"] = job_id
+                if job_id == 2:
+                    import ipdb
+
+                    ipdb.set_trace()
                 launch_dict["local_GPU_ID"] = lgid
                 if "launch_command" not in job_description:
                     raise Exception("Missing Launch Command")
