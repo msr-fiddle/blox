@@ -70,7 +70,7 @@ class ResourceManagerComm(object):
                 launch_params.append(master_ip_address)
                 launch_params.append(world_size)
                 launch_params.append(dist_rank)
-                launch_params = job_description["launch_params"]
+                launch_params.extend(job_description["launch_params"])
                 launch_params.append(str(launch_dict["job_id"]))
                 # launch_params_string = ",".join(launch_params)
                 launch_dict["launch_params"] = launch_params
