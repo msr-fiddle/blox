@@ -33,7 +33,8 @@ class ResourceManagerComm(object):
         ipaddr_list: List[str],
     ) -> None:
         """
-        Notify respesctive node managers to launch jobs
+        Notify respesctive node managers to launch jobs.
+        For each job this is called once.
         Args:
             job_description: Job description from the job ID dictionary
             gpu_ids: Number of GPUS to launch
@@ -41,15 +42,19 @@ class ResourceManagerComm(object):
         Returns:
             None
         """
+        dist_rank = 0
+        world_size = len(local_gpu_ids)
         if job_description["simulation"] == False:
             for ipaddr, lgid in zip(ipaddr_list, local_gpu_ids):
+                if dist_rank == 0:
+                    master_ip_address = ipaddr
                 ipaddr = f"{ipaddr}:{self.rpc_port}"
                 launch_dict = dict()
                 launch_dict["job_id"] = job_id
-                if job_id == 2:
-                    import ipdb
+                # if job_id == 2:
+                # import ipdb
 
-                    ipdb.set_trace()
+                # ipdb.set_trace()
                 launch_dict["local_GPU_ID"] = lgid
                 if "launch_command" not in job_description:
                     raise Exception("Missing Launch Command")
@@ -58,10 +63,16 @@ class ResourceManagerComm(object):
                     launch_dict["should_resume"] = job_description["suspended"]
                 else:
                     launch_dict["should_resume"] = "0"
+
+                # we have simplified this
+                launch_params = list()
+                launch_params.append(lgid)
+                launch_params.append(master_ip_address)
+                launch_params.append(world_size)
+                launch_params.append(dist_rank)
                 launch_params = job_description["launch_params"]
                 launch_params.append(str(launch_dict["job_id"]))
                 # launch_params_string = ",".join(launch_params)
-                launch_params[0] = lgid
                 launch_dict["launch_params"] = launch_params
                 # ["0,", "6001", "1", "resnet50", "64" ]
                 launch_request = rm_pb2.JsonResponse()
@@ -72,6 +83,7 @@ class ResourceManagerComm(object):
                 print(
                     f"Launched Job {job_id}, response {response}, request {launch_dict}"
                 )
+                dist_rank += 1
 
             return None
         elif job_description["simulation"] == True:
