@@ -74,6 +74,7 @@ class ResourceManagerComm(object):
                 launch_params.append(str(launch_dict["job_id"]))
                 # launch_params_string = ",".join(launch_params)
                 launch_dict["launch_params"] = launch_params
+                print("Launch Params {}".format(launch_params))
                 # ["0,", "6001", "1", "resnet50", "64" ]
                 launch_request = rm_pb2.JsonResponse()
                 launch_request.response = json.dumps(launch_dict)
