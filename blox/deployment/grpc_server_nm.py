@@ -58,10 +58,10 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         # TODO: Support Model Parallel/Pipeline Parallel job checkpoints
         print("Launching Command")
         print(
-            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee {job_id}.log"
+            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee job_{job_id_lgid}_gpu.log"
         )
         proc = subprocess.Popen(
-            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee {job_id}.log",
+            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee job_{job_id_lgid}_gpu.log",
             stdout=subprocess.PIPE,
             # stderr=subprocess.STDOUT,
             shell=True,
