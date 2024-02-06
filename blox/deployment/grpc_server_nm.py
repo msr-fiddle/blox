@@ -130,6 +130,12 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
                     job_metrics[key] = (job_metrics[key] + previous_metrics[key]) / 2
                 else:
                     pass
+            if key == "iter_num":
+                if key in previous_metrics:
+                    # replace
+                    job_metrics[key] = job_metrics[key]
+                else:
+                    pass
         self.local_data_store.set_job_metrics(job_id, job_metrics)
         return rm_pb2.BooleanResponse(value=True)
 

@@ -165,6 +165,10 @@ class ResourceManagerComm(object):
                             ) / 2
                         else:
                             pass
+                    if key == "iter_num":
+                        metric_data[key] += previous_metric[key]
+                    else:
+                        pass
 
                 # Same job ids can be running at multiple ip addr
                 if job_id in metric_data_dict:
@@ -179,6 +183,8 @@ class ResourceManagerComm(object):
                                 ) / 2
                             else:
                                 pass
+                        if key == "iter_num":
+                            metric_data_dict[job_id][key] += metric_data[key]
 
                 else:
                     metric_data_dict[job_id] = metric_data
