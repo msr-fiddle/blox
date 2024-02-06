@@ -58,10 +58,10 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         # TODO: Support Model Parallel/Pipeline Parallel job checkpoints
         print("Launching Command")
         print(
-            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee job_{job_id}_local_gpu_{local_gpu_id}.log"
+            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee /cray/tmp/job_{job_id}_local_gpu_{local_gpu_id}.log"
         )
         proc = subprocess.Popen(
-            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee job_{job_id}_local_gpu_{local_gpu_id}.log",
+            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee /cray/tmp/job_{job_id}_local_gpu_{local_gpu_id}.log",
             stdout=subprocess.PIPE,
             # stderr=subprocess.STDOUT,
             shell=True,
@@ -117,7 +117,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         recevied_data = json.loads(request.response)
         job_id = recevied_data["Job_ID"]
         job_metrics = recevied_data["metrics"]
-        # print(f"Set metrics {job_metrics})")
+        print(f"Set metrics {job_metrics})")
         previous_metrics = self.local_data_store.get_job_metrics(job_id)
         for key in job_metrics:
             if key == "attained_service":
