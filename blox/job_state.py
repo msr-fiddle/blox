@@ -81,12 +81,15 @@ class JobState(object):
                 try:
                     jobs = new_jobs.pop(0)
                     # TODO: Make this more permanent
-                    params_to_track = ["per_iter_time", "attained_service"]
-                    default_values_param = [0, 0]
-                    tracking_dict = dict()
-                    for p, v in zip(params_to_track, default_values_param):
-                        tracking_dict[p] = v
-                    jobs["tracked_metrics"] = tracking_dict
+                    if "tracked_metrics" not in jobs:
+                        # if not in job dict
+                        params_to_track = ["per_iter_time", "attained_service"]
+                        default_values_param = [0, 0]
+                        tracking_dict = dict()
+                        for p, v in zip(params_to_track, default_values_param):
+                            tracking_dict[p] = v
+                        jobs["tracked_metrics"] = tracking_dict
+
                     jobs["time_since_scheduled"] = 0
                     jobs["job_priority"] = 999
                     jobs["previously_launched"] = False
