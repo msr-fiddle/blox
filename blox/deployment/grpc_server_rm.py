@@ -51,9 +51,9 @@ class RMServer(rm_pb2_grpc.RMServerServicer):
         """
         received_job = json.loads(request.response)
         received_job["submit_time"] = time.time()
-        # params_to_track = received_job["params_to_track"]
-        # default_values_param = received_job["default_values"]
-        # tracking_dict = dict()
+        params_to_track = received_job["params_to_track"]
+        default_values_param = received_job["default_values"]
+        tracking_dict = dict()
         for p, v in zip(params_to_track, default_values_param):
             tracking_dict[p] = v
         received_job["tracked_metrics"] = tracking_dict
