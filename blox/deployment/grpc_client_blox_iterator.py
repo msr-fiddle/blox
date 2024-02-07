@@ -38,10 +38,10 @@ class BloxIteratorComm(object):
         lease_request.response = json.dumps(
             {"Job_ID": self.jobid, "Iteration": iteration}
         )
-        print(lease_request.response)
-        with grpc.insecure_channel(self.node_manager_ip) as channel:
-            stub = nm_pb2_grpc.NMServerStub(channel)
-            response = stub.GetLease(lease_request)
+        # print("Lease Request respoi )
+        # with grpc.insecure_channel(self.node_manager_ip) as channel:
+        stub = nm_pb2_grpc.NMServerStub(self.channel)
+        response = stub.GetLease(lease_request)
         return response.value
 
     def push_metrics(self, metrics: dict) -> bool:
