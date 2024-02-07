@@ -21,6 +21,7 @@ class BloxIteratorComm(object):
     def __init__(self, jobid, node_manager_port=50052):
         self.node_manager_ip = f"localhost:{node_manager_port}"
         self.jobid = jobid
+        self.channel = grpc.insecure_channel(self.node_manager_ip)
         return None
 
     def check_lease(self, iteration: int) -> bool:
@@ -54,9 +55,9 @@ class BloxIteratorComm(object):
             {"Job_ID": self.jobid, "metrics": metrics}
         )
         print(f"Input Metrics {metrics}")
-        with grpc.insecure_channel(self.node_manager_ip) as channel:
-            stub = nm_pb2_grpc.NMServerStub(channel)
-            response = stub.SetMetrics(metrics_request)
+        # with grpc.insecure_channel(self.node_manager_ip) as channel:
+        stub = nm_pb2_grpc.NMServerStub(self.channel)
+        response = stub.SetMetrics(metrics_request)
         return response.value
 
     def job_exity_notify(self) -> bool:
