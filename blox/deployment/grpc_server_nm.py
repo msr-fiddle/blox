@@ -27,14 +27,14 @@ from google.protobuf.json_format import MessageToDict
 class NMServer(nm_pb2_grpc.NMServerServicer):
     def __init__(self, use_redis, redis_host, redis_port):
         self.job_mapping = dict()  # Job ID to GPU mapping
-        if use_redis:
-            # configuring local data store with redis
-            self.local_data_store = DataRelay(
-                use_redis=use_redis, redis_host=redis_host, redis_port=redis_port
-            )
-        else:
-            # configuring local data store with python dict
-            self.local_data_store = DataRelay()
+        # if use_redis:
+        # configuring local data store with redis
+        self.local_data_store = DataRelay(
+            use_redis=use_redis, redis_host=redis_host, redis_port=redis_port
+        )
+        # else:
+        # # configuring local data store with python dict
+        # self.local_data_store = DataRelay()
 
     def LaunchJob(self, request, context) -> rm_pb2.BooleanResponse:
         """
@@ -49,28 +49,28 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         resume_iter = 0
         job_id = received_job["job_id"]
         self.local_data_store.set_lease_status(received_job["job_id"], True)
-        os.environ["BLOX_JOB_ID"] = str(received_job["job_id"])
-        os.environ["GPU_ID"] = str(received_job["local_GPU_ID"])
-        os.environ["BLOX_LOG_DIR"] = "temp"
-        os.environ["SHOULD_RESUME"] = str(received_job["should_resume"])
-        os.environ["START_ITER"] = "0"
+        # os.environ["BLOX_JOB_ID"] = str(received_job["job_id"])
+        # os.environ["GPU_ID"] = str(received_job["local_GPU_ID"])
+        # os.environ["BLOX_LOG_DIR"] = "temp"
+        # os.environ["SHOULD_RESUME"] = str(received_job["should_resume"])
+        # os.environ["START_ITER"] = "0"
         # BloxIterator saves the checkpoint in the format {jobid_iternum.ckpt}
         # TODO: Support Model Parallel/Pipeline Parallel job checkpoints
         print("Launching Command")
         print(
             f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee /dev/shm/job_{job_id}_local_gpu_{local_gpu_id}.log"
         )
-        # proc = subprocess.Popen(
-        # f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee /dev/shm/job_{job_id}_local_gpu_{local_gpu_id}.log",
-        # stdout=subprocess.PIPE,
-        # # stderr=subprocess.STDOUT,
-        # start_new_session=True,
-        # shell=True,
+        proc = subprocess.Popen(
+            f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee /dev/shm/job_{job_id}_local_gpu_{local_gpu_id}.log",
+            stdout=subprocess.PIPE,
+            # stderr=subprocess.STDOUT,
+            start_new_session=True,
+            shell=True,
+        )
+        # with open("job_file_db.txt", "w") as fopen:
+        # fopen.write(
+        # f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee /dev/shm/job_{job_id}_local_gpu_{local_gpu_id}.log"
         # )
-        with open("job_file_db.txt", "w") as fopen:
-            fopen.write(
-                f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee /dev/shm/job_{job_id}_local_gpu_{local_gpu_id}.log"
-            )
         # Debug code added
         # output, error = proc.communicate()
         # print(output, error)
@@ -161,29 +161,29 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         self.local_data_store.set_job_metrics(jobs_to_terminate, {"job_suspend": True})
         return rm_pb2.BooleanResponse(value=True)
 
-    def SetMetricsFromRM(self, request, context) -> rm_pb2.BooleanResponse:
-        """
-        Set metrics pushed from resource manager.
-        Resource manager calls
-        """
-        recevied_data = json.loads(request.response)
-        job_id = recevied_data["Job_ID"]
-        job_metrics = recevied_data["metrics"]
-        self.local_data_store.set_rm_metrics(job_id, job_metrics)
-        return rm_pb2.BooleanResponse(value=True)
+    # def SetMetricsFromRM(self, request, context) -> rm_pb2.BooleanResponse:
+    # """
+    # Set metrics pushed from resource manager.
+    # Resource manager calls
+    # """
+    # recevied_data = json.loads(request.response)
+    # job_id = recevied_data["Job_ID"]
+    # job_metrics = recevied_data["metrics"]
+    # self.local_data_store.set_rm_metrics(job_id, job_metrics)
+    # return rm_pb2.BooleanResponse(value=True)
 
-    def GetMetricsFromRM(self, request, context) -> rm_pb2.JsonResponse:
-        """
-        Return the metrics pushed from the resource manager.
-        Application will call.
-        """
-        received_job = json.loads(request.response)
-        job_id = received_job["Job_ID"]
-        metric_to_fetch = received_job["metric"]
-        metric = self.local_data_store.get_rm_metrics(job_id, metric_to_fetch)
-        metric_response = rm_pb2.JsonResponse()
-        metric_response.response = json.dumps(metric)
-        return metric_response
+    # def GetMetricsFromRM(self, request, context) -> rm_pb2.JsonResponse:
+    # """
+    # Return the metrics pushed from the resource manager.
+    # Application will call.
+    # """
+    # received_job = json.loads(request.response)
+    # job_id = received_job["Job_ID"]
+    # metric_to_fetch = received_job["metric"]
+    # metric = self.local_data_store.get_rm_metrics(job_id, metric_to_fetch)
+    # metric_response = rm_pb2.JsonResponse()
+    # metric_response.response = json.dumps(metric)
+    # return metric_response
 
 
 def server(node_manager_port: int):
