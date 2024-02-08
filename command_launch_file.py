@@ -12,4 +12,4 @@ while True:
             start_new_session=True,
             shell=True,
         )
-    time.sleep(100000000000)
+    time.sleep(10000000)
