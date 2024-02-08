@@ -67,6 +67,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
             start_new_session=True,
             shell=True,
         )
+        proc.kill()
         # Debug code added
         # output, error = proc.communicate()
         # print(output, error)
