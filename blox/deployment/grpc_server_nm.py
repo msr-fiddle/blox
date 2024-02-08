@@ -67,7 +67,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         # start_new_session=True,
         # shell=True,
         # )
-        with open("job_file_db.txt", "a") as fopen:
+        with open("job_file_db.txt", "w") as fopen:
             fopen.write(
                 f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee /dev/shm/job_{job_id}_local_gpu_{local_gpu_id}.log"
             )
