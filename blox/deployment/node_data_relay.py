@@ -6,7 +6,7 @@ class DataRelay(object):
     def __init__(self, **kwargs):
         # if kwargs.get("use_redis") == True:
         self.use_redis = True
-        self.redis_client = redis.redis(
+        self.redis_client = redis.Redis(
             host=kwargs["redis_host"], port=kwargs["redis_port"]
         )
 
