@@ -1,4 +1,5 @@
 # handles node data, like per iteration time lease etc
+import sys
 import redis
 
 
@@ -9,6 +10,12 @@ class DataRelay(object):
         self.redis_client = redis.Redis(
             host=kwargs["redis_host"], port=kwargs["redis_port"], decode_responses=True
         )
+        # datatype mapping
+        self.data_type = {
+            "attained_service": float,
+            "per_iter_time": float,
+            "iter_num": int,
+        }
 
     # else:
     # self.use_redis = None
@@ -56,8 +63,13 @@ class DataRelay(object):
         Args:
             job_id: The job ID of the associated job
         """
+        key_to_delete = f"{job_id}_metrics"
         if self.use_redis:
-            self.redis_client.delete(job_id)
+            del_response = self.redis_client.delete(job_id)
+            if del_response == 0:
+                print("Non existent key deleted")
+                sys.exit()
+
         # else:
         # if job_id in self.data_dict:
         # del self.data_dict[job_id]
@@ -73,6 +85,8 @@ class DataRelay(object):
         if self.use_redis:
             # TODO: Handle this for a key which doesn't exist
             data = self.redis_client.hgetall(metric_key)
+            for key_metric in data:
+                data[key_metric] = self.data_type[key_metric](data[key_metric])
         # else:
         # if job_id in self.data_dict:
         # data = self.data_dict[job_id]
