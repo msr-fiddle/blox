@@ -72,11 +72,12 @@ class JobState(object):
                         "attained_service_scheduler"
                         in self.active_jobs[jid]["tracked_metrics"]
                     ):
-                        metric_data[jid]["attained_service_scheduler"] = (
-                            self.active_jobs[jid]["tracked_metrics"][
-                                "attained_service_scheduler"
-                            ]
-                            + round_duration
+                        metric_data[jid][
+                            "attained_service_scheduler"
+                        ] = self.active_jobs[jid]["tracked_metrics"][
+                            "attained_service_scheduler"
+                        ] + (
+                            round_duration * self.active_jobs[jid]["num_GPUs"]
                         )
                     else:
                         metric_data[jid]["attained_service_scheduler"] = round_duration
