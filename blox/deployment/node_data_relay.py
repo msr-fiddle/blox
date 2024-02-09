@@ -97,15 +97,10 @@ class DataRelay(object):
 
     def reset_keys(self, job_id: int) -> None:
         """
-        Clear up all keys at restart
+        Clear up metric keys at restart
         """
-        delete_key = [
-            f"{job_id}_metrics",
-            f"{job_id}_lease",
-            f"{job_id}_status",
-            f"{job_id}_iteration",
-        ]
-        self.redis_client.delete(*delete_key)
+        delete_key = f"{job_id}_metrics"
+        self.redis_client.delete(delete_key)
         return None
 
     def set_job_metrics(self, job_id: int, metrics: dict) -> None:
