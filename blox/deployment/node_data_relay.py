@@ -7,7 +7,7 @@ class DataRelay(object):
         # if kwargs.get("use_redis") == True:
         self.use_redis = True
         self.redis_client = redis.Redis(
-            host=kwargs["redis_host"], port=kwargs["redis_port"]
+            host=kwargs["redis_host"], port=kwargs["redis_port"], decode_responses=True
         )
 
     # else:
