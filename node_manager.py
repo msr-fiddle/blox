@@ -30,7 +30,7 @@ class NodeManagerMain(object):
         )
         # flush db at launch
         self.redis_client = redis.Redis(
-            host="localhost", port=6739, decode_responses=True
+            host="localhost", port=6379, decode_responses=True
         )
         self.redis_client.flushdb()
 
