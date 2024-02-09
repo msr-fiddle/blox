@@ -47,7 +47,7 @@ class BloxIteratorComm(object):
         Return:
             lease_status: True if the job still has lease
         """
-        lease_status = self.data_relay.get_lease_status(job_id, iteration)
+        lease_status = self.data_relay.get_lease_status(self.job_id, iteration)
         return lease_status
 
     def push_metrics(self, metrics: dict) -> bool:
