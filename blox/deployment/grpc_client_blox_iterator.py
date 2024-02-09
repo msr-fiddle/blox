@@ -7,6 +7,7 @@ from typing import List
 from concurrent import futures
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "grpc_stubs"))
+sys.path.append(os.path.dirname(__file__))
 print(sys.path)
 import nm_pb2 as nm_pb2
 import rm_pb2 as rm_pb2
