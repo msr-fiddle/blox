@@ -41,6 +41,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         Receives information for launching jobs on the node manager
         """
         # TODO: Add launching from docker
+        print("In Launch Job")
         received_job = json.loads(request.response)
         command_to_run = received_job["launch_command"]
         launch_params = received_job["launch_params"]
