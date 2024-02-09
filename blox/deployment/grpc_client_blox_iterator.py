@@ -30,9 +30,11 @@ class BloxIteratorComm(object):
         # self.redis_client = redis.Redis(
         # host="localhost", port=6379, decode_responses=True
         # )
+
         self.data_relay = node_data_relay.DataRelay(
             redis_host=redis_host, redis_port=redis_port
         )
+        self.data_relay.reset_keys(self.jobid)
         self.job_launch_notify()
         return None
 

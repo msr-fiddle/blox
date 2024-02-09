@@ -115,7 +115,7 @@ class DataRelay(object):
         # TODO: Add custom parsing scripts
 
         # TODO: Get rid of this, bad hack for implementing LAS
-        # if "attained_service" not in self.data_dict[job_id]:
+        # if "attaAined_service" not in self.data_dict[job_id]:
         # metrics["attained_service"] = metrics["per_iter_time"]
         # else:
         # metrics["attained_service"] += metrics["per_iter_time"]
