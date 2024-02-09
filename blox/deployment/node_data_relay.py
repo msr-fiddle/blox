@@ -117,7 +117,6 @@ class DataRelay(object):
         # else:
         # self.data_dict[job_id].update(metrics)
         # print("set job metrics data dict {}".format(self.data_dict))
-        print("Self Data dict {}".format(self.data_dict))
         return None
 
     def set_job_status(self, job_id: int, status: str) -> None:
