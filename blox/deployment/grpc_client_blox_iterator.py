@@ -77,7 +77,7 @@ class BloxIteratorComm(object):
                     pass
             if key == "per_iter_time":
                 if key in previous_metrics:
-                    metrics[key] = (job_metrics[key] + previous_metrics[key]) / 2
+                    metrics[key] = (metrics[key] + previous_metrics[key]) / 2
                 else:
                     pass
             if key == "iter_num":
