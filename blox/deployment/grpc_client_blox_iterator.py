@@ -67,6 +67,7 @@ class BloxIteratorComm(object):
         # However, what will happen for aggregation function mechanisms in future.
         # Before this REDIS change we were fine with using additional
         previous_metrics = self.data_relay.get_job_metrics(self.jobid)
+        print(f"Previous Metrics {previous_metrics}")
         #### Metrics Aggregation
         for key in metrics:
             if key == "attained_service":
@@ -85,6 +86,7 @@ class BloxIteratorComm(object):
                 else:
                     pass
         self.data_relay.set_job_metrics(self.jobid, metrics)
+        print("Updated Metrics {}".format(metrics))
         return True
 
     def job_exit_notify(self) -> bool:
