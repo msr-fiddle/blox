@@ -68,7 +68,7 @@ class DataRelay(object):
             del_response = self.redis_client.delete(job_id)
             if del_response == 0:
                 print("Non existent key deleted")
-                sys.exit()
+                print("Key {job_id}_metrics")
 
         # else:
         # if job_id in self.data_dict:
