@@ -95,8 +95,11 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         job_data = self.local_data_store.get_job_metrics(received_job["Job_ID"])
         # data_to_send = dict()
         # data_to_send[received_job["Job_ID"]] = job_data
+        print("Got Job metrics")
+        print("Job data {}".format(job_data))
         job_data_request = rm_pb2.JsonResponse()
         job_data_request.response = json.dumps(job_data)
+        print("Json dump done")
         self.local_data_store.reset_job_metrics(received_job["Job_ID"])
         return job_data_request
 
