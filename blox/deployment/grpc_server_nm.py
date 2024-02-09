@@ -63,8 +63,8 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         )
         proc = subprocess.Popen(
             f"{command_to_run}  {' '.join(str(i) for i in launch_params)}  2>&1 | tee /dev/shm/job_{job_id}_local_gpu_{local_gpu_id}.log",
-            stdout=subprocess.PIPE,
-            # stderr=subprocess.STDOUT,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
             start_new_session=True,
             shell=True,
         )
