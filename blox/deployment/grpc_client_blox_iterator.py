@@ -68,7 +68,7 @@ class BloxIteratorComm(object):
         # Before this REDIS change we were fine with using additional
         previous_metrics = self.data_relay.get_job_metrics(self.jobid)
         #### Metrics Aggregation
-        for key in job_metrics:
+        for key in metrics:
             if key == "attained_service":
                 if key in previous_metrics:
                     metrics[key] += previous_metrics[key]
