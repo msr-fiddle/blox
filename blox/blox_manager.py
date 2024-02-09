@@ -129,7 +129,7 @@ class BloxManager(object):
         )
         print("Metric Data {}".format(metric_data))
 
-        job_state.update_metrics(metric_data)
+        job_state.update_metrics(metric_data, round_duration)
         # prune jobs which have been completed
 
         jid_to_terminate = list()

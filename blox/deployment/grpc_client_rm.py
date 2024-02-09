@@ -191,18 +191,18 @@ class ResourceManagerComm(object):
             else:
                 # this is a simulation
                 # profile scaling by number of GPUs
-                total_gpus = [5, 3, 1.4, 1.2, 1.1, 1.0, 1.0, 1.0, 1.0]
-                self.optimus_scale_by_gpus = {
-                    "1.0": total_gpus[0],
-                    "2.0": total_gpus[1],
-                    "3.0": total_gpus[2],
-                    "4.0": total_gpus[3],
-                    "5.0": total_gpus[4],
-                    "6.0": total_gpus[5],
-                    "7.0": total_gpus[6],
-                    "8.0": total_gpus[7],
-                    "9.0": total_gpus[8],
-                }
+                # total_gpus = [5, 3, 1.4, 1.2, 1.1, 1.0, 1.0, 1.0, 1.0]
+                # self.optimus_scale_by_gpus = {
+                # "1.0": total_gpus[0],
+                # "2.0": total_gpus[1],
+                # "3.0": total_gpus[2],
+                # "4.0": total_gpus[3],
+                # "5.0": total_gpus[4],
+                # "6.0": total_gpus[5],
+                # "7.0": total_gpus[6],
+                # "8.0": total_gpus[7],
+                # "9.0": total_gpus[8],
+                # }
                 if active_job_dict[job_id]["previously_launched"] == False:
                     active_job_dict[job_id]["job_launched_first_time"] = True
                 if active_job_dict[job_id]["previously_launched"] == True:

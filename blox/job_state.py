@@ -58,7 +58,7 @@ class JobState(object):
     # if len(new_jobs) > 0:
     # self._add_new_jobs(new_jobs)
 
-    def update_metrics(self, metric_data: dict) -> None:
+    def update_metrics(self, metric_data: dict, round_duration: int) -> None:
         """
         Update the metrics fetched at end of each round duration
         """
@@ -66,7 +66,18 @@ class JobState(object):
             if self.active_jobs[jid]["is_running"] == True:
                 if len(metric_data.get(jid)) > 0:
                     # replace only when we have got metrics
-                    self.active_jobs[jid]["tracked_metrics"] = metric_data.get(jid)
+                    # add scheduler side metrics
+                    # TODO: Good to have a separate function for this in future
+                    if (
+                        "attained_service_scheduler"
+                        in self.active_jobs[jid]["tracked_metrics"]
+                    ):
+                        metric_data[jid]["attained_service_scheduler"] += round_duration
+                    else:
+                        metric_data[jid]["attained_service_scheduler"] = round_duration
+                    self.active_jobs[jid]["tracked_metrics"].update(
+                        metric_data.get(jid)
+                    )
 
         return None
 
