@@ -37,8 +37,10 @@ class DataRelay(object):
         iteration_key = f"{job_id}_iteration"
         # if self.use_redis:
         lease_status = self.redis_client.get(lease_key)
+        print(f"b Lease status {lease_status}")
         lease_status = bool(lease_status)
         self.redis_client.set(iteration_key, iteration)
+        print(f"a lease_status {lease_status}")
         return lease_status
 
     def set_lease_status(self, job_id: int, status: bool) -> None:
@@ -51,6 +53,7 @@ class DataRelay(object):
         key_to_set = f"{job_id}_lease"
         if self.use_redis:
             status = str(status)
+            print("Setting status {}".format(status))
             self.redis_client.set(key_to_set, status)
         # else:
         # self.data_dict[key_to_set] = status

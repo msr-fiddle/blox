@@ -83,6 +83,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         Terminate Job post launch. This will terminate lease. Which when read
         by blox iterator will terminate the job.
         """
+        print("Called Terminate")
         job_id_to_terminate = json.loads(request.response)["Job_ID"]
         self.local_data_store.set_lease_status(job_id_to_terminate, False)
         return rm_pb2.BooleanResponse(value=True)
