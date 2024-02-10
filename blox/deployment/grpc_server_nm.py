@@ -85,6 +85,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         """
         print("Called Terminate")
         job_id_to_terminate = json.loads(request.response)["Job_ID"]
+        print("Terminate Job {}".format(job_id_to_terminate))
         self.local_data_store.set_lease_status(job_id_to_terminate, False)
         return rm_pb2.BooleanResponse(value=True)
 

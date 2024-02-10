@@ -117,6 +117,7 @@ class ResourceManagerComm(object):
                 terminate_request = rm_pb2.JsonResponse()
                 terminate_request.response = json.dumps({"Job_ID": job_id})
                 # TODO: Add simulator
+                print("Called Terminate for job id {}".format(job_id))
                 with grpc.insecure_channel(ipaddr) as channel:
                     stub = nm_pb2_grpc.NMServerStub(channel)
                     response = stub.TerminateJob(terminate_request)

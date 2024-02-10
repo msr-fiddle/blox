@@ -53,7 +53,7 @@ class DataRelay(object):
         key_to_set = f"{job_id}_lease"
         if self.use_redis:
             status = str(status)
-            print("Setting status {}".format(status))
+            print("Setting status {} job id {}".format(status, job_id))
             self.redis_client.set(key_to_set, status)
         # else:
         # self.data_dict[key_to_set] = status
