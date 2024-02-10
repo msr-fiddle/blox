@@ -328,6 +328,7 @@ class BloxManager(object):
         terminate_list_id = list()
         terminate_ipaddr = list()
         terminate_simulation = list()
+        print("Job IDs to terminate {}".format(jobs_to_terminate))
         for jid in jobs_to_terminate:
             # find ipaddresses for corresponding jobs to terminate
             running_ipddr = list(

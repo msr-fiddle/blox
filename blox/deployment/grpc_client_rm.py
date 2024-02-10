@@ -108,10 +108,12 @@ class ResourceManagerComm(object):
             None
         """
         # TODO: Multithread this
+        print("In terminate simulation")
+        print("job id list {}".format(job_id_list))
         for job_id, ipaddr, simulation in zip(
             job_id_list, ipaddr_list, terminate_simulation
         ):
-            if not terminate_simulation:
+            if not simulation:
                 # only launch termination if false
                 ipaddr = f"{ipaddr}:{self.rpc_port}"
                 terminate_request = rm_pb2.JsonResponse()
