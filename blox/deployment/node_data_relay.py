@@ -38,7 +38,8 @@ class DataRelay(object):
         # if self.use_redis:
         lease_status = self.redis_client.get(lease_key)
         print(f"b Lease status {lease_status}")
-        lease_status = bool(lease_status)
+        # bad idea but need to fix
+        lease_status = eval(lease_status)
         self.redis_client.set(iteration_key, iteration)
         print(f"a lease_status {lease_status}")
         return lease_status
