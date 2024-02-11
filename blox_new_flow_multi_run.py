@@ -100,6 +100,7 @@ def main(args):
                     cluster_state,
                     job_state,
                 )
+                print("GPU Df {}".format(cluster_state.gpu_df))
 
                 job_state.add_new_jobs(accepted_jobs)
                 new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
@@ -115,9 +116,9 @@ def main(args):
                 blox_mgr.exec_jobs(to_launch, to_suspend, cluster_state, job_state)
                 if args.simulate:
                     simulator_time += args.round_duration
-                    blox_mgr.simulator_time += args.round_duration
-                    job_state.simulator_time += args.round_duration
-                    admission_policy.simulator_time += args.round_duration
+                    blox_mgr.time += args.round_duration
+                    job_state.time += args.round_duration
+                    # admission_policy.time += args.round_duration
 
 
 def parse_args(parser):
@@ -135,6 +136,22 @@ def parse_args(parser):
         help="Name of the scheduling strategy",
     )
 
+    parser.add_argument(
+        "--node-manager-port", default=50052, type=int, help="Node Manager RPC port"
+    )
+    parser.add_argument(
+        "--central-scheduler-port",
+        default=50051,
+        type=int,
+        help="Central Scheduler RPC Port",
+    )
+
+    parser.add_argument(
+        "--simulator-rpc-port",
+        default=50050,
+        type=int,
+        help="Simulator RPC port to fetch ",
+    )
     parser.add_argument(
         "--acceptance-policy",
         default="accept_all",
