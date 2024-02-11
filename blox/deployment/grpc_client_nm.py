@@ -77,6 +77,18 @@ class NodeManagerComm(object):
                 .stdout.decode("utf-8")
                 .strip()
             )
+            gpuuuids = process = (
+                subprocess.run(
+                    "nvidia-smi -L | awk '{print $NF}' | tr -d '[)]'",
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    check=True,
+                    shell=True,
+                )
+                .stdout.decode("utf-8")
+                .strip()
+            )
+
         else:
             numgpus = str(0)
         # getting memory from meminfo file
@@ -89,7 +101,7 @@ class NodeManagerComm(object):
         request_to_rm.ipaddr = ipaddr
         request_to_rm.numGPUs = int(numgpus)
         request_to_rm.memoryCapacity = int(memoryCapacity)
-
+        request_to_rm.gpuUUIDs = gpuuuids
         if numa.available():
             last_node = 0
             for node in range(numa.get_max_node()):

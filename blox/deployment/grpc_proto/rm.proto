@@ -18,7 +18,8 @@ message RegisterRequest{
   int32 numCPUcores =3;
   int32 memoryCapacity =4;
   bool numaAvailable = 5;
-  map <int32, int32> cpuMaping = 6; 
+  map <int32, int32> cpuMaping = 6;
+  string gpuUUIDs = 7;
 }
 
 message BooleanResponse{

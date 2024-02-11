@@ -36,6 +36,7 @@ class ClusterState(object):
         self.gpu_df = pd.DataFrame(
             columns=[
                 "GPU_ID",
+                "GPU_UUID",
                 "Local_GPU_ID",
                 "Node_ID",
                 "IP_addr",
@@ -64,13 +65,17 @@ class ClusterState(object):
                 node_info = new_nodes.pop(0)
                 self.server_map[self.node_counter] = node_info
                 numGPUs_on_node = node_info["numGPUs"]
+                gpu_uuid_list = node_info["gpuUUIDs"].split("\n")
                 if numGPUs_on_node > 0:
                     gpuID_list = list()
-                    for local_gpu_id in range(numGPUs_on_node):
+                    for local_gpu_id, gpu_uuid in zip(
+                        range(numGPUs_on_node), gpu_uuid_list
+                    ):
                         gpuID_list.append(
                             {
                                 "GPU_ID": self.gpu_number,
                                 "Node_ID": self.node_counter,
+                                "GPU_UUID": gpu_uuid,
                                 "Local_GPU_ID": local_gpu_id,
                                 "IP_addr": node_info["ipaddr"],
                                 "IN_USE": False,

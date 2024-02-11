@@ -5,8 +5,8 @@ import argparse
 import pandas as pd
 from concurrent import futures
 
-import deployment.grpc_server_nm as nm_serve
-import deployment.grpc_client_nm as nm_client
+import blox.deployment.grpc_server_nm as nm_serve
+import blox.deployment.grpc_client_nm as nm_client
 
 from typing import Tuple
 
