@@ -202,7 +202,7 @@ def prune_jobs_based_on_iteration(
                                     job_state.active_jobs[jid]
                                 )
                                 # write logs everytime job is finished
-                                write_log_files(job_state, cluster_state)
+                                write_log_files(job_state, cluster_state, blr)
 
                             jid_to_terminate.append(jid)
                         # delete GPU utilization
@@ -331,7 +331,7 @@ def track_finished_jobs(
         )
     )
     if all(jid in job_state.finished_job for jid in job_state.job_ids_to_track):
-        write_log_files(job_state, cluster_state)
+        write_log_files(job_state, cluster_state, blr)
 
         blr.terminate = True
         return True
@@ -339,7 +339,7 @@ def track_finished_jobs(
         return False
 
 
-def write_log_files(job_state, cluster_state):
+def write_log_files(job_state, cluster_state, blr):
 
     with open(
         f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_job_stats.json",
