@@ -180,13 +180,13 @@ def prune_jobs_based_on_iteration(
         if job_state.active_jobs[jid]["is_running"] == True:
             if jid in job_state.active_jobs:
                 if "tracked_metrics" in job_state.active_jobs[jid]:
-                    if "iter_num" in self.active_jobs[jid]["tracked_metrics"]:
-                        num_iterations = self.active_jobs[jid]["tracked_metrics"][
+                    if "iter_num" in job_state.active_jobs[jid]["tracked_metrics"]:
+                        num_iterations = job_state.active_jobs[jid]["tracked_metrics"][
                             "iter_num"
                         ]
                         if (
                             num_iterations
-                            >= self.active_jobs[jid]["job_total_iteration"]
+                            >= job_state.active_jobs[jid]["job_total_iteration"]
                         ):
                             if (
                                 jid >= job_state.job_ids_to_track[0]

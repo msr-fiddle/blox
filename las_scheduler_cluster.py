@@ -142,6 +142,7 @@ def main(args):
             job_state, cluster_state, blox_instance
         )
         # actually kill jobs
+        print("Remove Jobs {}".format(remove_jobs))
         blox_instance.exec_jobs([], remove_jobs, cluster_state, job_state)
         # modify state to account for removal of jobs
         utils.remove_post_termination(remove_jobs, job_state, cluster_state)
