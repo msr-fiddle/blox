@@ -164,6 +164,51 @@ def prune_jobs_based_on_runtime(
     return jid_to_terminate
 
 
+def prune_jobs_based_on_iteration(
+    job_state: JobState, cluster_state: ClusterState, blr: BloxManager
+):
+    """
+    Special function. In regular cases jobs themselves exit based on some exit condition.
+    The scheduler is not the one to decide when to terminate a job.
+    However, for research we sometime will like to terminate jobs by the scheduler.
+
+    There should be a key which says number_of_iteration to end
+    """
+    jid_to_terminate = list()
+
+    for jid in job_state.active_jobs:
+        if job_state.active_jobs[jid]["is_running"] == True:
+            if jid in job_state.active_jobs:
+                if "tracked_metrics" in job_state.active_jobs[jid]:
+                    if "iter_num" in self.active_jobs[jid]["tracked_metrics"]:
+                        num_iterations = self.active_jobs[jid]["tracked_metrics"][
+                            "iter_num"
+                        ]
+                        if (
+                            num_iterations
+                            >= self.active_jobs[jid]["job_total_iteration"]
+                        ):
+                            if (
+                                jid >= job_state.job_ids_to_track[0]
+                                and jid <= job_state.job_ids_to_track[-1]
+                            ):
+                                # log the exit
+                                job_state.job_completion_stats[jid] = [
+                                    job_state.active_jobs[jid]["submit_time"],
+                                    blr.simulator_time,
+                                ]
+
+                                job_state.job_runtime_stats[jid] = copy.deepcopy(
+                                    job_state.active_jobs[jid]
+                                )
+                                # write logs everytime job is finished
+                                write_log_files(job_state, cluster_state)
+
+                            jid_to_terminate.append(jid)
+                        # delete GPU utilization
+    return jid_to_terminate
+
+
 def remove_post_termination(jobs_terminated, job_state, cluster_state):
     for jid in jobs_terminated:
         _free_gpu_by_jobid(jid, cluster_state.gpu_df)
@@ -286,44 +331,49 @@ def track_finished_jobs(
         )
     )
     if all(jid in job_state.finished_job for jid in job_state.job_ids_to_track):
-        with open(
-            f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_job_stats.json",
-            "w",
-        ) as fopen:
-            # fopen.write(json.dumps(self.job_completion_stats))
-            json.dump(job_state.job_completion_stats, fopen)
-
-        with open(
-            f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_cluster_stats.json",
-            "w",
-        ) as fopen:
-            # fopen.write(json.dumps(self.cluster_stats))
-            json.dump(cluster_state.cluster_stats, fopen)
-        # sys.exit(0)
-        with open(
-            f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_run_time_stats.json",
-            "w",
-        ) as fopen:
-            # fopen.write(json.dumps(self.cluster_stats))
-            json.dump(job_state.job_runtime_stats, fopen)
-
-        with open(
-            f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_responsivness.json",
-            "w",
-        ) as fopen:
-            # fopen.write(json.dumps(self.cluster_stats))
-            json.dump(job_state.job_responsiveness_stats, fopen)
-        with open(
-            f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_custom_metrics.json",
-            "w",
-        ) as fopen:
-            # fopen.write(json.dumps(self.cluster_stats))
-            json.dump(job_state.custom_metrics, fopen)
+        write_log_files(job_state, cluster_state)
 
         blr.terminate = True
         return True
     else:
         return False
+
+
+def write_log_files(job_state, cluster_state):
+
+    with open(
+        f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_job_stats.json",
+        "w",
+    ) as fopen:
+        # fopen.write(json.dumps(self.job_completion_stats))
+        json.dump(job_state.job_completion_stats, fopen)
+
+    with open(
+        f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_cluster_stats.json",
+        "w",
+    ) as fopen:
+        # fopen.write(json.dumps(self.cluster_stats))
+        json.dump(cluster_state.cluster_stats, fopen)
+    # sys.exit(0)
+    with open(
+        f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_run_time_stats.json",
+        "w",
+    ) as fopen:
+        # fopen.write(json.dumps(self.cluster_stats))
+        json.dump(job_state.job_runtime_stats, fopen)
+
+    with open(
+        f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_responsivness.json",
+        "w",
+    ) as fopen:
+        # fopen.write(json.dumps(self.cluster_stats))
+        json.dump(job_state.job_responsiveness_stats, fopen)
+    with open(
+        f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_custom_metrics.json",
+        "w",
+    ) as fopen:
+        # fopen.write(json.dumps(self.cluster_stats))
+        json.dump(job_state.custom_metrics, fopen)
 
 
 def _get_jobs_status(job_state: JobState) -> Tuple[int]:

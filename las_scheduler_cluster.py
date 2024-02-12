@@ -136,9 +136,9 @@ def main(args):
         accepted_jobs = admission_policy.accept(new_jobs, cluster_state, job_state)
         job_state.add_new_jobs(accepted_jobs)
         print("Jobs in cluster {}".format(job_state.active_jobs))
-        utils.prune_jobs(job_state, cluster_state, blox_instance)
+        # utils.prune_jobs(job_state, cluster_state, blox_instance)
         # perform scheduler based pruning of jobs
-        remove_jobs = utils.prune_jobs_based_on_runtime(
+        remove_jobs = utils.prune_jobs_based_on_iteration(
             job_state, cluster_state, blox_instance
         )
         # actually kill jobs
