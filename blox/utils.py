@@ -195,7 +195,7 @@ def prune_jobs_based_on_iteration(
                                 # log the exit
                                 job_state.job_completion_stats[jid] = [
                                     job_state.active_jobs[jid]["submit_time"],
-                                    blr.simulator_time,
+                                    blr.time,
                                 ]
 
                                 job_state.job_runtime_stats[jid] = copy.deepcopy(
