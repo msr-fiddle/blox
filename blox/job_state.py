@@ -86,17 +86,17 @@ class JobState(object):
                     )
 
                     # Mark Job completion
-                    if "iter_num" in self.active_jobs[jid]["tracked_metrics"]:
-                        num_iterations = self.active_jobs[jid]["tracked_metrics"][
-                            "iter_num"
-                        ]
-                        if (
-                            num_iterations
-                            >= self.active_jobs[jid]["job_total_iteration"]
-                        ):
-                            self.active_jobs[jid]["tracked_metrics"].update(
-                                {"job_exit": True}
-                            )
+                    # if "iter_num" in self.active_jobs[jid]["tracked_metrics"]:
+                    # num_iterations = self.active_jobs[jid]["tracked_metrics"][
+                    # "iter_num"
+                    # ]
+                    # if (
+                    # num_iterations
+                    # >= self.active_jobs[jid]["job_total_iteration"]
+                    # ):
+                    # self.active_jobs[jid]["tracked_metrics"].update(
+                    # {"job_exit": True}
+                    # )
         return None
 
     def add_new_jobs(self, new_jobs: List[dict]) -> None:
