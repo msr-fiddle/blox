@@ -336,7 +336,9 @@ class BloxManager(object):
             )
             terminate_list_id.extend([jid] * len(running_ipddr))
             terminate_ipaddr.extend(running_ipddr)
-            terminate_simulation.append(active_jobs.active_jobs[jid]["simulation"])
+            terminate_simulation.extend(
+                [active_jobs.active_jobs[jid]["simulation"]] * len(running_ipddr)
+            )
             # mark the job that is running is false
             active_jobs.active_jobs[jid]["is_running"] = False
             active_jobs.active_jobs[jid]["rank_0_ip"] = None
