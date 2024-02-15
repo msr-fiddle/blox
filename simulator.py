@@ -364,6 +364,9 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
             request_to_rm = rm_pb2.RegisterRequest()
             request_to_rm.ipaddr = ""
             request_to_rm.numGPUs = self.gpus_per_machine
+            request_to_rm.gpuUUIDs = "\n".join(
+                [str(x) for x in range(self.gpus_per_machine)]
+            )
             request_to_rm.memoryCapacity = self.memory_per_machine
             request_to_rm.numCPUcores = self.num_cpu_cores
             request_to_rm.numaAvailable = self.is_numa_available

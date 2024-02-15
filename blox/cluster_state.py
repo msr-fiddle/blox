@@ -66,6 +66,9 @@ class ClusterState(object):
                 self.server_map[self.node_counter] = node_info
                 numGPUs_on_node = node_info["numGPUs"]
                 gpu_uuid_list = node_info["gpuUUIDs"].split("\n")
+                assert (
+                    len(gpu_uuid_list) == numGPUs_on_node
+                ), f"GPU UUIDs {len(gpu_uuid_list)}  GPUs on node {numGPUs_on_node}"
                 if numGPUs_on_node > 0:
                     gpuID_list = list()
                     for local_gpu_id, gpu_uuid in zip(
