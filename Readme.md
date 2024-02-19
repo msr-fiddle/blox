@@ -16,7 +16,6 @@ Blox provides a modular framework for implementing deep learning research schedu
 Components of blox are designed to be easily swappable based on different objective. However, from experience, most of existing deep learning schedulers can be implemented by adding a new scheduling policy and modifying the placement.
 
 
-
 ### Blox Simulator 
 
 For large scale experiments it is often the practise to simulate how a policy will behave under different loads. Blox also provides a built in simulator for this case. 

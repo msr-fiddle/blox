@@ -33,7 +33,8 @@ class ResourceManagerComm(object):
         ipaddr_list: List[str],
     ) -> None:
         """
-        Notify respesctive node managers to launch jobs
+        Notify respesctive node managers to launch jobs.
+        For each job this is called once.
         Args:
             job_description: Job description from the job ID dictionary
             gpu_ids: Number of GPUS to launch
@@ -41,11 +42,19 @@ class ResourceManagerComm(object):
         Returns:
             None
         """
+        dist_rank = 0
+        world_size = len(local_gpu_ids)
         if job_description["simulation"] == False:
             for ipaddr, lgid in zip(ipaddr_list, local_gpu_ids):
+                if dist_rank == 0:
+                    master_ip_address = ipaddr
                 ipaddr = f"{ipaddr}:{self.rpc_port}"
                 launch_dict = dict()
                 launch_dict["job_id"] = job_id
+                # if job_id == 2:
+                # import ipdb
+
+                # ipdb.set_trace()
                 launch_dict["local_GPU_ID"] = lgid
                 if "launch_command" not in job_description:
                     raise Exception("Missing Launch Command")
@@ -54,6 +63,19 @@ class ResourceManagerComm(object):
                     launch_dict["should_resume"] = job_description["suspended"]
                 else:
                     launch_dict["should_resume"] = "0"
+
+                # we have simplified this
+                launch_params = list()
+                launch_params.append(lgid)
+                launch_params.append(master_ip_address)
+                launch_params.append(world_size)
+                launch_params.append(dist_rank)
+                launch_params.extend(job_description["launch_params"])
+                launch_params.append(str(launch_dict["job_id"]))
+                # launch_params_string = ",".join(launch_params)
+                launch_dict["launch_params"] = launch_params
+                print("Launch Params {}".format(launch_params))
+                # ["0,", "6001", "1", "resnet50", "64" ]
                 launch_request = rm_pb2.JsonResponse()
                 launch_request.response = json.dumps(launch_dict)
                 with grpc.insecure_channel(ipaddr) as channel:
@@ -62,6 +84,7 @@ class ResourceManagerComm(object):
                 print(
                     f"Launched Job {job_id}, response {response}, request {launch_dict}"
                 )
+                dist_rank += 1
 
             return None
         elif job_description["simulation"] == True:
@@ -85,15 +108,18 @@ class ResourceManagerComm(object):
             None
         """
         # TODO: Multithread this
+        print("In terminate simulation")
+        print("job id list {}".format(job_id_list))
         for job_id, ipaddr, simulation in zip(
             job_id_list, ipaddr_list, terminate_simulation
         ):
-            if not terminate_simulation:
+            if not simulation:
                 # only launch termination if false
                 ipaddr = f"{ipaddr}:{self.rpc_port}"
                 terminate_request = rm_pb2.JsonResponse()
                 terminate_request.response = json.dumps({"Job_ID": job_id})
                 # TODO: Add simulator
+                print("Called Terminate for job id {}".format(job_id))
                 with grpc.insecure_channel(ipaddr) as channel:
                     stub = nm_pb2_grpc.NMServerStub(channel)
                     response = stub.TerminateJob(terminate_request)
@@ -128,22 +154,58 @@ class ResourceManagerComm(object):
                     stub = nm_pb2_grpc.NMServerStub(channel)
                     response = stub.GetMetrics(metric_request)
                 metric_data = json.loads(response.response)
-                metric_data_dict[job_id] = metric_data
+                # make sure we update and not overwrite
+                print("Job id {} Recieved Metric Data {}".format(job_id, metric_data))
+                previous_metric = active_job_dict[job_id]["tracked_metrics"]
+                for key in metric_data:
+                    if key == "attained_service":
+                        metric_data[key] += previous_metric[key]
+                        # keys with their default values are assigned
+                    if key == "per_iter_time":
+                        if previous_metric[key] != 0:
+                            metric_data[key] = (
+                                metric_data[key] + previous_metric[key]
+                            ) / 2
+                        else:
+                            pass
+                    if key == "iter_num":
+                        metric_data[key] += previous_metric[key]
+                    else:
+                        pass
+
+                # Same job ids can be running at multiple ip addr
+                if job_id in metric_data_dict:
+                    for key in metric_data:
+                        if key == "attained_service":
+                            metric_data_dict[job_id][key] += metric_data[key]
+                        if key == "per_iter_time":
+                            # average key
+                            if key in metric_data_dict[job_id]:
+                                metric_data_dict[job_id][key] = (
+                                    metric_data_dict[job_id][key] + metric_data[key]
+                                ) / 2
+                            else:
+                                pass
+                        if key == "iter_num":
+                            metric_data_dict[job_id][key] += metric_data[key]
+
+                else:
+                    metric_data_dict[job_id] = metric_data
             else:
                 # this is a simulation
                 # profile scaling by number of GPUs
-                total_gpus = [5, 3, 1.4, 1.2, 1.1, 1.0, 1.0, 1.0, 1.0]
-                self.optimus_scale_by_gpus = {
-                    "1.0": total_gpus[0],
-                    "2.0": total_gpus[1],
-                    "3.0": total_gpus[2],
-                    "4.0": total_gpus[3],
-                    "5.0": total_gpus[4],
-                    "6.0": total_gpus[5],
-                    "7.0": total_gpus[6],
-                    "8.0": total_gpus[7],
-                    "9.0": total_gpus[8],
-                }
+                # total_gpus = [5, 3, 1.4, 1.2, 1.1, 1.0, 1.0, 1.0, 1.0]
+                # self.optimus_scale_by_gpus = {
+                # "1.0": total_gpus[0],
+                # "2.0": total_gpus[1],
+                # "3.0": total_gpus[2],
+                # "4.0": total_gpus[3],
+                # "5.0": total_gpus[4],
+                # "6.0": total_gpus[5],
+                # "7.0": total_gpus[6],
+                # "8.0": total_gpus[7],
+                # "9.0": total_gpus[8],
+                # }
                 if active_job_dict[job_id]["previously_launched"] == False:
                     active_job_dict[job_id]["job_launched_first_time"] = True
                 if active_job_dict[job_id]["previously_launched"] == True:

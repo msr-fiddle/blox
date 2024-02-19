@@ -18,7 +18,7 @@ def submit_dummy_job(ipaddr: str):
 
     job_dict = {
         "launch_method": "file",
-        "launch_command": "python test_mnist_job.py",
+        "launch_command": "python /global/homes/s/songbian/blox/applications/testing_application.py",
         "container_location": "temp",
         "config_parser_name": "temp",  # if parsing a config get this
         # which params to read from the config
@@ -30,9 +30,11 @@ def submit_dummy_job(ipaddr: str):
         "params_to_track": ["per_iter_time", "attained_service"],
         "default_values": [0, 0],  # default values for params to track
         # "parsing_params" : [AVG, S\UM]
-        "num_GPUs": 1,
+        "num_GPUs": 2,
+        "num_total_iterations": 2000,
         "simulation": False,
     }
+    # this is final. Metric collection and termination work
     for i in range(int(sys.argv[1])):
         with grpc.insecure_channel(ipaddr) as channel:
             stub = rm_pb2_grpc.RMServerStub(channel)

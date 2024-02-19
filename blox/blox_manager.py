@@ -127,8 +127,9 @@ class BloxManager(object):
             self.round_duration,
             job_state.active_jobs,
         )
+        print("Metric Data {}".format(metric_data))
 
-        job_state.update_metrics(metric_data)
+        job_state.update_metrics(metric_data, self.round_duration)
         # prune jobs which have been completed
 
         jid_to_terminate = list()
@@ -327,6 +328,7 @@ class BloxManager(object):
         terminate_list_id = list()
         terminate_ipaddr = list()
         terminate_simulation = list()
+        print("Job IDs to terminate {}".format(jobs_to_terminate))
         for jid in jobs_to_terminate:
             # find ipaddresses for corresponding jobs to terminate
             running_ipddr = list(
@@ -334,7 +336,9 @@ class BloxManager(object):
             )
             terminate_list_id.extend([jid] * len(running_ipddr))
             terminate_ipaddr.extend(running_ipddr)
-            terminate_simulation.append(active_jobs.active_jobs[jid]["simulation"])
+            terminate_simulation.extend(
+                [active_jobs.active_jobs[jid]["simulation"]] * len(running_ipddr)
+            )
             # mark the job that is running is false
             active_jobs.active_jobs[jid]["is_running"] = False
             active_jobs.active_jobs[jid]["rank_0_ip"] = None

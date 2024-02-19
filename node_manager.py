@@ -9,6 +9,7 @@ import blox.deployment.grpc_server_nm as nm_serve
 import blox.deployment.grpc_client_nm as nm_client
 
 from typing import Tuple
+import redis
 
 
 class NodeManagerMain(object):
@@ -27,6 +28,11 @@ class NodeManagerMain(object):
         self.node_manager_comm = nm_client.NodeManagerComm(
             self.ipaddr, central_scheduler_port
         )
+        # flush db at launch
+        self.redis_client = redis.Redis(
+            host="localhost", port=6379, decode_responses=True
+        )
+        self.redis_client.flushdb()
 
     def register_with_scheduler(self, interface: str) -> None:
         """

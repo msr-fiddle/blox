@@ -58,7 +58,7 @@ class JobState(object):
     # if len(new_jobs) > 0:
     # self._add_new_jobs(new_jobs)
 
-    def update_metrics(self, metric_data: dict) -> None:
+    def update_metrics(self, metric_data: dict, round_duration: int) -> None:
         """
         Update the metrics fetched at end of each round duration
         """
@@ -66,8 +66,37 @@ class JobState(object):
             if self.active_jobs[jid]["is_running"] == True:
                 if len(metric_data.get(jid)) > 0:
                     # replace only when we have got metrics
-                    self.active_jobs[jid]["tracked_metrics"] = metric_data.get(jid)
+                    # add scheduler side metrics
+                    # TODO: Good to have a separate function for this in future
+                    if (
+                        "attained_service_scheduler"
+                        in self.active_jobs[jid]["tracked_metrics"]
+                    ):
+                        metric_data[jid][
+                            "attained_service_scheduler"
+                        ] = self.active_jobs[jid]["tracked_metrics"][
+                            "attained_service_scheduler"
+                        ] + (
+                            round_duration * self.active_jobs[jid]["num_GPUs"]
+                        )
+                    else:
+                        metric_data[jid]["attained_service_scheduler"] = round_duration
+                    self.active_jobs[jid]["tracked_metrics"].update(
+                        metric_data.get(jid)
+                    )
 
+                    # Mark Job completion
+                    # if "iter_num" in self.active_jobs[jid]["tracked_metrics"]:
+                    # num_iterations = self.active_jobs[jid]["tracked_metrics"][
+                    # "iter_num"
+                    # ]
+                    # if (
+                    # num_iterations
+                    # >= self.active_jobs[jid]["job_total_iteration"]
+                    # ):
+                    # self.active_jobs[jid]["tracked_metrics"].update(
+                    # {"job_exit": True}
+                    # )
         return None
 
     def add_new_jobs(self, new_jobs: List[dict]) -> None:
@@ -81,12 +110,15 @@ class JobState(object):
                 try:
                     jobs = new_jobs.pop(0)
                     # TODO: Make this more permanent
-                    params_to_track = ["per_iter_time", "attained_service"]
-                    default_values_param = [0, 0]
-                    tracking_dict = dict()
-                    for p, v in zip(params_to_track, default_values_param):
-                        tracking_dict[p] = v
-                    jobs["tracked_metrics"] = tracking_dict
+                    if "tracked_metrics" not in jobs:
+                        # if not in job dict
+                        params_to_track = ["per_iter_time", "attained_service"]
+                        default_values_param = [0, 0]
+                        tracking_dict = dict()
+                        for p, v in zip(params_to_track, default_values_param):
+                            tracking_dict[p] = v
+                        jobs["tracked_metrics"] = tracking_dict
+
                     jobs["time_since_scheduled"] = 0
                     jobs["job_priority"] = 999
                     jobs["previously_launched"] = False
