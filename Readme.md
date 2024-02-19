@@ -157,4 +157,25 @@ python simulator_simple.py --cluster-job-log ./cluster_job_log --sim-type trace-
 ```
 python las_scheduler.py --simulate --load 1 --exp-prefix test --simulator-rpc-port 50501
 ```
+#### Running cluster experiments in Blox
+Blox allows users to run experiments on the real cluster. However, running experiments on real cluster requires additional setup.
 
+First on a node launch the scheduler you will like to run. For example - 
+```
+python las_scheduler_cluster.py --round-duration 30 --start-id-track 0 --stop-id-track 10
+```
+The above command will launch the cluster scheduler. 
+
+Next on each node which you plan to run the jobs on, start redis-server and launch the job-manager.
+```
+redis-server
+```
+Post starting redis-server, you need to launch the node manager.
+
+```
+python node_manager.py --ipaddr {ip_addr_of_scheduler} --interface {network_interface_to_use}
+```
+For starting the node manager, we need two mandatory arguments, the IP Address of the scheduler and the network interface you want to use the node manager to use. 
+To get the network interface you can run `ip a`.
+
+Finally you need to send the jobs to the the scheduler. For an example of how to submit jobs you can look [here](https://github.com/msr-fiddle/blox/blob/main/blox/deployment/job_submit_script.py).
