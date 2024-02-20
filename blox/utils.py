@@ -1,3 +1,4 @@
+import time
 import copy
 import json
 import pandas as pd
@@ -84,10 +85,18 @@ def prune_jobs_based_on_runtime(
                                 and jid <= job_state.job_ids_to_track[-1]
                             ):
                                 # log the exit
-                                job_state.job_completion_stats[jid] = [
-                                    job_state.active_jobs[jid]["submit_time"],
-                                    blr.simulator_time,
-                                ]
+                                if job_state.active_jobs[jid]["simulation"]:
+                                    # if job is simulation
+                                    job_state.job_completion_stats[jid] = [
+                                        job_state.active_jobs[jid]["submit_time"],
+                                        blr.simulator_time,
+                                    ]
+                                else:
+                                    # if job is cluster job
+                                    job_state.job_completion_stats[jid] = [
+                                        job_state.active_jobs[jid]["submit_time"],
+                                        time.time(),
+                                    ]
 
                                 job_state.job_runtime_stats[jid] = copy.deepcopy(
                                     job_state.active_jobs[jid]
@@ -215,10 +224,17 @@ def prune_jobs_based_on_runtime(
                                 and jid <= job_state.job_ids_to_track[-1]
                             ):
                                 # log the exit
-                                job_state.job_completion_stats[jid] = [
-                                    job_state.active_jobs[jid]["submit_time"],
-                                    blr.time,
-                                ]
+                                if job_state.active_jobs[jid]["simulation"]:
+                                    job_state.job_completion_stats[jid] = [
+                                        job_state.active_jobs[jid]["submit_time"],
+                                        blr.time,
+                                    ]
+                                else:
+                                    # if job is cluster job
+                                    job_state.job_completion_stats[jid] = [
+                                        job_state.active_jobs[jid]["submit_time"],
+                                        time.time(),
+                                    ]
 
                                 job_state.job_runtime_stats[jid] = copy.deepcopy(
                                     job_state.active_jobs[jid]
