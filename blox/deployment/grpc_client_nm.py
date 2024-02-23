@@ -96,19 +96,22 @@ class NodeManagerComm(object):
             memory_data = fin.read()
 
         memoryCapacity = self.memory_extract.findall(memory_data)[0]
-
         request_to_rm = rm_pb2.RegisterRequest()
         request_to_rm.ipaddr = ipaddr
         request_to_rm.numGPUs = int(numgpus)
         request_to_rm.memoryCapacity = int(memoryCapacity)
         request_to_rm.gpuUUIDs = gpuuuids
+        # TODO: Eventually fix this to send the full list
         if numa.available():
             last_node = 0
             for node in range(numa.get_max_node()):
-                request_to_rm.cpuMaping[node] = list(numa.node_to_cpus(node))[-1]
+                temp_mapping = list(numa.node_to_cpus(node))[-1]
+                request_to_rm.cpuMaping[node] = temp_mapping
                 last_node = node
+                num_cpu_cores = temp_mapping
             # copying the last know cpu core to numCPUcores
-            request_to_rm.numCPUcores = list(numa.node_to_cpus(last_node))[-1]
+            # request_to_rm.numCPUcores = list(numa.node_to_cpus(last_node))[-1]
+            request_to_rm.numCPUcores = num_cpu_cores
             request_to_rm.numaAvailable = True
         else:
             numCPUcores = (
