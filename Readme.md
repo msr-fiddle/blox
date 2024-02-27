@@ -179,3 +179,18 @@ For starting the node manager, we need two mandatory arguments, the IP Address o
 To get the network interface you can run `ip a`.
 
 Finally you need to send the jobs to the the scheduler. For an example of how to submit jobs you can look [here](https://github.com/msr-fiddle/blox/blob/main/blox/deployment/job_submit_script.py).
+
+To launch a job on the cluster there are two mandatory fields to blox.
+First is the launch_command, launch_command gives the command to launch.
+Next you can pass any command line arguments with Blox, by using the launch_params key, as done in the job_submit_script.py.
+For each application blox also sets following environment variables. 
+For multiple jobs blox will launch the command multiple times. However, with differnt environment variables.
+The users are responsible to configure the environment variables themselves. Following is the enviroment variable to query, and their description. 
+```
+local_gpu_id : specifies the local gpu id this job is running
+master_ip_address: in case of a distributed job this is the master-ip-address to use.
+world_size: total number of workers running this command
+dist_rank: rank of the current process
+job_id: job id assigned to this particular job by blox
+local_accessible_gpu: all gpus that can accessed by this job. This is especially useful with CUDA_VISIBLE_DEVICES.
+``` 
