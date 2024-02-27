@@ -77,11 +77,11 @@ class ResourceManagerComm(object):
 
                 # sending parameters for launch params
                 environment_variable_pairs = dict()
-                environment_variable_pairs["local_gpu_id"] = lgid
+                environment_variable_pairs["local_gpu_id"] = str(lgid)
                 environment_variable_pairs["master_ip_address"] = master_ip_address
-                environment_variable_pairs["world_size"] = world_size
-                environment_variable_pairs["dist_rank"] = dist_rank
-                environment_variable_pairs["job_id"] = launch_dict["job_id"]
+                environment_variable_pairs["world_size"] = str(world_size)
+                environment_variable_pairs["dist_rank"] = str(dist_rank)
+                environment_variable_pairs["job_id"] = str(launch_dict["job_id"])
                 environment_variable_pairs["local_accessible_gpus"] = ",".join(
                     [str(x) for x in local_gpu_ids]
                 )
