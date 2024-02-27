@@ -65,6 +65,7 @@ class ResourceManagerComm(object):
                     launch_dict["should_resume"] = "0"
 
                 # we have simplified this
+
                 launch_params = list()
                 launch_params.append(lgid)
                 launch_params.append(master_ip_address)
@@ -73,6 +74,18 @@ class ResourceManagerComm(object):
                 launch_params.extend(job_description["launch_params"])
                 launch_params.append(str(launch_dict["job_id"]))
                 # launch_params_string = ",".join(launch_params)
+
+                # sending parameters for launch params
+                environment_variable_pairs = dict()
+                environment_variable_pairs["local_gpu_id"] = lgid
+                environment_variable_pairs["master_ip_address"] = master_ip_address
+                environment_variable_pairs["world_size"] = world_size
+                environment_variable_pairs["dist_rank"] = dist_rank
+                environment_variable_pairs["job_id"] = launch_dict["job_id"]
+                environment_variable_pairs["local_accessible_gpus"] = ",".join(
+                    [str(x) for x in local_gpu_ids]
+                )
+                launch_dict["env_variables"] = environment_variable_pairs
                 launch_dict["launch_params"] = launch_params
                 print("Launch Params {}".format(launch_params))
                 # ["0,", "6001", "1", "resnet50", "64" ]

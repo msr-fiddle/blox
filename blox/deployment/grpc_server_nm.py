@@ -49,6 +49,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         # resume_iter = received_job["resume_iter"]
         resume_iter = 0
         job_id = received_job["job_id"]
+        environment_variable_pairs = received_job["env_variables"]
         self.local_data_store.set_lease_status(received_job["job_id"], True)
         # os.environ["BLOX_JOB_ID"] = str(received_job["job_id"])
         # os.environ["GPU_ID"] = str(received_job["local_GPU_ID"])
@@ -67,6 +68,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
             stderr=subprocess.DEVNULL,
             start_new_session=True,
             shell=True,
+            env=environment_variable_pairs,
         )
         # with open("job_file_db.txt", "w") as fopen:
         # fopen.write(
