@@ -203,14 +203,6 @@ class JobPlacement(object):
                     new_scheduled_jobs += 1
                     job_to_launch[job_id] = placement
                     # update manual-pipeline-list for bert and gpt
-                    if (active_jobs[job_id]["job_model"] == "Bert-Large"
-                            or active_jobs[job_id]["job_model"] == "GPT2-Medium"):
-                        if int(active_jobs[job_id]["launch_params"][1]) == 2:
-                            active_jobs[job_id]["launch_params"][-2] = "14,10"
-                        elif int(active_jobs[job_id]["launch_params"][1]) == 4:
-                            active_jobs[job_id]["launch_params"][-2] = "6,8,8,2"
-                        else:
-                            raise ValueError("GPU demand is not correct")
                     mark_gpu_in_use(gpu_df, placement, job_id)
                 else:
                     # print(f"New Jobs scheduled {new_scheduled_jobs}")
