@@ -156,6 +156,14 @@ class DataRelay(object):
         self.redis_client.set(status_key, status)
         return None
 
+    def get_job_status(self, job_id: int) -> None:
+        """
+        Get Job Status
+        """
+        status_key = f"{job_id}_status"
+        self.redis_client.get(status_key)
+        return None
+
     # def get_rm_metrics(self, job_id: int, metric_to_fetch: str) -> dict:
     # """
     # Returns the metric requested by job id
