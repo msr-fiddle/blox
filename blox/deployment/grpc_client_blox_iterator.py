@@ -101,8 +101,8 @@ class BloxIteratorComm(object):
         # with grpc.insecure_channel(self.node_manager_ip) as channel:
         # stub = nm_pb2_grpc.NMServerStub(channel)
         # response = stub.NotifyTerminate(notify_exit_id)
-
-        self.data_relay.set_rm_metrics(self.jobid, "exit")
+        # making a stupid line so git detects it
+        self.data_relay.set_job_status(self.jobid, "exit")
         return None
 
     def job_launch_notify(self) -> None:
