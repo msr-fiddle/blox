@@ -20,7 +20,7 @@ class bloxEnumerate(enumerate):
 
     def job_exit_notify(self):
         print("Called exit")
-        self._rpc_client.job_exity_notify()
+        self._rpc_client.job_exit_notify()
 
 
 if __name__ == "__main__":

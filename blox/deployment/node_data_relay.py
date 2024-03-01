@@ -161,8 +161,8 @@ class DataRelay(object):
         Get Job Status
         """
         status_key = f"{job_id}_status"
-        self.redis_client.get(status_key)
-        return None
+        get_data = self.redis_client.get(status_key)
+        return get_data
 
     # def get_rm_metrics(self, job_id: int, metric_to_fetch: str) -> dict:
     # """
