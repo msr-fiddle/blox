@@ -72,24 +72,25 @@ class BloxIteratorComm(object):
         previous_metrics = self.data_relay.get_job_metrics(self.jobid)
         print(f"Previous Metrics {previous_metrics}")
         #### Metrics Aggregation
+        float_dict = dict()
+        other_dict = dict()
         for key in metrics:
-            if key == "attained_service":
-                if key in previous_metrics:
-                    metrics[key] += previous_metrics[key]
-                else:
-                    pass
+            if key == "attained_service" or key == "iter_num":
+                float_dict[key] = metrics[key]
             if key == "per_iter_time":
                 if key in previous_metrics:
-                    metrics[key] = (metrics[key] + previous_metrics[key]) / 2
+                    other_dict[key] = (metrics[key] + previous_metrics[key]) / 2
                 else:
-                    pass
-            if key == "iter_num":
-                if key in previous_metrics:
-                    metrics[key] += previous_metrics[key]
-                else:
-                    pass
-        self.data_relay.set_job_metrics(self.jobid, metrics)
-        print("Updated Metrics {}".format(metrics))
+                    other_dict[key] = metrics[key]
+            # if key == "iter_num":
+            # if key in previous_metrics:
+            # metrics[key] += previous_metrics[key]
+            # else:
+            # pass
+        self.data_relay.set_job_metrics_float(self.jobid, float_dict)
+        self.data_relay.set_job_metrics(self.jobid, other_dict)
+        # self.data_relay.set_job_metrics(self.jobid, metrics)
+        # print("Updated Metrics {}".format(metrics))
         return True
 
     def job_exit_notify(self) -> bool:

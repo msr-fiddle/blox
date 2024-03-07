@@ -56,6 +56,7 @@ class DataRelay(object):
             status = str(status)
             print("Setting status {} job id {}".format(status, job_id))
             self.redis_client.set(key_to_set, status)
+
         # else:
         # self.data_dict[key_to_set] = status
 
@@ -109,6 +110,45 @@ class DataRelay(object):
             print("Non existent key deleted")
             print(f"Key {job_id}_metrics")
         return None
+
+    def set_job_metrics_float(self, job_id: int, metrics: dict) -> None:
+        """
+        Set Job Metrics for float increment
+        """
+        metric_key = f"{job_id}_metrics"
+        with self.redis_client.pipeline() as redis_pipe:
+            for key in metrics:
+                redis_pipe.hincrbyfloat(metric_key, key, metrics[key])
+            updated_value = redis_pipe.execute()
+            print("Input Metrics {}".format(metrics))
+            print("Updated Metrics {}".format(updated_value))
+        return None
+
+    def set_job_metrics_watch(self, job_id: int, metrics: dict) -> None:
+        """
+        Update a key by puting a watch a command
+        """
+        metric_key = f"{job_id}_metrics"
+        with self.redis_client.pipeline() as redis_pipe:
+            while True:
+                try:
+                    redis_pipe.watch(metric_key)
+                    previous_metrics = redis_pipe.hgetall(metric_key)
+                    for key_metric in data:
+                        data[key_metric] = self.data_type[key_metric](data[key_metric])
+                    redis_pipe.multi()
+                    for key in metrics:
+                        if key == "per_iter_time":
+                            if key in previous_metrics:
+                                metrics[key] = (
+                                    metrics[key] + previous_metrics[key]
+                                ) / 2
+                            else:
+                                pass
+                            redis_pipe.hset(metric_key, key, metrics[key])
+                    redis_pipe.execute()
+                except redis.WatchError:
+                    continue
 
     def set_job_metrics(self, job_id: int, metrics: dict) -> None:
         """
