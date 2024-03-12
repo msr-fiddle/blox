@@ -157,53 +157,47 @@ class ResourceManagerComm(object):
         """
         # TODO: Multi-thread this
         metric_data_dict = dict()
-        for job_id, ipaddr, if_sim in zip(job_id_list, ipaddr_list, if_simulation):
+        for idx, job_id in job_id_list:
+            ipaddr_to_query = ipaddr_list[idx]
+            if_sim = if_simulation[idx]
             job_exit = False
             if not if_sim:
-                ipaddr = f"{ipaddr}:{self.rpc_port}"
-                metric_request = rm_pb2.JsonResponse()
-                metric_request.response = json.dumps({"Job_ID": job_id})
-                with grpc.insecure_channel(ipaddr) as channel:
-                    stub = nm_pb2_grpc.NMServerStub(channel)
-                    response = stub.GetMetrics(metric_request)
-                metric_data = json.loads(response.response)
-                # make sure we update and not overwrite
-                print("Job id {} Recieved Metric Data {}".format(job_id, metric_data))
                 previous_metric = active_job_dict[job_id]["tracked_metrics"]
-                for key in metric_data:
-                    if key == "attained_service":
-                        metric_data[key] += previous_metric[key]
-                        # keys with their default values are assigned
-                    if key == "per_iter_time":
-                        if previous_metric[key] != 0:
-                            metric_data[key] = (
-                                metric_data[key] + previous_metric[key]
-                            ) / 2
-                        else:
-                            pass
-                    if key == "iter_num":
-                        metric_data[key] += previous_metric[key]
+                metric_data_dict[job_id] = previous_metrics
+                for ipaddr in ipaddr_list:
+                    ipaddr = f"{ipaddr}:{self.rpc_port}"
+                    metric_request = rm_pb2.JsonResponse()
+                    metric_request.response = json.dumps({"Job_ID": job_id})
+                    with grpc.insecure_channel(ipaddr) as channel:
+                        stub = nm_pb2_grpc.NMServerStub(channel)
+                        response = stub.GetMetrics(metric_request)
+                    metric_data = json.loads(response.response)
+                    # make sure we update and not overwrite
+                    if job_id in metric_data_dict:
+                        for key in metric_data:
+                            if key == "attained_service":
+                                metric_data_dict[job_id][key] += metric_data[key]
+                            if key == "per_iter_time":
+                                # average key
+                                if key in metric_data_dict[job_id]:
+                                    metric_data_dict[job_id][key] = (
+                                        metric_data_dict[job_id][key] + metric_data[key]
+                                    ) / 2
+                                else:
+                                    pass
+                            if key == "iter_num":
+                                metric_data_dict[job_id][key] += metric_data[key]
+
                     else:
-                        pass
+                        metric_data_dict[job_id] = metric_data
 
-                # Same job ids can be running at multiple ip addr
-                if job_id in metric_data_dict:
-                    for key in metric_data:
-                        if key == "attained_service":
-                            metric_data_dict[job_id][key] += metric_data[key]
-                        if key == "per_iter_time":
-                            # average key
-                            if key in metric_data_dict[job_id]:
-                                metric_data_dict[job_id][key] = (
-                                    metric_data_dict[job_id][key] + metric_data[key]
-                                ) / 2
-                            else:
-                                pass
-                        if key == "iter_num":
-                            metric_data_dict[job_id][key] += metric_data[key]
-
-                else:
-                    metric_data_dict[job_id] = metric_data
+                    # Add previous data
+                    print(
+                        "Job id {} Aggregated Metric Data {}".format(
+                            job_id, metric_data
+                        )
+                    )
+                    # Same job ids can be running at multiple ip addr
             else:
                 # this is a simulation
                 # profile scaling by number of GPUs
