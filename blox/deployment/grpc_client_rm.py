@@ -162,6 +162,7 @@ class ResourceManagerComm(object):
             if_sim = if_simulation[idx]
             job_exit = False
             if not if_sim:
+                # added tracking
                 previous_metric = active_job_dict[job_id]["tracked_metrics"]
                 metric_data_dict[job_id] = previous_metrics
                 for ipaddr in ipaddr_list:

@@ -365,6 +365,7 @@ class BloxManager(object):
             )
             active_jobs.active_jobs[jid]["is_running"] = True
             active_jobs.active_jobs[jid]["rank_0_ip"] = list(set(ipaddress_to_launch))
+
             if "suspended" in active_jobs.active_jobs[jid]:
                 active_jobs.active_jobs[jid]["suspended"] = 0
             _mark_gpu_in_use_by_gpu_id(gpus_to_launch, jid, cluster_state.gpu_df)
