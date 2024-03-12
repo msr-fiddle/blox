@@ -157,7 +157,7 @@ class ResourceManagerComm(object):
         """
         # TODO: Multi-thread this
         metric_data_dict = dict()
-        for idx, job_id in job_id_list:
+        for idx, job_id in enumerate(job_id_list):
             ipaddr_to_query = ipaddr_list[idx]
             if_sim = if_simulation[idx]
             job_exit = False
@@ -165,7 +165,7 @@ class ResourceManagerComm(object):
                 # added tracking
                 previous_metric = active_job_dict[job_id]["tracked_metrics"]
                 metric_data_dict[job_id] = previous_metrics
-                for ipaddr in ipaddr_list:
+                for ipaddr in ipaddr_to_query:
                     ipaddr = f"{ipaddr}:{self.rpc_port}"
                     metric_request = rm_pb2.JsonResponse()
                     metric_request.response = json.dumps({"Job_ID": job_id})
