@@ -370,16 +370,16 @@ class BloxManager(object):
             _mark_gpu_in_use_by_gpu_id(gpus_to_launch, jid, cluster_state.gpu_df)
             return True
 
-        for jid in jobs_to_launch:
-            with futures.ThreadPoolExecutor(max_workers=16) as executor:
-                future_results = [
-                    executor.submit(launch_job_func, jid) for jid in jobs_to_launch
-                ]
+        # for jid in jobs_to_launch:
+        with futures.ThreadPoolExecutor(max_workers=16) as executor:
+            future_results = [
+                executor.submit(launch_job_func, jid) for jid in jobs_to_launch
+            ]
 
-                results = [
-                    future.result() for future in futures.as_completed(future_results)
-                ]
-                print("Launched")
+            results = [
+                future.result() for future in futures.as_completed(future_results)
+            ]
+            print("Launched")
 
         # update the time for training
 
