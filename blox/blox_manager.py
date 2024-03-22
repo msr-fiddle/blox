@@ -353,8 +353,7 @@ class BloxManager(object):
         )
 
         # jobs terminated
-
-        for jid in jobs_to_launch:
+        def launch_job_func(jid):
             gpus_to_launch = jobs_to_launch[jid]
             ipaddress_to_launch = _find_ipaddr_by_gpu_ids(
                 gpus_to_launch, cluster_state.gpu_df
@@ -369,6 +368,18 @@ class BloxManager(object):
             if "suspended" in active_jobs.active_jobs[jid]:
                 active_jobs.active_jobs[jid]["suspended"] = 0
             _mark_gpu_in_use_by_gpu_id(gpus_to_launch, jid, cluster_state.gpu_df)
+            return True
+
+        for jid in jobs_to_launch:
+            with futures.ThreadPoolExecutor(max_workers=16) as executor:
+                future_results = [
+                    executor.submit(launch_job_func, jid) for jid in jobs_to_launch
+                ]
+
+                results = [
+                    future.result() for future in futures.as_completed(future_results)
+                ]
+                print("Launched")
 
         # update the time for training
 
