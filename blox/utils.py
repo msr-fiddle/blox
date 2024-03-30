@@ -9,31 +9,6 @@ from job_state import JobState
 from typing import Tuple, List
 
 
-def get_metrics(
-    blr: BloxManager, cluster_state: ClusterState, job_state: JobState
-) -> dict:
-    """
-    Perform metric collection
-    """
-    job_id_to_fetch = list()
-    ipaddress_to_fetch_from = list()
-    if_simulation = list()
-    for jid in job_state.active_jobs:
-        if job_state.active_jobs[jid]["is_running"] == True:
-            job_id_to_fetch.append(jid)
-            if_simulation.append(job_state.active_jobs[jid]["simulation"])
-            ipaddress_to_fetch_from.append(job_state.active_jobs[jid]["rank_0_ip"])
-    metric_data = blr.comm_node_manager.get_metrics(
-        job_id_to_fetch,
-        ipaddress_to_fetch_from,
-        if_simulation,
-        blr.round_duration,
-        job_state.active_jobs,
-    )
-
-    return metric_data
-
-
 def remove_post_termination(jobs_terminated, job_state, cluster_state):
     for jid in jobs_terminated:
         _free_gpu_by_jobid(jid, cluster_state.gpu_df)
@@ -105,80 +80,6 @@ def prune_jobs_based_on_runtime(
                             jid_to_terminate.append(jid)
                             # delete GPU utilization
     return jid_to_terminate
-
-
-def execute_jobs(
-    jobs_to_launch: dict,
-    jobs_to_terminate: list,
-    cluster_state: ClusterState,
-    active_jobs: JobState,
-    blr: BloxManager,
-) -> None:
-    """
-    First terminates the jobs. Then marks the jobs to launch.
-    Args:
-        jobs_to_launch: {Job_ID: [GPUs to launch]}
-        jobs_to_terminate : List of Job IDs to Terminate
-        cluster_state : ClusterState class
-        active_jobs: JobState
-    Return:
-      None
-    """
-    terminate_list_id = list()
-    terminate_ipaddr = list()
-    terminate_simulation = list()
-    for jid in jobs_to_terminate:
-        # find ipaddresses for corresponding jobs to terminate
-        running_ipddr = list(set(_find_ipaddr_by_job_ids(jid, cluster_state.gpu_df)))
-        terminate_list_id.extend([jid] * len(running_ipddr))
-        terminate_ipaddr.extend(running_ipddr)
-        terminate_simulation.append(active_jobs.active_jobs[jid]["simulation"])
-        # mark the job that is running is false
-        active_jobs.active_jobs[jid]["is_running"] = False
-        active_jobs.active_jobs[jid]["rank_0_ip"] = None
-        # the job was suspended
-        active_jobs.active_jobs[jid]["suspended"] = 1
-        # mark corresponding GPUs on which the jobs are running as
-        # available
-        _free_gpu_by_jobid(jid, cluster_state.gpu_df)
-
-    blr.comm_node_manager.terminate_jobs(
-        terminate_list_id, terminate_ipaddr, terminate_simulation
-    )
-
-    # jobs terminated
-
-    for jid in jobs_to_launch:
-        gpus_to_launch = jobs_to_launch[jid]
-        ipaddress_to_launch = _find_ipaddr_by_gpu_ids(
-            gpus_to_launch, cluster_state.gpu_df
-        )
-        local_gpu_ids = _find_local_gpu_id(gpus_to_launch, cluster_state.gpu_df)
-        blr.comm_node_manager.launch_job(
-            jid, active_jobs.active_jobs[jid], local_gpu_ids, ipaddress_to_launch
-        )
-        active_jobs.active_jobs[jid]["is_running"] = True
-        active_jobs.active_jobs[jid]["rank_0_ip"] = ipaddress_to_launch[0]
-        if "suspended" in active_jobs.active_jobs[jid]:
-            active_jobs.active_jobs[jid]["suspended"] = 0
-        _mark_gpu_in_use_by_gpu_id(gpus_to_launch, jid, cluster_state.gpu_df)
-
-    # update the time for training
-
-    for jid in active_jobs.active_jobs:
-        if jid in jobs_to_terminate:
-            active_jobs.active_jobs[jid]["time_since_scheduled"] = 0
-        elif jid in jobs_to_launch:
-            active_jobs.active_jobs[jid]["time_since_scheduled"] = 0
-        elif active_jobs.active_jobs[jid]["is_running"]:
-            active_jobs.active_jobs[jid]["time_since_scheduled"] = 0
-        else:
-            active_jobs.active_jobs[jid]["time_since_scheduled"] += blr.round_duration
-            if (
-                active_jobs.active_jobs[jid]["time_since_scheduled"]
-                >= blr.priority_thresh
-            ):
-                active_jobs.active_jobs[jid]["job_priority"] = 1
 
 
 def prune_jobs_based_on_runtime(
