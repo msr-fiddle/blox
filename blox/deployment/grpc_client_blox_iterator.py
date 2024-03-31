@@ -64,7 +64,7 @@ class BloxIteratorComm(object):
                 ## this is rank 0 and we need to notify other peer nodes that lease has expired
                 # get ip address as well
                 terminate_request = rm_pb2.JsonResponse()
-                terminate_request.response = json.dumps({"Job_ID": jobid})
+                terminate_request.response = json.dumps({"Job_ID": self.jobid})
                 ipaddress = self.data_relay.get_peer_ipaddress_rank0(self.jobid)
                 for ipaddr in ipaddress:
                     with grpc.insecure_channel(ipaddr) as channel:
