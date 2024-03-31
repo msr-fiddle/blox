@@ -129,7 +129,7 @@ class ResourceManagerComm(object):
         assert len(job_id_list) == len(all_ipaddr_list)
 
         for job_id, rank_0_ipaddr, all_ip_addr, simulation in zip(
-            job_id_list, terminate_rank_0_ipaddr, ipaddr_list, terminate_simulation
+            job_id_list, terminate_rank_0_ipaddr, all_ipaddr_list, terminate_simulation
         ):
             if not simulation:
                 ipaddr = f"{ipaddr}:{self.rpc_port}"

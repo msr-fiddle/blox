@@ -378,7 +378,7 @@ class BloxManager(object):
                 0
             ]
 
-            active_job.active_job[jid]["running_ip_address"] = list(
+            active_jobs.active_jobs[jid]["running_ip_address"] = list(
                 set(ipaddress_to_launch)
             )
 
