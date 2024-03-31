@@ -132,7 +132,7 @@ class ResourceManagerComm(object):
             job_id_list, terminate_rank_0_ipaddr, all_ipaddr_list, terminate_simulation
         ):
             if not simulation:
-                ipaddr = f"{ipaddr}:{self.rpc_port}"
+                ipaddr = f"{rank_0_ipaddr}:{self.rpc_port}"
                 terminate_request = rm_pb2.JsonResponse()
                 terminate_request.response = json.dumps(
                     {"Job_ID": job_id, "IP_addr_terminate": all_ip_addr}
