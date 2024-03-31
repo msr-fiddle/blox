@@ -108,7 +108,7 @@ class ResourceManagerComm(object):
         self,
         job_id_list: List[int],
         terminate_rank_0_ipaddr: List[int],
-        all_ipaddr_list: List[str],
+        all_ipaddr_list: List[List[str]],
         terminate_simulation: List[bool],
     ) -> None:
         """

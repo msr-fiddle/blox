@@ -75,7 +75,7 @@ class DataRelay(object):
             print("Setting status {} job id {}".format(status, job_id))
             self.redis_client.set(key_to_set, status)
 
-    def get_peer_ipaddress_rank0(self, job_id: int) -> None:
+    def get_peer_ipaddress_rank0(self, job_id: int) -> List[str]:
         key_to_read = f"{job_id}_terminate_ips"
         if self.use_redis:
             ipaddress = self.redis_client.get(key_to_read)
