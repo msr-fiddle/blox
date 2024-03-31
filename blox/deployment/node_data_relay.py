@@ -83,7 +83,7 @@ class DataRelay(object):
         return ipaddress
 
     def set_lease_status_rank0(
-        self, job_id: int, ipaddr_to_terminate: int, status: bool
+        self, job_id: int, ipaddr_to_terminate: List[str], status: bool
     ) -> None:
         """
         Set lease status for a given job_id
