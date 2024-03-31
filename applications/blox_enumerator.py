@@ -9,7 +9,7 @@ class bloxEnumerate(object):
         jid: Job ID
         rank: Rank distributed
         """
-        self.x_ = x
+        self.x_ = list(x)
         self.len_ = len(x)
         self._rpc_client = bloxComm.BloxIteratorComm(jid, rank)
 
