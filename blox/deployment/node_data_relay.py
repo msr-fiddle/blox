@@ -44,6 +44,24 @@ class DataRelay(object):
         print(f"a lease_status {lease_status}")
         return lease_status
 
+    def get_lease_status_rank0(self, job_id: int, iteration: int) -> bool:
+        """
+        For a given id check job lease
+        Args:
+            job_id: Job ID associated
+            iteration: Iteration number of the job
+        """
+        lease_key = f"{job_id}_lease_rank0"
+        iteration_key = f"{job_id}_iteration"
+        # if self.use_redis:
+        lease_status = self.redis_client.get(lease_key)
+        print(f"b Lease status {lease_status}")
+        # bad idea but need to fix
+        lease_status = eval(lease_status)
+        self.redis_client.set(iteration_key, iteration)
+        print(f"a lease_status {lease_status}")
+        return lease_status
+
     def set_lease_status(self, job_id: int, status: bool) -> None:
         """
         Set lease status for a given job_id
@@ -57,6 +75,29 @@ class DataRelay(object):
             print("Setting status {} job id {}".format(status, job_id))
             self.redis_client.set(key_to_set, status)
 
+    def get_peer_ipaddress_rank0(self, job_id: int) -> None:
+        key_to_read = f"{job_id}_terminate_ips"
+        if self.use_redis:
+            ipaddress = self.redis_client.get(key_to_read)
+            ipaddress = json.loads(ipaddress)
+        return ipaddress
+
+    def set_lease_status_rank0(
+        self, job_id: int, ipaddr_to_terminate: int, status: bool
+    ) -> None:
+        """
+        Set lease status for a given job_id
+        Args:
+            job_id: The job ID of the associated job
+            status : Status of the lease for the associated job_id
+        """
+        key_to_set = f"{job_id}_lease_rank0"
+        key_to_set_ipaddr = f"{job_id}_terminate_ips"
+        if self.use_redis:
+            status = str(status)
+            print("Setting status {} job id {}".format(status, job_id))
+            self.redis_client.set(key_to_set, status)
+            self.redis_client.set(key_to_set_ipaddr, ipaddr_to_terminate)
         # else:
         # self.data_dict[key_to_set] = status
 

@@ -22,7 +22,12 @@ class BloxIteratorComm(object):
     """
 
     def __init__(
-        self, jobid, node_manager_port=50052, redis_host="localhost", redis_port=6379
+        self,
+        jobid,
+        rank,
+        node_manager_port=50052,
+        redis_host="localhost",
+        redis_port=6379,
     ):
         self.node_manager_ip = f"localhost:{node_manager_port}"
         self.jobid = jobid
@@ -35,6 +40,7 @@ class BloxIteratorComm(object):
             redis_host=redis_host, redis_port=redis_port
         )
         self.data_relay.reset_keys(self.jobid)
+        self.rank = rank
         self.job_launch_notify()
         return None
 
@@ -47,7 +53,22 @@ class BloxIteratorComm(object):
         Return:
             lease_status: True if the job still has lease
         """
+        # check lease status first
         lease_status = self.data_relay.get_lease_status(self.jobid, iteration)
+        # if lease status
+        if self.rank == 0:
+            rank_0_lease_status = self.data_relay.get_lease_status_rank0(
+                self.job_id, iteration
+            )
+            if rank_0_lease_status == False:
+                ## this is rank 0 and we need to notify other peer nodes that lease has expired
+                # get ip address as well
+                ipaddress = self.data_relay.get_peer_ipaddress_rank0(self.job_id)
+                for ipaddr in ipaddress:
+                    with grpc.insecure_channel(ipaddr) as channel:
+                        stub = nm_pb2_grpc.NMServerStub(channel)
+                        response = stub.TerminateJobfromPeer(terminate_request)
+
         print("Job ID {}".format(lease_status))
         return lease_status
 

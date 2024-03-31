@@ -5,6 +5,7 @@ import "rm.proto";
 service NMServer {
   rpc LaunchJob(JsonResponse) returns(BooleanResponse) {}
   rpc TerminateJob(JsonResponse) returns(BooleanResponse) {}
+  rpc TerminateJobfromPeer(JsonResponse) returns(BooleanResponse) {}
   rpc GetMetrics(JsonResponse) returns (JsonResponse) {}
   rpc SetMetrics(JsonResponse) returns (BooleanResponse) {}
   rpc GetLease(JsonResponse) returns (BooleanResponse) {}

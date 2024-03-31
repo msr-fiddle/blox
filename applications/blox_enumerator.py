@@ -3,10 +3,15 @@ from blox.deployment import grpc_client_blox_iterator as bloxComm
 
 
 class bloxEnumerate(enumerate):
-    def __init__(self, x, jid, start=0):
+    def __init__(self, x, jid, rank, start=0):
+        """
+        x: Number of iterations
+        jid: Job ID
+        rank: Rank distributed
+        """
         self.x_ = x
         self.len_ = len(x)
-        self._rpc_client = bloxComm.BloxIteratorComm(jid)
+        self._rpc_client = bloxComm.BloxIteratorComm(jid, rank)
 
     def __next__(self):
         # check lease

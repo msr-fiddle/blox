@@ -107,7 +107,8 @@ class ResourceManagerComm(object):
     def terminate_jobs(
         self,
         job_id_list: List[int],
-        ipaddr_list: List[str],
+        terminate_rank_0_ipaddr: List[int],
+        all_ipaddr_list: List[str],
         terminate_simulation: List[bool],
     ) -> None:
         """
@@ -123,14 +124,19 @@ class ResourceManagerComm(object):
         # TODO: Multithread this
         print("In terminate simulation")
         print("job id list {}".format(job_id_list))
-        for job_id, ipaddr, simulation in zip(
-            job_id_list, ipaddr_list, terminate_simulation
+        assert len(job_id_list) == len(terminate_simulation)
+        assert len(job_id_list) == len(terminate_rank_0_ipaddr)
+        assert len(job_id_list) == len(all_ipaddr_list)
+
+        for job_id, rank_0_ipaddr, all_ip_addr, simulation in zip(
+            job_id_list, terminate_rank_0_ipaddr, ipaddr_list, terminate_simulation
         ):
             if not simulation:
-                # only launch termination if false
                 ipaddr = f"{ipaddr}:{self.rpc_port}"
                 terminate_request = rm_pb2.JsonResponse()
-                terminate_request.response = json.dumps({"Job_ID": job_id})
+                terminate_request.response = json.dumps(
+                    {"Job_ID": job_id, "IP_addr_terminate": all_ip_addr}
+                )
                 # TODO: Add simulator
                 print("Called Terminate for job id {}".format(job_id))
                 with grpc.insecure_channel(ipaddr) as channel:
