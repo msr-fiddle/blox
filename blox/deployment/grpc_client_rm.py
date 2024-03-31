@@ -134,6 +134,8 @@ class ResourceManagerComm(object):
             if not simulation:
                 ipaddr = f"{rank_0_ipaddr}:{self.rpc_port}"
                 terminate_request = rm_pb2.JsonResponse()
+
+                all_ip_addr = [f"{all_ip}:{self.rpc_port}" for all_ip in all_ip_addr]
                 terminate_request.response = json.dumps(
                     {"Job_ID": job_id, "IP_addr_terminate": all_ip_addr}
                 )
