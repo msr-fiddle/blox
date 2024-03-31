@@ -97,7 +97,7 @@ class DataRelay(object):
             status = str(status)
             print("Setting status {} job id {}".format(status, job_id))
             self.redis_client.set(key_to_set, status)
-            self.redis_client.set(key_to_set_ipaddr, ipaddr_to_terminate)
+            self.redis_client.set(key_to_set_ipaddr, json.dumps(ipaddr_to_terminate))
         # else:
         # self.data_dict[key_to_set] = status
 

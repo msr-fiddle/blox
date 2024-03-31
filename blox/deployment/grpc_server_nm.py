@@ -69,9 +69,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         # check if all previous jobs have terminated
         self.ensure_terminate_status()
         self.local_data_store.set_lease_status(received_job["job_id"], True)
-        self.local_data_store.set_lease_status_rank0(
-            received_job["job_id"], json.dumps([]), True
-        )
+        self.local_data_store.set_lease_status_rank0(received_job["job_id"], [], True)
         self.local_data_store.set_job_status(received_job["job_id"], "running")
         # os.environ["BLOX_JOB_ID"] = str(received_job["job_id"])
         # os.environ["GPU_ID"] = str(received_job["local_GPU_ID"])
@@ -112,9 +110,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         """
         print("Called Terminate")
         job_id_to_terminate = json.loads(request.response)["Job_ID"]
-        ipaddr_to_terminate = json.dumps(
-            json.loads(request.response)["IP_addr_terminate"]
-        )  # you know what you know !!
+        ipaddr_to_terminate = json.loads(request.response)["IP_addr_terminate"]
         print("Terminate Job {}".format(job_id_to_terminate))
         self.job_terminate_ids.append(job_id_to_terminate)
         self.local_data_store.set_lease_status_rank0(
