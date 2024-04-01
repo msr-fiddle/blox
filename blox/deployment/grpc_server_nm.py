@@ -237,7 +237,7 @@ def server(node_manager_port: int):
     Node Manager Port
     node_manager_port (int): Node Manager Port
     """
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=20))
     rm_pb2_grpc.add_RMServerServicer_to_server(NMServer(), server)
     server.add_insecure_port(f"[::]:{node_manager_port}")
     server.start()
