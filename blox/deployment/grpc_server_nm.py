@@ -66,6 +66,8 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
             all_terminated = True
             terminated_job_lists = self.local_data_store.get_terminated_jobs()
             all_job_to_terminate = self.local_data_store.get_jobs_to_terminate()
+            print("Terminated job list {}".format(terminated_job_list))
+            print("All jobs to terminate {}".format(all_job_to_terminate))
             for terminate_id in all_job_to_terminate:
                 if terminate_id not in terminated_job_lists:
                     all_terminated = False
