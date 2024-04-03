@@ -157,8 +157,8 @@ class DataRelay(object):
         Push jobs to terminate
         """
 
-        self.redis_client.rpush("terminated_jobs", job_id)
-        return None
+        out = self.redis_client.rpush("terminated_jobs", job_id)
+        return out
 
     def get_terminated_jobs(self) -> None:
         """
