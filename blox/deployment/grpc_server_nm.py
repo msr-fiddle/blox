@@ -50,6 +50,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
                 time.sleep(1)
                 job_status = self.local_data_store.get_job_status(jid_to_test)
             self.push_terminated_jobs(jid_to_test)
+            jid_to_test = self.node_data_relay.get_job_ids_to_check_terminate()
         # all workers are done with checking if each individual job has finished.
 
         # now we need to make sure all jobs have been finished
