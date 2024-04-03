@@ -43,29 +43,29 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         Check if all jobs in the terminate list have terminated before finishing the launch.
         """
         print("Ensuring previous round has terminated")
-        jid_to_test = self.node_data_relay.get_job_ids_to_check_terminate()
+        jid_to_test = self.local_data_store.get_job_ids_to_check_terminate()
         while jid_to_test is not None:
             job_status = self.local_data_store.get_job_status(jid_to_test)
             while job_status != "exit":
                 time.sleep(1)
                 job_status = self.local_data_store.get_job_status(jid_to_test)
-            out_val = self.node_data_relay.push_terminated_jobs(jid_to_test)
-            jid_to_test = self.node_data_relay.get_job_ids_to_check_terminate()
+            out_val = self.local_data_store.push_terminated_jobs(jid_to_test)
+            jid_to_test = self.local_data_store.get_job_ids_to_check_terminate()
         # all workers are done with checking if each individual job has finished.
 
         # now we need to make sure all jobs have been finished
         # this involves combining two lists
 
-        terminated_job_lists = self.node_data_relay.get_terminated_jobs()
-        all_job_to_terminate = self.node_data_relay.get_jobs_to_terminate()
+        terminated_job_lists = self.local_data_store.get_terminated_jobs()
+        all_job_to_terminate = self.local_data_store.get_jobs_to_terminate()
 
         # time to check if elements are all there
         all_terminate_false = False
 
         while not all_terminated:
             all_terminated = True
-            terminated_job_lists = self.node_data_relay.get_terminated_jobs()
-            all_job_to_terminate = self.node_data_relay.get_jobs_to_terminate()
+            terminated_job_lists = self.local_data_store.get_terminated_jobs()
+            all_job_to_terminate = self.local_data_store.get_jobs_to_terminate()
             for terminate_id in all_job_to_terminate:
                 if terminate_id not in terminated_job_list:
                     all_terminated = False
