@@ -160,12 +160,12 @@ class DataRelay(object):
         out = self.redis_client.rpush("terminated_jobs", job_id)
         return out
 
-    def get_terminated_jobs(self) -> None:
+    def get_terminated_jobs(self) -> List[str]:
         """
         Return terminated job list
         """
         terminated_job_list = self.redis_client.lrange("terminated_jobs", 0, -1)
-        return terminated_jobs
+        return terminated_job_list
 
     def get_jobs_to_terminate(self) -> None:
         """

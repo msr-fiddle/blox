@@ -56,18 +56,18 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         # now we need to make sure all jobs have been finished
         # this involves combining two lists
 
-        terminated_job_lists = self.local_data_store.get_terminated_jobs()
-        all_job_to_terminate = self.local_data_store.get_jobs_to_terminate()
+        # terminated_job_lists = self.local_data_store.get_terminated_jobs()
+        # all_job_to_terminate = self.local_data_store.get_jobs_to_terminate()
 
         # time to check if elements are all there
-        all_terminate_false = False
+        all_terminated = False
 
         while not all_terminated:
             all_terminated = True
             terminated_job_lists = self.local_data_store.get_terminated_jobs()
             all_job_to_terminate = self.local_data_store.get_jobs_to_terminate()
             for terminate_id in all_job_to_terminate:
-                if terminate_id not in terminated_job_list:
+                if terminate_id not in terminated_job_lists:
                     all_terminated = False
                     time.sleep(1)
         print("All jobs terminated")
