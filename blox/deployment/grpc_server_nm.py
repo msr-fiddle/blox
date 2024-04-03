@@ -64,6 +64,14 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
 
         while not all_terminated:
             all_terminated = True
+            jid_to_test = self.local_data_store.get_job_ids_to_check_terminate()
+            while jid_to_test is not None:
+                job_status = self.local_data_store.get_job_status(jid_to_test)
+                while job_status != "exit":
+                    time.sleep(1)
+                    job_status = self.local_data_store.get_job_status(jid_to_test)
+                out_val = self.local_data_store.push_terminated_jobs(jid_to_test)
+                jid_to_test = self.local_data_store.get_job_ids_to_check_terminate()
             terminated_job_lists = self.local_data_store.get_terminated_jobs()
             all_job_to_terminate = self.local_data_store.get_jobs_to_terminate()
             print("Terminated job list {}".format(terminated_job_list))
@@ -171,6 +179,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         self.local_data_store.delete_all_job_terminate_list()
         received_job = json.loads(request.response)
         job_data = self.local_data_store.get_job_metrics(received_job["Job_ID"])
+        self.local_data_store.push_job_to_terminate(job_id_to_terminate)
         # data_to_send = dict()
         # data_to_send[received_job["Job_ID"]] = job_data
         print("Got Job metrics")
