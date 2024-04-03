@@ -42,6 +42,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         """
         Check if all jobs in the terminate list have terminated before finishing the launch.
         """
+        print("Ensuring previous round has terminated")
         jid_to_test = self.node_data_relay.get_job_ids_to_check_terminate()
         while jid_to_test is not None:
             job_status = self.local_data_store.get_job_status(jid_to_test)
