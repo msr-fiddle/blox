@@ -154,6 +154,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         ipaddr_to_terminate = json.loads(request.response)["IP_addr_terminate"]
         print("Terminate Job {}".format(job_id_to_terminate))
         # self.job_terminate_ids.append(job_id_to_terminate)
+        self.local_data_store.push_job_to_terminate(job_id_to_terminate)
         self.local_data_store.set_lease_status_rank0(
             job_id_to_terminate, ipaddr_to_terminate, False
         )
@@ -179,7 +180,6 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         self.local_data_store.delete_all_job_terminate_list()
         received_job = json.loads(request.response)
         job_data = self.local_data_store.get_job_metrics(received_job["Job_ID"])
-        self.local_data_store.push_job_to_terminate(job_id_to_terminate)
         # data_to_send = dict()
         # data_to_send[received_job["Job_ID"]] = job_data
         print("Got Job metrics")
