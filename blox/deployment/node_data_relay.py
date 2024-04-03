@@ -152,6 +152,57 @@ class DataRelay(object):
             print(f"Key {job_id}_metrics")
         return None
 
+    def push_terminated_jobs(self, job_id: int) -> None:
+        """
+        Push jobs to terminate
+        """
+
+        self.redis_client.rpush("terminated_jobs", job_id)
+        return None
+
+    def get_terminated_jobs(self) -> None:
+        """
+        Return terminated job list
+        """
+        terminated_job_list = self.redis_client.lrange("terminated_jobs", 0, -1)
+        return terminated_jobs
+
+    def get_jobs_to_terminate(self) -> None:
+        """
+        Return jobs to terminate
+        """
+
+        all_job_to_terminate = self.redis_client.lrange("all_job_terminate_list", 0, -1)
+        return all_job_to_terminate
+
+    def get_job_ids_to_check_terminate(self) -> None:
+        """
+        Get Job IDs to terminate
+        """
+        jid = self.redis_client.lpop("job_check_list")
+        return jid
+
+    def delete_all_job_terminate_list(self) -> None:
+        """
+        Delete the job terminate list list
+        """
+        self.redis_client.delete("terminated_jobs")
+        self.redis_client.delete("all_job_terminate_list")
+        return None
+
+    def push_job_to_terminate(self, job_id: int) -> None:
+        """
+        This for pushing jobs to terminate.
+        Writes two lists, "all_job_terminate_list" and "job_check_list".
+        The two of those are same uptil a point.
+        """
+        with self.redis_client.pipeline() as redis_pipe:
+            self.redis_client.rpush("all_job_terminate_list", job_id)
+            self.redis_client.rpush("job_check_list", job_id)
+            redis_pipe.execute()
+
+        return None
+
     def set_job_metrics_float(self, job_id: int, metrics: dict) -> None:
         """
         Set Job Metrics for float increment

@@ -34,7 +34,6 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         )
 
         # Will keep job terminate ids in this list
-        self.job_terminate_ids = list()
         # else:
         # # configuring local data store with python dict
         # self.local_data_store = DataRelay()
@@ -43,13 +42,43 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         """
         Check if all jobs in the terminate list have terminated before finishing the launch.
         """
-        if len(self.job_terminate_ids) > 0:
-            while len(self.job_terminate_ids) > 0:
-                jid_to_test = self.job_terminate_ids.pop()
+        jid_to_test = self.node_data_relay.get_job_ids_to_check_terminate()
+        while jid_to_test is not None:
+            job_status = self.local_data_store.get_job_status(jid_to_test)
+            while job_status != "exit":
+                time.sleep(1)
                 job_status = self.local_data_store.get_job_status(jid_to_test)
-                while job_status != "exit":
+            self.push_terminated_jobs(jid_to_test)
+        # all workers are done with checking if each individual job has finished.
+
+        # now we need to make sure all jobs have been finished
+        # this involves combining two lists
+
+        terminated_job_lists = self.node_data_relay.get_terminated_jobs()
+        all_job_to_terminate = self.node_data_relay.get_jobs_to_terminate()
+
+        # time to check if elements are all there
+        all_terminate_false = False
+
+        while not all_terminated:
+            all_terminated = True
+            terminated_job_lists = self.node_data_relay.get_terminated_jobs()
+            all_job_to_terminate = self.node_data_relay.get_jobs_to_terminate()
+            for terminate_id in all_job_to_terminate:
+                if terminate_id not in terminated_job_list:
+                    all_terminated = False
                     time.sleep(1)
-                    job_status = self.local_data_store.get_job_status(jid_to_test)
+        print("All jobs terminated")
+
+        return None
+
+        # if len(self.job_terminate_ids) > 0:
+        # while len(self.job_terminate_ids) > 0:
+        # jid_to_test = self.job_terminate_ids.pop()
+        # job_status = self.local_data_store.get_job_status(jid_to_test)
+        # while job_status != "exit":
+        # time.sleep(1)
+        # job_status = self.local_data_store.get_job_status(jid_to_test)
 
     def LaunchJob(self, request, context) -> rm_pb2.BooleanResponse:
         """
@@ -112,7 +141,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         job_id_to_terminate = json.loads(request.response)["Job_ID"]
         ipaddr_to_terminate = json.loads(request.response)["IP_addr_terminate"]
         print("Terminate Job {}".format(job_id_to_terminate))
-        self.job_terminate_ids.append(job_id_to_terminate)
+        # self.job_terminate_ids.append(job_id_to_terminate)
         self.local_data_store.set_lease_status_rank0(
             job_id_to_terminate, ipaddr_to_terminate, False
         )
@@ -121,11 +150,13 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
     def TerminateJobfromPeer(self, request, context) -> rm_pb2.BooleanResponse:
         """
         Terminate a job. Whose termination direction is recieved from peers
+        Note: Every job is terminated by call from peer. This is called from Rank0
         """
         print("Called Terminate from Peer")
         job_id_to_terminate = json.loads(request.response)["Job_ID"]
         print("Terminate Job {}".format(job_id_to_terminate))
-        self.job_terminate_ids.append(job_id_to_terminate)
+        # self.job_terminate_ids.append(job_id_to_terminate)
+        self.local_data_store.push_job_to_terminate(job_id_to_terminate)
         self.local_data_store.set_lease_status(job_id_to_terminate, False)
         return rm_pb2.BooleanResponse(value=True)
 
@@ -133,6 +164,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         """
         Return metrics as requested by resource manager
         """
+        self.local_data_store.delete_all_job_terminate_list()
         received_job = json.loads(request.response)
         job_data = self.local_data_store.get_job_metrics(received_job["Job_ID"])
         # data_to_send = dict()
