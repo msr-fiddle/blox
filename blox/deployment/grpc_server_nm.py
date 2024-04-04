@@ -150,7 +150,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         This is has been called by the node manager
         """
         print("Called Terminate")
-        all_job_ids_to_terminate = json.loads(request.response)["Job_ID"]
+        all_job_ids_to_terminate = json.loads(request.response)["Job_ID_list"]
         all_corresponding_ip_address_to_terminate = json.loads(request.response)[
             "IP_addr_terminate"
         ]
