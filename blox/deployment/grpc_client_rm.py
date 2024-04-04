@@ -154,7 +154,12 @@ class ResourceManagerComm(object):
             )
             # TODO: Add simulator
 
-            print("Called Terminate for job id {}".format(job_id))
+            print("Called Terminate for ip address {}".format(send_ip_address))
+            print("Terminating job ids {}".format(send_request_dict[send_ip_address]))
+            print(
+                "IP_addr_terminate {}".format(other_ip_address_to_send[send_ip_address])
+            )
+
             with grpc.insecure_channel(send_ip_address) as channel:
                 stub = nm_pb2_grpc.NMServerStub(channel)
                 response = stub.TerminateJob(terminate_request)
