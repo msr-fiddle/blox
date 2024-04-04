@@ -150,14 +150,20 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         This is has been called by the node manager
         """
         print("Called Terminate")
-        job_id_to_terminate = json.loads(request.response)["Job_ID"]
-        ipaddr_to_terminate = json.loads(request.response)["IP_addr_terminate"]
+        all_job_ids_to_terminate = json.loads(request.response)["Job_ID"]
+        all_corresponding_ip_address_to_terminate = json.loads(request.response)[
+            "IP_addr_terminate"
+        ]
         print("Terminate Job {}".format(job_id_to_terminate))
         # self.job_terminate_ids.append(job_id_to_terminate)
-        self.local_data_store.push_job_to_terminate(job_id_to_terminate)
-        self.local_data_store.set_lease_status_rank0(
-            job_id_to_terminate, ipaddr_to_terminate, False
+
+        self.local_data_store.set_lease_status_rank0_batch_false(
+            all_job_ids_to_terminate, all_corresponding_ip_address_to_terminate
         )
+        # self.local_data_store.push_job_to_terminate(job_id_to_terminate)
+        # self.local_data_store.set_lease_status_rank0(
+        # job_id_to_terminate, ipaddr_to_terminate, False
+        # )
         return rm_pb2.BooleanResponse(value=True)
 
     def TerminateJobfromPeer(self, request, context) -> rm_pb2.BooleanResponse:

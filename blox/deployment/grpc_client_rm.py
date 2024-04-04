@@ -5,6 +5,7 @@ import grpc
 import logging
 from typing import List
 from concurrent import futures
+from collections import defaultdict
 
 sys.path.append(os.path.join((__file__), "./grpc_stubs"))
 import nm_pb2
@@ -128,23 +129,35 @@ class ResourceManagerComm(object):
         assert len(job_id_list) == len(terminate_rank_0_ipaddr)
         assert len(job_id_list) == len(all_ipaddr_list)
 
+        send_request_dict = defaultdict(list)
+        other_ip_address_to_send = defaultdict(list)
         for job_id, rank_0_ipaddr, all_ip_addr, simulation in zip(
             job_id_list, terminate_rank_0_ipaddr, all_ipaddr_list, terminate_simulation
         ):
+
             if not simulation:
                 all_ip_addr = [f"{all_ip}:{self.rpc_port}" for all_ip in all_ip_addr]
+
                 for send_ip_address in all_ip_addr:
                     # ipaddr = f"{send_ip_address}:{self.rpc_port}"
-                    terminate_request = rm_pb2.JsonResponse()
+                    send_request_dict[send_ip_address].append(job_id)
+                    other_ip_address_to_send[send_ip_address].append(all_ipaddr_list)
 
-                    terminate_request.response = json.dumps(
-                        {"Job_ID": job_id, "IP_addr_terminate": all_ip_addr}
-                    )
-                    # TODO: Add simulator
-                    print("Called Terminate for job id {}".format(job_id))
-                    with grpc.insecure_channel(send_ip_address) as channel:
-                        stub = nm_pb2_grpc.NMServerStub(channel)
-                        response = stub.TerminateJob(terminate_request)
+        for send_ip_address in send_request_dict:
+            terminate_request = rm_pb2.JsonResponse()
+
+            terminate_request.response = json.dumps(
+                {
+                    "Job_ID_list": send_request_dict[send_ip_address],
+                    "IP_addr_terminate": other_ip_address_to_send[send_ip_address],
+                }
+            )
+            # TODO: Add simulator
+
+            print("Called Terminate for job id {}".format(job_id))
+            with grpc.insecure_channel(send_ip_address) as channel:
+                stub = nm_pb2_grpc.NMServerStub(channel)
+                response = stub.TerminateJob(terminate_request)
         return None
 
     def get_metrics(

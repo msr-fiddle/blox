@@ -190,6 +190,25 @@ class DataRelay(object):
         self.redis_client.delete("all_job_terminate_list")
         return None
 
+    def set_lease_status_rank0_batch_false(
+        self, job_id_list: List[int], corresponding_ip_list: List[int]
+    ) -> None:
+        """
+        Pushes in a batch
+        """
+        with self.redis_client.pipeline() as redis_pipe:
+            for job_id, corresponding_ips in zip(job_id_list, corresponding_ip_list):
+                redis_pipe.rpush("all_job_terminate_list", job_id)
+                redis_pipe.rpush("job_check_list", job_id)
+                key_to_set = f"{job_id}_lease_rank0"
+                key_to_set_ipaddr = f"{job_id}_terminate_ips"
+                status = str(False)
+                redis_pipe.set(key_to_set, status)
+                redis_pipe.set(key_to_set_ipaddr, json.dumps(corresponding_ips))
+                print("Setting status {} job id {}".format(status, job_id))
+            redis_pipe.execute()
+        return None
+
     def push_job_to_terminate(self, job_id: int) -> None:
         """
         This for pushing jobs to terminate.
