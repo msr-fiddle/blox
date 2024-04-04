@@ -154,7 +154,7 @@ class NMServer(nm_pb2_grpc.NMServerServicer):
         all_corresponding_ip_address_to_terminate = json.loads(request.response)[
             "IP_addr_terminate"
         ]
-        print("Terminate Job {}".format(job_id_to_terminate))
+        print("Terminate Job {}".format(all_job_to_terminate))
         # self.job_terminate_ids.append(job_id_to_terminate)
 
         self.local_data_store.set_lease_status_rank0_batch_false(
