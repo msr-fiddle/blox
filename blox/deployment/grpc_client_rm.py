@@ -141,7 +141,7 @@ class ResourceManagerComm(object):
                 for send_ip_address in all_ip_addr:
                     # ipaddr = f"{send_ip_address}:{self.rpc_port}"
                     send_request_dict[send_ip_address].append(job_id)
-                    other_ip_address_to_send[send_ip_address].append(all_ipaddr_list)
+                    other_ip_address_to_send[send_ip_address].append(send_ip_address)
 
         for send_ip_address in send_request_dict:
             terminate_request = rm_pb2.JsonResponse()
