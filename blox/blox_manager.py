@@ -44,7 +44,7 @@ class BloxManager(object):
         self.server, self.rmserver = launch_server(
             rm_server_rpc_port=args.central_scheduler_port,
             simulator_rpc_port=args.simulator_rpc_port,
-        )
+        ) # XY: launch rm_servor
         self.time = 0
         self.terminate = False
         return None
@@ -529,7 +529,7 @@ def launch_server(
         server : GRPC server object
         rmserver : The class object to work with rmserver
     """
-    rmserver = rm_serve.RMServer(simulator_rpc_port=simulator_rpc_port)
-    server = rm_serve.start_server(rmserver, rm_server_rpc_port=rm_server_rpc_port)
+    rmserver = rm_serve.RMServer(simulator_rpc_port=simulator_rpc_port) # XY: grpc_server_rm.RMServer; this class has methods that call the simulator server
+    server = rm_serve.start_server(rmserver, rm_server_rpc_port=rm_server_rpc_port) # XY: grpc_server_rm.start_server; this starts a rm_server which has the rmserver as its servicer
     print("Server started")
     return server, rmserver

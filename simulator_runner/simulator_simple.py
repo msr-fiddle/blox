@@ -100,7 +100,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         try:
             job_config = self.simulator_config.pop(0)
             # setup new workload
-            self.workload = self._generate_workload(job_config)
+            self.workload = self._generate_workload(job_config) # XY: a list of jobs will be created 
             job_config_send = rm_pb2.JsonResponse()
             job_config_send.response = json.dumps(job_config)
             self.setup_cluster()
@@ -152,7 +152,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
                     jcounter += 1
                 if new_job_dict["job_arrival_time"] > simulator_time:
                     # no more jobs for next time
-                    print("returning previos job")
+                    print("returning previous job")
                     valid_jobs = rm_pb2.JsonResponse()
                     valid_jobs.response = json.dumps(job_to_run_dict)
                     self.prev_job = new_job_dict
@@ -319,8 +319,8 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         # set the random seed before generating the workload
         random.seed(self.random_seed)
         # print("After random seed")
-        return Workload(
-            self.cluster_job_log,
+        return Workload(# a list of jobs will be created here
+            self.cluster_job_log, # XY: when this is None, will get "synthetic" workload
             jobs_per_hour=workload_config["load"],
             exponential=self.exponential,
             multigpu=self.multigpu,
@@ -433,7 +433,7 @@ def launch_server(args) -> grpc.Server:
     simulator_pb2_grpc.add_SimServerServicer_to_server(
         SimulatorRunner(
             args.cluster_job_log,
-            np.arange(args.jobs_per_hour, args.jobs_per_hour + 1, 1.0).tolist(),
+            np.arange(args.jobs_per_hour, args.jobs_per_hour + 1, 1.0).tolist(), # XY: self.list_jobs_per_hour
             (args.start_job_track, args.end_job_track),
             [
                 "Las",
@@ -444,7 +444,7 @@ def launch_server(args) -> grpc.Server:
         ),
         server,
     )
-    server.add_insecure_port(f"[::]:{args.simulator_rpc_port}")
+    server.add_insecure_port(f"[::]:{args.simulator_rpc_port}") # XY: 50050
     server.start()
     print("Print Server started")
     return server

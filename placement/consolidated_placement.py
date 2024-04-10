@@ -32,7 +32,7 @@ class ConsolidatedPlacement(JobPlacement):
         jobs_to_terminate = list()
         job_to_launch = dict()
         launched_job_ids = list()
-        for idx, job_id in enumerate(job_order):
+        for idx, job_id in enumerate(job_order): # XY: where is job_order defined, should it be new_job_schedule??
             job_id, _ = job_id
             job = active_jobs[job_id]
             found = False
@@ -43,7 +43,7 @@ class ConsolidatedPlacement(JobPlacement):
             if job["is_running"] == False:
                 # need to find placement since the job is not running
 
-                free_gpus = utils.find_free_gpus(gpu_df)
+                free_gpus = utils.find_free_gpus(gpu_df) # XY: this determines the format of the returned "job_to_launch"
                 placement, found = self._consolidated_placement(job, free_gpus)
                 if not found:
                     # no free GPUs, need to remove GPUs for the training

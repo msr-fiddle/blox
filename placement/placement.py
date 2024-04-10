@@ -10,7 +10,7 @@ class JobPlacement(object):
     @staticmethod
     def copy_arguments(function):
         def function_wrapper(
-            self, job_state, cluster_state, new_job_schedule, **kwargs
+            self, job_state, cluster_state, new_job_schedule, **kwargs # XY: note the order of arguments changed here
         ):
             return function(
                 self,
@@ -39,7 +39,7 @@ class JobPlacement(object):
         # gpu_df
 
         """
-        job_order = new_job_schedule["job_order"]
+        job_order = new_job_schedule["job_order"] # XY: this determines the format of job_to_terminate
         scheduler = new_job_schedule.get("scheduler")
         jobs_to_terminate = list()
         job_to_launch = dict()
@@ -144,6 +144,11 @@ class JobPlacement(object):
             # accel_sorted_by_pref - key: gpu_type, val: list of job ids sorted
             # by decreasing preference
 
+        if scheduler == "Pollux":
+            """
+            TODO
+            """
+
         if scheduler is None:
             running_jobs = 0
             new_scheduled_jobs = 0
@@ -163,7 +168,7 @@ class JobPlacement(object):
                     )
 
                     # first checking if there are free GPUs
-                    free_gpus = find_free_GPUs(gpu_df)
+                    free_gpus = find_free_GPUs(gpu_df) # XY: this determines the format of "job_to_launch"
                     if place_consolidated:
                         placement, found = self._consolidated_placement(job, free_gpus)
                     else:

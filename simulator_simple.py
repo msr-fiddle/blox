@@ -98,9 +98,12 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         """
         # get new job config
         try:
+            print(f"length of simulator_config is {len(self.simulator_config)}")
             job_config = self.simulator_config.pop(0)
+            
             # setup new workload
             self.workload = self._generate_workload(job_config)
+            print("self.workload finished")
             job_config_send = rm_pb2.JsonResponse()
             job_config_send.response = json.dumps(job_config)
             self.setup_cluster()
@@ -110,6 +113,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
             print("Job config {}".format(job_config))
             return job_config_send
         except IndexError:
+            print("IndexError occured")
             # list empty signal to terminate
             job_config = dict()
             job_config["scheduler"] = ""
@@ -398,7 +402,7 @@ def parse_args(parser):
     parser.add_argument(
         "--cluster-job-log",
         type=str,
-        default="",
+        default=None, # ""
         help="Name of the cluster log file to run",
     )
     parser.add_argument("--jobs-per-hour", type=int, default=5, help="Jobs per hour")

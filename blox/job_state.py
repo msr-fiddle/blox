@@ -26,12 +26,27 @@ class JobState(object):
         # self.blr = blox_resource_manager
         # dict of active jobs
         self.active_jobs = dict()
+        """
+        XY: dict of dict, jid -> job info, which include
+        "tracked_metrics": dict
+            "per_iter_time": float - mean updated
+            "attained_service": float - additively updated
+            "iter num": int - additively updated
+            "attained_service_scheduler": - updated using "round_duration" * "numGPUs"
+        "time_since_scheduled": int
+        "job_priority": int
+        "previously_launched": boolean
+        "is_running": boolean
+        "simulation": boolean
+        "running_ip_address": 
+        "num_GPUs"
+        """
         # count number of accepted jobs
         self.job_counter = 0
         self.job_completion_stats = dict()
         self.job_responsiveness_stats = dict()
         self.cluster_stats = dict()
-        self.custom_metrics = dict()
+        self.custom_metrics = dict() # XY: may be useful
         self.job_runtime_stats = dict()
         self.finished_job = dict()  # keys are ids of the jobs which have finished
         self.job_ids_to_track = list(range(args.start_id_track, args.stop_id_track + 1))

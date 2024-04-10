@@ -21,7 +21,7 @@ def parse_args(parser):
     return a parser with arguments
     """
     parser.add_argument(
-        "--scheduler", default="Las", type=str, help="Name of the scheduling strategy"
+        "--scheduler", default="Pollux", type=str, help="Name of the scheduling strategy"
     )
 
     parser.add_argument(
@@ -43,14 +43,14 @@ def parse_args(parser):
 
     parser.add_argument(
         "--scheduler-name",
-        default="Las",
+        default="Pollux",
         type=str,
         help="Name of the scheduling strategy",
     )
 
     parser.add_argument(
         "--placement-name",
-        default="Las",
+        default="Pollux",
         type=str,
         help="Name of the scheduling strategy",
     )
@@ -88,16 +88,19 @@ def parse_args(parser):
 
 
 def main(args):
-    # The scheduler runs consolidated placement, with las scheduler and accept all placement policy
-    placement_policy = placement.JobPlacement(args) # XY: seems nothing done at init
-    # Running LAS scheduling policy
-    scheduling_policy = schedulers.Las(args)
+    # The scheduler runs Goodput optimizing scheduling and placement policy and accept all admission policy
+    # scheduling and placement policies are combined, both implemented in schedulers.Pollux()
+
+    # Running Pollux scheduling policy
+    # placement_policy = placement.JobPlacement(args)  # XY: seems nothing done at init
+    scheduling_policy = schedulers.Pollux(args)
     admission_policy = admission_control.acceptAll(args)
     if args.simulate:
-        # for simulation we get the config from the simulator
-        # The config helps in providing file names and intialize
+        # for simulation, we get the config from the simulator
+        # The config helps in providing file names and initialize
         blox_instance = BloxManager(args)
-        new_config = blox_instance.rmserver.get_new_sim_config() # XY: calls simulator server to get sim_config, i.e., simulator_simple.GetConfig
+        # XY: calls simulator server to get sim_config, i.e., simulator_simple.GetConfig
+        new_config = blox_instance.rmserver.get_new_sim_config()
         print(f"New config {new_config}")
         if args.scheduler_name == "":
             # terminate the blox instance before exiting
@@ -130,10 +133,18 @@ def main(args):
                 break
             blox_instance.update_cluster(cluster_state)
             blox_instance.update_metrics(cluster_state, job_state)
-            new_jobs = blox_instance.pop_wait_queue(args.simulate) # XY: will call blox manager, which will call simulator server to GetJobs, will get a dict of job_to_run
+            # XY: call blox manager, which will call simulator server to GetJobs, will get a dict of job_to_run
+            new_jobs = blox_instance.pop_wait_queue(args.simulate)
             # get simulator jobs
             accepted_jobs = admission_policy.accept(new_jobs, cluster_state, job_state)
             job_state.add_new_jobs(accepted_jobs)
+
+            ### XY: call Pollux scheduler_placement
+            # Input: job_state, cluster_state
+            # Output: to_suspend, to_launch
+
+            to_suspend, to_launch = scheduling_policy.schedule(job_state, cluster_state)
+
             new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
             # prune jobs - get rid of finished jobs
             utils.prune_jobs(job_state, cluster_state, blox_instance)
@@ -143,6 +154,8 @@ def main(args):
             to_suspend, to_launch = placement_policy.place(
                 job_state, cluster_state, new_job_schedule
             )
+
+            ### XY: end call Pollux scheduler_placement
 
             utils.collect_custom_metrics(
                 job_state, cluster_state, {"num_preemptions": len(to_suspend)}
