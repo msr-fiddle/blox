@@ -14,7 +14,7 @@ import admission_control
 from blox import ClusterState, JobState, BloxManager
 import blox.utils as utils
 
-
+from schedulers.pollux_exe.utils import update_allocation_info
 def parse_args(parser):
     """
     parser : argparse.ArgumentParser
@@ -174,26 +174,13 @@ def main(args):
             blox_instance.exec_jobs(to_launch, to_suspend, cluster_state, job_state)
 
             # XY: Update job and cluster metrics according to the new allocation
-            if schedule_info["allocations"]:
-                for jid in job_state.active_jobs:
-                    job = job_state.active_jobs[jid]["tracked_metrics"]["pollux_metrics"]
-                    if schedule_info["allocations"].get(job.name) != cluster_state.allocations.get(job.name):
-                        alloc = schedule_info["allocations"].get(job.name, [])
-                        placement = []
-                        for i in range(len(alloc)):
-                            if i == 0 or alloc[i] != alloc[i - 1]:
-                                placement.append(1)
-                            else:
-                                placement[-1] += 1
-                        job.reallocate(placement)
-                cluster_state.allocations = schedule_info["allocations"]
+            update_allocation_info(schedule_info["allocations"], job_state, cluster_state)
 
             # update time
             simulator_time += args.round_duration
             job_state.time += args.round_duration
             cluster_state.time += args.round_duration
             blox_instance.time += args.round_duration
-
 
 if __name__ == "__main__":
     args = parse_args(

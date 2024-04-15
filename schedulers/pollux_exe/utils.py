@@ -46,3 +46,19 @@ class NodeInfo(object):
         """
         self.resources = resources
         self.preemptible = preemptible
+
+
+def update_allocation_info(allocations: dict, job_state, cluster_state):
+    if allocations:
+        for jid in job_state.active_jobs:
+            job = job_state.active_jobs[jid]["tracked_metrics"]["pollux_metrics"]
+            if allocations.get(job.name) != cluster_state.allocations.get(job.name):
+                alloc = allocations.get(job.name, [])
+                placement = []
+                for i in range(len(alloc)):
+                    if i == 0 or alloc[i] != alloc[i - 1]:
+                        placement.append(1)
+                    else:
+                        placement[-1] += 1
+                job.reallocate(placement)
+        cluster_state.allocations = allocations

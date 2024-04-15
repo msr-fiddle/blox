@@ -366,6 +366,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         for _ in range(self.number_of_machines):
             count += 1
             request_to_rm = rm_pb2.RegisterRequest()
+            # XY: the node attributes below are used as arguments (dict form) in cluster_state.update
             request_to_rm.ipaddr = ""
             request_to_rm.numGPUs = self.gpus_per_machine
             request_to_rm.gpuUUIDs = "\n".join(
