@@ -58,8 +58,8 @@ class Pollux(SchedulingPolicy):
         # call pollux.optimize(jobs, nodes, base_allocations)
         schedule_info = dict()
         schedule_info ["allocations"] = dict()
-        schedule_info["to_suspend"] = dict()
-        schedule_info["to_launch"] = dict()
+        schedule_info["to_suspend"] = list() # list of jid
+        schedule_info["to_launch"] = dict() # jid -> ...
 
         if job_infos:
             results = self.engine.optimize(job_infos, nodes,
@@ -74,5 +74,10 @@ class Pollux(SchedulingPolicy):
             """
             Assign to_suspend, to_launch
             """
+            for jid in job_dict:
+                if jid not in new_allocations:
+                    schedule_info["to_suspend"].append(jid)
+
+            # to_launch will likely require nodes object
 
         return schedule_info

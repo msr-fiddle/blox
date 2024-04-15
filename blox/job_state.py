@@ -38,10 +38,12 @@ class JobState(object):
             "attained_service": float - additively updated
             "iter num": int - additively updated
             "attained_service_scheduler": - updated using "round_duration" * "numGPUs"   
+            "job_exit": optional(boolean)
         "time_since_scheduled": int
         "job_priority": int
         "previously_launched": boolean
         "is_running": boolean
+        "suspended": int
         "simulation": boolean
         "running_ip_address": 
         "num_GPUs"  
@@ -49,7 +51,7 @@ class JobState(object):
         """
         # count number of accepted jobs
         self.job_counter = 0
-        self.job_completion_stats = dict()
+        self.job_completion_stats = dict() # XY: used when job finishes
         self.job_responsiveness_stats = dict()
         self.cluster_stats = dict()
         self.custom_metrics = dict()
