@@ -25,8 +25,9 @@ class Pollux(SchedulingPolicy):
         self,
         job_dict: dict, # XY: job_state.active_jobs
         simulator_time, # XY added
-        node_info: dict, # XY: cluster_state.server_map, use this as self.allocations in Pollux repo
+        node_info: dict, # XY: cluster_state.server_map
         gpu_df: pd.DataFrame, # XY: cluster_state.gpu_df
+        allocations: dict, # XY added
         global_placement_policy: Optional[str] = None,
     ) -> dict:
         # print(f"Job dict las {job_dict}")
@@ -62,13 +63,13 @@ class Pollux(SchedulingPolicy):
 
         if job_infos:
             results = self.engine.optimize(job_infos, nodes,
-                                           node_info, nodes[0])
-            allocations, desired_nodes = results
+                                           allocations, nodes[0])
+            new_allocations, desired_nodes = results
             # used_gpus = collections.Counter(sum(allocations.values(), []))
             # assert all(val <= node_infos[key].resources["nvidia.com/gpu"]
             #            for key, val in used_gpus.items())
 
-            schedule_info["allocations"] = allocations
+            schedule_info["allocations"] = new_allocations
 
             """
             Assign to_suspend, to_launch

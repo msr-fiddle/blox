@@ -177,7 +177,7 @@ def main(args):
             if schedule_info["allocations"]:
                 for jid in job_state.active_jobs:
                     job = job_state.active_jobs[jid]["tracked_metrics"]["pollux_metrics"]
-                    if schedule_info["allocations"].get(job.name) != cluster_state.server_map.get(job.name):
+                    if schedule_info["allocations"].get(job.name) != cluster_state.allocations.get(job.name):
                         alloc = schedule_info["allocations"].get(job.name, [])
                         placement = []
                         for i in range(len(alloc)):
@@ -186,7 +186,7 @@ def main(args):
                             else:
                                 placement[-1] += 1
                         job.reallocate(placement)
-                cluster_state.server_map = schedule_info["allocations"]
+                cluster_state.allocations = schedule_info["allocations"]
 
             # update time
             simulator_time += args.round_duration
