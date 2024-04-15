@@ -14,7 +14,7 @@ import admission_control
 from blox import ClusterState, JobState, BloxManager
 import blox.utils as utils
 
-
+from schedulers.pollux_exe.utils import update_allocation_info
 def parse_args(parser):
     """
     parser : argparse.ArgumentParser
@@ -82,6 +82,10 @@ def parse_args(parser):
     parser.add_argument(
         "--stop-id-track", type=int, default=4000, help="Stop ID to track"
     )
+    parser.add_argument(
+        "--interference", type=float, default=0.0, help="job slowdown due to interference, as used on Pollux"
+    )
+
 
     args = parser.parse_args()
     return args
@@ -138,22 +142,17 @@ def main(args):
             # get simulator jobs
             accepted_jobs = admission_policy.accept(new_jobs, cluster_state, job_state)
             job_state.add_new_jobs(accepted_jobs)
+            # prune jobs - get rid of finished jobs
+            utils.prune_jobs(job_state, cluster_state, blox_instance)
 
             ### XY: call Pollux scheduler_placement
             # Input: job_state, cluster_state
-            # Output: to_suspend, to_launch
+            # Output: a dict containing to_suspend, to_launch, allocations
 
-            to_suspend, to_launch = scheduling_policy.schedule(job_state, cluster_state)
+            schedule_info = scheduling_policy.schedule(job_state, cluster_state)
 
-            new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
-            # prune jobs - get rid of finished jobs
-            utils.prune_jobs(job_state, cluster_state, blox_instance)
-            # perform scheduling
-            new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
-            # get placement
-            to_suspend, to_launch = placement_policy.place(
-                job_state, cluster_state, new_job_schedule
-            )
+            to_suspend = schedule_info["to_suspend"]
+            to_launch = schedule_info["to_launch"]
 
             ### XY: end call Pollux scheduler_placement
 
@@ -166,12 +165,15 @@ def main(args):
             utils.track_finished_jobs(job_state, cluster_state, blox_instance)
             # execute jobs
             blox_instance.exec_jobs(to_launch, to_suspend, cluster_state, job_state)
+
+            # XY: Update job and cluster metrics according to the new allocation
+            update_allocation_info(schedule_info["allocations"], job_state, cluster_state)
+
             # update time
             simulator_time += args.round_duration
             job_state.time += args.round_duration
             cluster_state.time += args.round_duration
             blox_instance.time += args.round_duration
-
 
 if __name__ == "__main__":
     args = parse_args(

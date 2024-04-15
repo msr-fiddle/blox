@@ -60,7 +60,7 @@ class ModelZoo:
         self.next_class_idx = 0
 
         self.tasks = self.create_default_tasks()
-        self.model_zoo = self.create_default_models()
+        self.model_zoo = self.create_default_models() # XY: dictionary form model_id to model_name
         self.model_zoo_multigpu = self.create_models_multigpu()
 
         self.logger.info("Created a model zoo with {} models".format(len(self)))

@@ -12,8 +12,10 @@ class SchedulingPolicy(object):
             return function(
                 self,
                 job_state.active_jobs,
+                job_state.time, # XY added
                 cluster_state.server_map,
                 cluster_state.gpu_df,
+                cluster_state.allocations, # XY added
                 # **copy.deepcopy(kwargs)
             )
 
