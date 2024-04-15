@@ -144,11 +144,6 @@ class JobPlacement(object):
             # accel_sorted_by_pref - key: gpu_type, val: list of job ids sorted
             # by decreasing preference
 
-        if scheduler == "Pollux":
-            """
-            TODO
-            """
-
         if scheduler is None:
             running_jobs = 0
             new_scheduled_jobs = 0
