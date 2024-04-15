@@ -241,6 +241,26 @@ class BloxManager(object):
             "gpu_demand": gpu_demand,
         }
 
+        # XY: update Pollux specific metrics
+        if job_state.scheduler_name == "Pollux":
+            # find nodes used by more than one jobs
+            interfere_nodes = set(idx for idx in range(cluster_state.node_counter)
+                                  if sum(len(set(val)) > 1 and idx in val
+                                         for key, val in cluster_state.server_map.items()) > 1)
+
+            # update job_state.active_jobs["tracked_metrics"]["pollux_metrics"]
+            for jid in job_state.active_jobs:
+                job = job_state.active_jobs[jid]["tracked_metrics"]["pollux_metrics"]
+                alloc_set = set(cluster_state.server_map.get(job.name, []))
+                interference = 0.0
+                if len(alloc_set) > 1 and any(idx in interfere_nodes for idx in alloc_set):
+                    interference = job_state.interference
+                job.step(job_state.round_duration, interference=interference)
+
+            # this dict is the same of self.allocation in Pollux repo
+            cluster_state.server_map = {k: v for k, v in cluster_state.server_map.items() if
+                                        k in job_state.active_jobs}
+
         # find the jobs have been finished
         # print(
         # "Not finished job {}".format(

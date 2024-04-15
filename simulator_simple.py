@@ -156,7 +156,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
                     jcounter += 1
                 if new_job_dict["job_arrival_time"] > simulator_time:
                     # no more jobs for next time
-                    print("returning previos job")
+                    print("returning previous job")
                     valid_jobs = rm_pb2.JsonResponse()
                     valid_jobs.response = json.dumps(job_to_run_dict)
                     self.prev_job = new_job_dict
@@ -305,7 +305,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
             new_job.pop("logger")
         if "job_task" in new_job:
             new_job.pop("job_task")
-        if "job_model" in new_job:
+        if "job_model" in new_job: # XY: consider how to keep the info of new_job.job_model.model_name here
             new_job.pop("job_model")
 
         new_job["num_GPUs"] = new_job["job_gpu_demand"]

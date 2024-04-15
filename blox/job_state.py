@@ -9,7 +9,11 @@ import pandas as pd
 import time
 from concurrent import futures
 
+
+
 from typing import Tuple, List
+from ..schedulers.pollux_exe.job import *
+from ..schedulers.pollux_exe.applications import *
 
 from blox_manager import BloxManager
 
@@ -29,28 +33,34 @@ class JobState(object):
         """
         XY: dict of dict, jid -> job info, which include
         "tracked_metrics": dict
+            "pollux_metrics": job.Job() object for pollux job # XY added
             "per_iter_time": float - mean updated
             "attained_service": float - additively updated
             "iter num": int - additively updated
-            "attained_service_scheduler": - updated using "round_duration" * "numGPUs"
+            "attained_service_scheduler": - updated using "round_duration" * "numGPUs"   
         "time_since_scheduled": int
         "job_priority": int
         "previously_launched": boolean
         "is_running": boolean
         "simulation": boolean
         "running_ip_address": 
-        "num_GPUs"
+        "num_GPUs"  
+        "submit_time"
         """
         # count number of accepted jobs
         self.job_counter = 0
         self.job_completion_stats = dict()
         self.job_responsiveness_stats = dict()
         self.cluster_stats = dict()
-        self.custom_metrics = dict() # XY: may be useful
+        self.custom_metrics = dict()
         self.job_runtime_stats = dict()
         self.finished_job = dict()  # keys are ids of the jobs which have finished
         self.job_ids_to_track = list(range(args.start_id_track, args.stop_id_track + 1))
         self.time = 0
+        self.scheduler_name = args.scheduler_name
+        if self.scheduler_name == "Pollux":
+            self.interference = args.interference
+            self.round_duration = args.round_duration
 
     # def get_new_jobs(self):
     # """
@@ -134,11 +144,22 @@ class JobState(object):
                             tracking_dict[p] = v
                         jobs["tracked_metrics"] = tracking_dict
 
+                    if self.scheduler_name == "Pollux":
+                        """
+                        Create pollux.job.Job object, decide how to refer to model name, the options of which include
+                        "bert", "cifar10", "ncf", "imagenet", "deepspeech2", "yolov3"
+                        """
+                        job_temp = Job(self.job_counter, APPLICATIONS[jobs["job_model"].model_name], jobs["job_arrival_time"])
+                        if job_temp.application.name == "ncf":
+                            job_temp.target_batch_size = 32768
+                        jobs["tracked_metrics"]["pollux_metrics"] = job_temp
+
                     jobs["time_since_scheduled"] = 0
                     jobs["job_priority"] = 999
                     jobs["previously_launched"] = False
-                    self.active_jobs[self.job_counter] = jobs
+                    self.active_jobs[self.job_counter] = jobs # XY: this has "submit_time" key
                     self.active_jobs[self.job_counter]["is_running"] = False
+
                     self.job_counter += 1
                 except IndexError:
                     # remove the job counter

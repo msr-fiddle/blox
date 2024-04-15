@@ -82,6 +82,10 @@ def parse_args(parser):
     parser.add_argument(
         "--stop-id-track", type=int, default=4000, help="Stop ID to track"
     )
+    parser.add_argument(
+        "--interference", type=float, default=0.0, help="job slowdown due to interference, as used on Pollux"
+    )
+
 
     args = parser.parse_args()
     return args
@@ -143,17 +147,19 @@ def main(args):
             # Input: job_state, cluster_state
             # Output: to_suspend, to_launch
 
-            to_suspend, to_launch = scheduling_policy.schedule(job_state, cluster_state)
+            schedule_info = scheduling_policy.schedule(job_state, cluster_state)
 
-            new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
-            # prune jobs - get rid of finished jobs
-            utils.prune_jobs(job_state, cluster_state, blox_instance)
-            # perform scheduling
-            new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
-            # get placement
-            to_suspend, to_launch = placement_policy.place(
-                job_state, cluster_state, new_job_schedule
-            )
+            to_suspend = schedule_info["to_suspend"]
+            to_launch = schedule_info["to_launch"]
+
+            # # prune jobs - get rid of finished jobs
+            # utils.prune_jobs(job_state, cluster_state, blox_instance)
+            # # perform scheduling
+            # new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
+            # # get placement
+            # to_suspend, to_launch = placement_policy.place(
+            #     job_state, cluster_state, new_job_schedule
+            # )
 
             ### XY: end call Pollux scheduler_placement
 
@@ -166,6 +172,22 @@ def main(args):
             utils.track_finished_jobs(job_state, cluster_state, blox_instance)
             # execute jobs
             blox_instance.exec_jobs(to_launch, to_suspend, cluster_state, job_state)
+
+            # XY: Update job and cluster metrics according to the new allocation
+            if schedule_info["allocations"]:
+                for jid in job_state.active_jobs:
+                    job = job_state.active_jobs[jid]["tracked_metrics"]["pollux_metrics"]
+                    if schedule_info["allocations"].get(job.name) != cluster_state.server_map.get(job.name):
+                        alloc = schedule_info["allocations"].get(job.name, [])
+                        placement = []
+                        for i in range(len(alloc)):
+                            if i == 0 or alloc[i] != alloc[i - 1]:
+                                placement.append(1)
+                            else:
+                                placement[-1] += 1
+                        job.reallocate(placement)
+                cluster_state.server_map = schedule_info["allocations"]
+
             # update time
             simulator_time += args.round_duration
             job_state.time += args.round_duration
