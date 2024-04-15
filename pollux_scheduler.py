@@ -142,24 +142,17 @@ def main(args):
             # get simulator jobs
             accepted_jobs = admission_policy.accept(new_jobs, cluster_state, job_state)
             job_state.add_new_jobs(accepted_jobs)
+            # prune jobs - get rid of finished jobs
+            utils.prune_jobs(job_state, cluster_state, blox_instance)
 
             ### XY: call Pollux scheduler_placement
             # Input: job_state, cluster_state
-            # Output: to_suspend, to_launch
+            # Output: a dict containing to_suspend, to_launch, allocations
 
             schedule_info = scheduling_policy.schedule(job_state, cluster_state)
 
             to_suspend = schedule_info["to_suspend"]
             to_launch = schedule_info["to_launch"]
-
-            # # prune jobs - get rid of finished jobs
-            # utils.prune_jobs(job_state, cluster_state, blox_instance)
-            # # perform scheduling
-            # new_job_schedule = scheduling_policy.schedule(job_state, cluster_state)
-            # # get placement
-            # to_suspend, to_launch = placement_policy.place(
-            #     job_state, cluster_state, new_job_schedule
-            # )
 
             ### XY: end call Pollux scheduler_placement
 
