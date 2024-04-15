@@ -9,4 +9,6 @@ __pycache__/
 *.pickle
 *.DS_Store
 
+.idea/
+venv/
 
