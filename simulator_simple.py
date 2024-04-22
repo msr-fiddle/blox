@@ -305,8 +305,9 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
             new_job.pop("logger")
         if "job_task" in new_job:
             new_job.pop("job_task")
-        if "job_model" in new_job: # XY: consider how to keep the info of new_job.job_model.model_name here
-            new_job.pop("job_model")
+        # XY commented to allow "job_model" be sent
+        # if "job_model" in new_job: # XY: consider how to keep the info of new_job.job_model.model_name here
+        #     new_job.pop("job_model")
 
         new_job["num_GPUs"] = new_job["job_gpu_demand"]
         # new_job["params_to_track"] = [
