@@ -227,7 +227,7 @@ class Application(object):
         return ret
 
 
-TRACES_DIR = os.path.join(os.path.dirname(__file__), "traces")
+TRACES_DIR = os.path.join(os.path.dirname(__file__),'../../workload_pollux', "traces")
 APPLICATIONS = {
     "bert": Application(os.path.join(TRACES_DIR, "bert"), max_epochs=2),
     "cifar10": Application(os.path.join(TRACES_DIR, "cifar10"), max_epochs=100),

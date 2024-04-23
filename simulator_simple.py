@@ -445,7 +445,7 @@ def launch_server(args) -> grpc.Server:
             np.arange(args.jobs_per_hour, args.jobs_per_hour + 1, 1.0).tolist(),
             (args.start_job_track, args.end_job_track),
             [
-                "Las",
+                "Pollux",
             ],
             ["Place"],
             ["AcceptAll"],

@@ -126,6 +126,7 @@ def main(args):
         blox_instance.reset(args)
         cluster_state = ClusterState(args)
         job_state = JobState(args)
+        print(f"scheduler_name is {job_state.scheduler_name}")
         os.environ["sched_policy"] = args.scheduler_name
         os.environ["sched_load"] = str(args.load)
         simulator_time = 0
