@@ -56,7 +56,7 @@ class Pollux(SchedulingPolicy):
         # create nodes
         nodes = dict()
 
-        for node_id, node_data in node_info.keys(), node_info.values():
+        for node_id, node_data in node_info.items():
             # TODO: Can we ignore cpu/pods for the resources map below?
             # TODO: How does preemptible work? Can we get this value somewhere in Blox?
             nodes[node_id] = NodeInfo(resources={"gpu": node_data["numGPUs"]}, preemptible=False)

@@ -10,10 +10,9 @@ import time
 from concurrent import futures
 
 
-
 from typing import Tuple, List
-from ..schedulers.pollux_exe.job import *
-from ..schedulers.pollux_exe.applications import *
+from schedulers.pollux_exe.job import *
+from schedulers.pollux_exe.applications import *
 
 from blox_manager import BloxManager
 

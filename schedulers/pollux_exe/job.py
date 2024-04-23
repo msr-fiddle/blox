@@ -3,8 +3,8 @@ import numpy as np
 # import pandas
 
 # from applications import APPLICATIONS
-from goodput import GoodputFunction, fit_perf_params
-from speedup import SpeedupFunction
+from .goodput import GoodputFunction, fit_perf_params
+from .speedup import SpeedupFunction
 # from utils import JobInfo, NodeInfo
 
 class Job(object):
