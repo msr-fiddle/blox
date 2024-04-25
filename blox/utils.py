@@ -260,7 +260,7 @@ def prune_jobs(job_state: JobState, cluster_state: ClusterState, blr: BloxManage
                             ]
 
     for jid in jid_to_terminate:
-        job_state.active_jobs.pop(jid)
+        job_state.active_jobs.pop(jid) # XY: active_jobs will get rid of the entry
     return None
 
 

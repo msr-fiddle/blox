@@ -262,7 +262,7 @@ class JobPlacement(object):
         gpus_for_job = list()
         found = False
         for node in free_gpus:
-            gpus_for_job.extend(free_gpus[node][:numGPUs_needed])
+            gpus_for_job.extend(free_gpus[node][:numGPUs_needed]) # XY: should an updated number be used here rather than numGPUs_needed?
             if len(gpus_for_job) == numGPUs_needed:
                 found = True
                 break

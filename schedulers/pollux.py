@@ -2,10 +2,12 @@ from .pollux_exe.utils import NodeInfo
 from .scheduler_policy import SchedulingPolicy
 from .pollux_exe.pollux_engine import PolluxPolicy
 from .pollux_exe.utils import JobInfo
+from ..placement.placement import find_free_GPUs
+from ..blox.blox_manager import _free_gpu_by_jobid
 import pandas as pd
 from operator import getitem
 
-from typing import Optional
+from typing import Optional, Dict, Union, Any, List
 
 
 class Pollux(SchedulingPolicy):
@@ -80,9 +82,35 @@ class Pollux(SchedulingPolicy):
             """
             Assign to_suspend, to_launch
             """
+            # XY: is there a way to adjust allocation rather than totally turn off before turning on?
+            # if jid not in new_allocations:
+            #     schedule_info["to_suspend"].append(jid)
+
             for jid in job_dict:
-                if jid not in new_allocations:
+                if new_allocations.get(jid) == allocations.get(jid):
+                    continue
+                if len(allocations.get(jid)) > 0:
                     schedule_info["to_suspend"].append(jid)
+                if len(new_allocations.get(jid)) == 0:
+                    continue
+
+                alloc = new_allocations.get(jid)
+                placement = {} # XY: record number of gpus allocated on each node
+                for i in range(len(alloc)):
+                    if i == 0 or alloc[i] != alloc[i - 1]:
+                        placement[alloc[i]] = 1
+                    else:
+                        placement[alloc[i]] += 1
+
+                gpu_df_copy = gpu_df.copy()
+                # update gpu_df_copy to as if jid is not running
+                _free_gpu_by_jobid(jid, gpu_df_copy)
+                gpus_for_job = list()  # XY: list of GPU IDs
+                free_gpus = find_free_GPUs(gpu_df_copy)
+
+                for node_id in placement:
+                    gpus_for_job.extend(free_gpus[node_id][:placement[node_id]])
+                schedule_info["to_launch"][jid] = gpus_for_job
 
             # to_launch will likely require nodes object
 
