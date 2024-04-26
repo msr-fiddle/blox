@@ -1,9 +1,11 @@
+import sys
+sys.path.append("..")
 from .pollux_exe.utils import NodeInfo
 from .scheduler_policy import SchedulingPolicy
 from .pollux_exe.pollux_engine import PolluxPolicy
 from .pollux_exe.utils import JobInfo
-from ..placement.placement import find_free_GPUs
-from ..blox.blox_manager import _free_gpu_by_jobid
+from placement.placement import find_free_GPUs
+from blox.blox_manager import _free_gpu_by_jobid
 import pandas as pd
 from operator import getitem
 
