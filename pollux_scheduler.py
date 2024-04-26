@@ -74,10 +74,10 @@ def parse_args(parser):
     parser.add_argument("--simulate", action="store_true", help="Enable Simulation")
 
     parser.add_argument(
-        "--round-duration", type=int, default=300, help="Round duration in seconds"
+        "--round-duration", type=int, default=60, help="Round duration in seconds" # may be same as "interval" in Pollux
     )
     parser.add_argument(
-        "--start-id-track", type=int, default=3000, help="Starting ID to track"
+        "--start-id-track", type=int, default=0, help="Starting ID to track"
     )
     parser.add_argument(
         "--stop-id-track", type=int, default=4000, help="Stop ID to track"
@@ -114,7 +114,7 @@ def main(args):
             sys.exit()
 
         blox_instance.scheduler_name = new_config["scheduler"]
-        blox_instance.load = new_config["load"]
+        blox_instance.load = new_config["load"] # XY: "Number of jobs per hour", args.jobs_per_hour in simulator_simple.py
 
         args.scheduler_name = new_config["scheduler"]
         args.load = new_config["load"]

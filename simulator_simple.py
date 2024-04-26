@@ -418,6 +418,9 @@ def parse_args(parser):
     parser.add_argument(
         "--scheduler", type=str, default="Fifo", help="Name of the scheduler"
     )
+    # XY: added to match Pollux simulation setting
+    parser.add_argument("--num-gpus", type=int, default=4, help="number of GPUs per node")
+    parser.add_argument("--num-nodes", type=int, default=16, help="min number of nodes in the cluster")
     parser.add_argument(
         "--exp-prefix",
         type=str,
@@ -450,6 +453,8 @@ def launch_server(args) -> grpc.Server:
             ["Place"],
             ["AcceptAll"],
             exp_prefix=args.exp_prefix,
+            number_of_machines=args.num_nodes,
+            gpus_per_machine=args.num_gpus,
         ),
         server,
     )

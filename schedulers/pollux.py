@@ -83,6 +83,7 @@ class Pollux(SchedulingPolicy):
             Assign to_suspend, to_launch
             """
             # XY: is there a way to adjust allocation rather than totally turn off before turning on?
+            #     is it possible to turn off only some of the GPUs of a job rather than turning all off?
             # if jid not in new_allocations:
             #     schedule_info["to_suspend"].append(jid)
 
