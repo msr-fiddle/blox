@@ -4,7 +4,7 @@ import json
 import grpc
 import argparse
 import numpy as np
-from workload import Workload
+from workload_pollux.workload import Workload
 from concurrent import futures
 from typing import Tuple
 
@@ -102,6 +102,9 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
             job_config = self.simulator_config.pop(0)
             
             # setup new workload
+            # import ipdb
+            #
+            # ipdb.set_trace()
             self.workload = self._generate_workload(job_config)
             print("self.workload finished")
             job_config_send = rm_pb2.JsonResponse()
@@ -149,6 +152,10 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
                     )
                 )
                 if new_job_dict["job_arrival_time"] <= simulator_time:
+                    if new_job_dict.get("job_mem_demand"):
+                        del new_job_dict["job_mem_demand"]
+                    if new_job_dict.get("job_mem_demand_orig"):
+                        del new_job_dict["job_mem_demand_orig"]
                     print("In getting more jobs")
                     job_to_run_dict[jcounter] = new_job_dict
                     self.prev_job_time = new_job_dict["job_arrival_time"]
@@ -301,6 +308,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         new_job["simulation"] = True
         new_job["submit_time"] = new_job["job_arrival_time"]
         # temporary fix not sure why this is happening though
+        # TODO: Different in Saurabh's version
         if "logger" in new_job:
             new_job.pop("logger")
         if "job_task" in new_job:
@@ -321,11 +329,13 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         """
         Generate workload for a given config
         """
+        print("GENERATE WORKLOAD is called!")
         # set the random seed before generating the workload
         random.seed(self.random_seed)
         # print("After random seed")
         return Workload(
             self.cluster_job_log,
+            scheduler=self.schedulers[0],
             jobs_per_hour=workload_config["load"],
             exponential=self.exponential,
             multigpu=self.multigpu,
@@ -377,6 +387,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
             request_to_rm.numCPUcores = self.num_cpu_cores
             request_to_rm.numaAvailable = self.is_numa_available
             request_to_rm.cpuMaping[0] = 0
+            # request_to_rm.preemptible = False
             with grpc.insecure_channel(self.ipaddr_rm) as channel:
                 stub = rm_pb2_grpc.RMServerStub(channel)
                 response = stub.RegisterWorker(request_to_rm)
@@ -407,7 +418,7 @@ def parse_args(parser):
         default=None, # ""
         help="Name of the cluster log file to run",
     )
-    parser.add_argument("--jobs-per-hour", type=int, default=5, help="Jobs per hour")
+    parser.add_argument("--jobs-per-hour", type=int, default=9, help="Jobs per hour")
     parser.add_argument(
         "--start-job-track", type=int, default=3000, help="Start ID of job to track"
     )

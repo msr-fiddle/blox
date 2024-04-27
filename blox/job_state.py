@@ -150,7 +150,10 @@ class JobState(object):
                         Create pollux.job.Job object, decide how to refer to model name, the options of which include
                         "bert", "cifar10", "ncf", "imagenet", "deepspeech2", "yolov3"
                         """
-                        job_temp = Job(self.job_counter, APPLICATIONS[jobs["job_model"].model_name], jobs["job_arrival_time"])
+                        # job_temp = Job(self.job_counter, APPLICATIONS[jobs["job_model"].model_name], jobs["job_arrival_time"])
+                        print(jobs)
+                        job_temp = Job(self.job_counter, APPLICATIONS[jobs["application"]],
+                                       jobs["job_arrival_time"])
                         if job_temp.application.name == "ncf":
                             job_temp.target_batch_size = 32768
                         jobs["tracked_metrics"]["pollux_metrics"] = job_temp

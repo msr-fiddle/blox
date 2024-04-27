@@ -78,7 +78,6 @@ class Job:
         self.current_round_time = 0
         self.synergy_speedup = 1
         self.tput = None
-        self.dominant_share = 0
 
         # job state
         self.gpus = list()
@@ -117,7 +116,7 @@ class Job:
         # End of Pollux Params
 
         self.cpu_val = {0:1, 1:2, 2:3, 3:4, 4:5, 5:6, 6:9, 7:12, 8:24}
-        self.mem_val = {0:20.83, 1:62.5, 2:125, 3:187.5, 4:250}
+        self.mem_val = {0:62.5, 1:125, 2:187.5, 3:250}
 
     def get_idx(self, id_map, value):
         for k,v in id_map.items():
@@ -271,7 +270,6 @@ class Job:
             demand = self.demand_map[_server]
             # proportional to gpus being deallocated in the server
             alloc_share = release_map[_server]['gpu']/self.res_map[_server]['gpu']     
-#            print("Job :{}, alloc_share:{}, Server:{}".format(str(self), alloc_share, _server.server_id))
             if 'cpu' in res:
                 res['cpu'] -= math.floor(res['cpu']*alloc_share)
                 _server.cpu_true_utilization -= math.floor(util['cpu']*alloc_share)
@@ -287,8 +285,8 @@ class Job:
             #if 'sspeed' in res:
                 _server.sspeed_true_utilization -= util['sspeed']*alloc_share
                 _server.sspeed_demand -= demand['sspeed']*alloc_share
-#            print("Dealloc demand : ", _server.cpu_demand, _server.mem_demand, _server.sspeed_demand, self.job_cpu_demand)
-#            print("Dealloc util : ", _server.cpu_true_utilization, _server.mem_true_utilization, _server.sspeed_true_utilization)
+        #print("Dealloc demand : ", _server.cpu_demand, _server.mem_demand, _server.sspeed_demand, self.job_cpu_demand)
+        #print("Dealloc util : ", _server.cpu_true_utilization, _server.mem_true_utilization, _server.sspeed_true_utilization)
             assert(_server.cpu_demand >= 0)
             assert(_server.mem_demand >= 0)
             assert(_server.sspeed_demand >= 0)
@@ -422,22 +420,6 @@ class Job:
         # job unmet demand in storage speed
         return (self.job_sspeed_demand - self.sspeed)
 
-    def get_remaining_weighted_duration(self, size_vec, fair=True):
-        remaining_iteration = self.job_total_iteration -\
-            self.job_executed_iteration 
-        dur = 0
-        if fair:
-            dur =  (self.job_iteration_time * remaining_iteration)
-        else:
-            dur =  (self.job_iteration_time * remaining_iteration / self.synergy_speedup)
-
-        d_gpu, d_cpu, d_mem, _, _ = self.get_job_demand_vector
-        _,_,gpus, cpus, mem,_,_ = size_vec
-        norm_demand = [ d_gpu/gpus, d_cpu/cpus, d_mem/mem]
-        weighted_demand = [item*dur for item in norm_demand]
-        #self.logger.info("Share for {} = {} : {} : {:.2f}val : {:.2f}s, {}speedup, {}iter, {:.2f}s".format(str(self), norm_demand, weighted_demand, sum(weighted_demand), dur, self.synergy_speedup, remaining_iteration, self.job_iteration_time)) 
-        return sum(weighted_demand)
-
     def remaining_duration(self, fair=True):
         # job remaining best-scenario duration
         remaining_iteration = self.job_total_iteration -\
@@ -466,18 +448,6 @@ class Job:
     # dur, so track elapsed time interms of simulator round dur
     def get_attained_service_time(self):
         return self.attained_service_time*self.job_gpu_demand
-
-    # size_vec: (racks, servers, gpus, cpus, mem, sspeed, net)
-    def get_dominant_share(self, size_vec):
-        _,_,gpus, cpus, mem,_,_ = size_vec
-        #self.logger.info("Max avail for {} = {},{},{}".format(str(self), gpus, cpus, mem)) 
-        gpu_share = self.job_gpu_demand/gpus    
-        cpu_share = self.job_cpu_demand/cpus    
-        mem_share = self.job_mem_demand/mem
-        self.dominant_share = max(gpu_share, cpu_share, mem_share) 
-        #self.logger.info("Share for {} = {:.4f},{:.4f},{:.4f}, max={:.4f}".format(str(self), gpu_share, cpu_share, mem_share, self.dominant_share)) 
-        
-        return self.dominant_share   
 
 
     def attained_service(self):
