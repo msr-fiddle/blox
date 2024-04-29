@@ -63,7 +63,7 @@ class Pollux(SchedulingPolicy):
         for node_id, node_data in node_info.items():
             # TODO: Can we ignore cpu/pods for the resources map below?
             # TODO: How does preemptible work? Can we get this value somewhere in Blox?
-            nodes[node_id] = NodeInfo(resources={"gpu": node_data["numGPUs"]}, preemptible=False)
+            nodes[node_id] = NodeInfo(resources={"nvidia.com/gpu": node_data["numGPUs"]}, preemptible=False)
 
         # call pollux.optimize(jobs, nodes, base_allocations)
         schedule_info = dict()
@@ -92,7 +92,7 @@ class Pollux(SchedulingPolicy):
             for jid in job_dict:
                 if new_allocations.get(jid) == allocations.get(jid):
                     continue
-                if len(allocations.get(jid)) > 0:
+                if allocations.get(jid) and len(allocations.get(jid)) > 0:
                     schedule_info["to_suspend"].append(jid)
                 if len(new_allocations.get(jid)) == 0:
                     continue
