@@ -420,11 +420,11 @@ def parse_args(parser):
     )
     parser.add_argument("--jobs-per-hour", type=int, default=9, help="Jobs per hour")
     parser.add_argument(
-        "--start-job-track", type=int, default=3000, help="Start ID of job to track"
+        "--start-job-track", type=int, default=0, help="Start ID of job to track"
     )
 
     parser.add_argument(
-        "--end-job-track", type=int, default=4000, help="End ID of job to track"
+        "--end-job-track", type=int, default=160, help="End ID of job to track"
     )
     parser.add_argument(
         "--scheduler", type=str, default="Fifo", help="Name of the scheduler"

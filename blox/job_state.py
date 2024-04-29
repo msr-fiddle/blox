@@ -151,7 +151,7 @@ class JobState(object):
                         "bert", "cifar10", "ncf", "imagenet", "deepspeech2", "yolov3"
                         """
                         # job_temp = Job(self.job_counter, APPLICATIONS[jobs["job_model"].model_name], jobs["job_arrival_time"])
-                        # print(jobs)
+                        print(jobs)
                         job_temp = Job(self.job_counter, APPLICATIONS[jobs["application"]],
                                        jobs["job_arrival_time"])
                         if job_temp.application.name == "ncf":

@@ -231,7 +231,7 @@ def parse_jobs_scheduler(
         job_id = count
 
         iteration_time_seconds = 1
-        total_iterations = 1
+        total_iterations = 1 # XY: is this right?
 
         packing_scores = None
         placement_scores = None
@@ -240,8 +240,8 @@ def parse_jobs_scheduler(
 
         user="default"
         if scheduler == "Pollux":
-            target_batch_size = None
-            target_num_replicas = None
+            target_batch_size = int(j["batch_size"]) # XY modified
+            target_num_replicas = int(j["num_replicas"]) # XY modified
         elif scheduler == "Optimus":
             target_batch_size=int(j["batch_size"])
             target_num_replicas=int(j["num_replicas"])
