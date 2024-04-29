@@ -271,7 +271,7 @@ class ResourceManagerComm(object):
                         + active_job_dict[job_id]["job_executed_iteration"]
                     )
                 if os.environ["sched_policy"] == "Pollux":
-                    if active_job_dict[job_id]["pollux_metrics"].completion_time is not None:
+                    if active_job_dict[job_id]["tracked_metrics"]["pollux_metrics"].completion_time is not None:
                         job_exit = True
                 elif (
                     total_iteration_achieved
