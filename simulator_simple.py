@@ -140,6 +140,12 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         new_job = None
         while True:
             try:
+                # XY: check if there are more jobs to run
+                if self.workload.job_id >= self.workload.total_jobs:
+                    print("no more jobs to add")
+                    valid_jobs = rm_pb2.JsonResponse()
+                    valid_jobs.response = json.dumps(job_to_run_dict)
+                    return valid_jobs
                 if self.prev_job is None:
                     new_job = self.workload.generate_next_job(self.prev_job_time)
                     new_job_dict = self._clean_sim_job(new_job.__dict__)

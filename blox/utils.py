@@ -324,7 +324,7 @@ def track_finished_jobs(
 def write_log_files(job_state, cluster_state, blr):
 
     with open(
-        f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_job_stats.json",
+        f"{blr.exp_prefix}_{job_state.job_ids_to_track[0]}_{job_state.job_ids_to_track[-1]}_{blr.scheduler_name}_load_{blr.load}_job_stats.json", # XY: this file has start and ending time of job
         "w",
     ) as fopen:
         # fopen.write(json.dumps(self.job_completion_stats))
