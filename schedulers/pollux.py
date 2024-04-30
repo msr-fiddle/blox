@@ -72,6 +72,7 @@ class Pollux(SchedulingPolicy):
         schedule_info["to_launch"] = dict() # jid -> ...
 
         if job_infos:
+            allocations = {k: v for k, v in allocations.items() if k in job_infos}
             results = self.engine.optimize(job_infos, nodes,
                                            allocations, nodes[0])
             new_allocations, desired_nodes = results
