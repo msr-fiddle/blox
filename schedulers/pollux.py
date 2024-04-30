@@ -4,8 +4,6 @@ from .pollux_exe.utils import NodeInfo
 from .scheduler_policy import SchedulingPolicy
 from .pollux_exe.pollux_engine import PolluxPolicy
 from .pollux_exe.utils import JobInfo
-from placement.placement import find_free_GPUs
-from blox.blox_manager import _free_gpu_by_jobid
 import pandas as pd
 from operator import getitem
 
@@ -106,14 +104,12 @@ class Pollux(SchedulingPolicy):
                     else:
                         placement[alloc[i]] += 1
 
-                gpu_df_copy = gpu_df.copy()
-                # update gpu_df_copy to as if jid is not running
-                _free_gpu_by_jobid(jid, gpu_df_copy)
                 gpus_for_job = list()  # XY: list of GPU IDs
-                free_gpus = find_free_GPUs(gpu_df_copy)
+                all_gpus = gpu_df.groupby("Node_ID")["GPU_ID"].apply(list).to_dict()
 
                 for node_id in placement:
-                    gpus_for_job.extend(free_gpus[node_id][:placement[node_id]])
+                    gpus_for_job.extend(all_gpus[node_id][:placement[node_id]])
+                    all_gpus[node_id] = all_gpus[node_id][placement[node_id]:]
                 schedule_info["to_launch"][jid] = gpus_for_job
 
             # to_launch will likely require nodes object
