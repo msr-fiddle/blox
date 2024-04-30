@@ -140,13 +140,13 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         new_job = None
         while True:
             try:
-                # XY: check if there are more jobs to run
-                if self.workload.job_id >= self.workload.total_jobs:
-                    print("no more jobs to add")
-                    valid_jobs = rm_pb2.JsonResponse()
-                    valid_jobs.response = json.dumps(job_to_run_dict)
-                    return valid_jobs
                 if self.prev_job is None:
+                    # XY: check if there are more jobs to run
+                    if self.workload.job_id >= self.workload.total_jobs:
+                        print("no more jobs to add")
+                        valid_jobs = rm_pb2.JsonResponse()
+                        valid_jobs.response = json.dumps(job_to_run_dict)
+                        return valid_jobs
                     new_job = self.workload.generate_next_job(self.prev_job_time)
                     new_job_dict = self._clean_sim_job(new_job.__dict__)
                 if self.prev_job is not None:
@@ -430,7 +430,7 @@ def parse_args(parser):
     )
 
     parser.add_argument(
-        "--end-job-track", type=int, default=160, help="End ID of job to track"
+        "--end-job-track", type=int, default=159, help="End ID of job to track"
     )
     parser.add_argument(
         "--scheduler", type=str, default="Fifo", help="Name of the scheduler"
