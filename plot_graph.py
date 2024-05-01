@@ -5,7 +5,7 @@ import json
 def get_avg_jct_dict_pollux_author():
     avg_jct_dict = {}
     period_list = ["30s", "1m", "2m", "4m", "8m"]
-    for period in period_list:
+    for period in period_list[:3]:
         with open("results-period/pollux-{}/summary.json".format(period)) as f:
             summary = json.load(f)
         average_jct = summary["avgs"]["workload-6"]
@@ -14,6 +14,15 @@ def get_avg_jct_dict_pollux_author():
             avg_jct_dict["30 s"] = average_jct
         else:
             avg_jct_dict["{} min".format(period[0])] = average_jct
+    for period in period_list[3:]:
+        with open("reproduce-period/pollux-{}/summary.json".format(period)) as f:
+            summary = json.load(f)
+        average_jct = summary["avgs"]["workload-6"]
+        average_jct = average_jct / 3600
+        if int(period[0]) == 3:
+            avg_jct_dict["30 s"] = average_jct
+        else:
+            avg_jct_dict["{} min".format(period[0])] = average_jct        
     return avg_jct_dict
 
 def get_avg_jct_dict_pollux_blox():
