@@ -90,7 +90,7 @@ plt.bar(indexes + bar_width, values_b, bar_width, label='Pollux-Blox Implementat
 # plt.errorbar(indexes + bar_width, values_b, sd_b, fmt='.', color='Black', elinewidth=2, capthick=10, errorevery=1, ms=4, capsize = 2)
 
 # Adding labels
-plt.xlabel('Scheduling Interval (mins)')
+plt.xlabel('Scheduling Interval')
 plt.ylabel('Avg JCT (hours)')
 # plt.title('Comparison of a and b')
 plt.xticks(indexes + bar_width / 2, keys)
