@@ -1,5 +1,8 @@
+numpy~=1.19.2
+scipy~=1.5.2
 grpcio
 matplotlib
 pandas==1.3.0
 grpcio-tools
 pymoo~=0.4.2.1
+seaborn~=0.11.0
