@@ -6,22 +6,22 @@ def get_avg_jct_dict_pollux_author():
     avg_jct_dict = {}
     sd_jct_dict = {}
     period_list = ["30s", "1m", "2m", "4m", "8m"]
-    for period in period_list[:3]:
-        with open("results-period/pollux-{}/summary.json".format(period)) as f:
-            summary = json.load(f)
-        average_jct = summary["avgs"]["workload-6"]
-        average_jct = average_jct / 3600
-        temp = list(summary["jcts"]["workload-6"].values())
-        temp = [n / 3600 for n in temp]
-        sd_jct = np.std(temp)
-        if int(period[0]) == 3:
-            avg_jct_dict["30 s"] = average_jct
-            sd_jct_dict["30 s"] = sd_jct
-        else:
-            avg_jct_dict["{} min".format(period[0])] = average_jct
-            sd_jct_dict["{} min".format(period[0])] = sd_jct
+    # for period in period_list[:3]:
+    #     with open("results-period/pollux-{}/summary.json".format(period)) as f:
+    #         summary = json.load(f)
+    #     average_jct = summary["avgs"]["workload-6"]
+    #     average_jct = average_jct / 3600
+    #     temp = list(summary["jcts"]["workload-6"].values())
+    #     temp = [n / 3600 for n in temp]
+    #     sd_jct = np.std(temp)
+    #     if int(period[0]) == 3:
+    #         avg_jct_dict["30 s"] = average_jct
+    #         sd_jct_dict["30 s"] = sd_jct
+    #     else:
+    #         avg_jct_dict["{} min".format(period[0])] = average_jct
+    #         sd_jct_dict["{} min".format(period[0])] = sd_jct
 
-    for period in period_list[3:]:
+    for period in period_list:
         with open("reproduce-period/pollux-{}/summary.json".format(period)) as f:
             summary = json.load(f)
         average_jct = summary["avgs"]["workload-6"]
