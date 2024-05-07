@@ -182,6 +182,7 @@ class BloxManager(object):
                                     job_state.job_runtime_stats[jid] = copy.deepcopy(
                                         job_state.active_jobs[jid]
                                     )
+                                    # XY: the lines below tracks completion_time and submission_time as maintained in the Pollux Job object
                                     if job_state.scheduler_name == "Pollux":
                                         del job_state.job_runtime_stats[jid]["tracked_metrics"]["pollux_metrics"]
                                         job_state.job_runtime_stats[jid]["completion_time_pollux"] = \
