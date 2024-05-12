@@ -19,7 +19,7 @@ class Job(object):
         self.target_num_replicas = target_num_replicas
         self.target_batch_size = target_batch_size
         self.completion_time = None
-        self.current_time = 0
+        self.current_time = current_time
         self.rescale_time = 0
         self.placement = ()
         self.atomic_bsz = 0

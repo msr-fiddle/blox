@@ -429,7 +429,7 @@ def parse_args(parser):
     )
 
     parser.add_argument(
-        "--end-job-track", type=int, default=159, help="End ID of job to track"
+        "--end-job-track", type=int, default=159, help="End ID of job to track\n if using Pollux workload, set this to (num_jobs - 1)"
     )
     parser.add_argument(
         "--scheduler", type=str, default="Fifo", help="Name of the scheduler"
