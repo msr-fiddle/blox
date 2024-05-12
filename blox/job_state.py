@@ -153,7 +153,7 @@ class JobState(object):
                         # job_temp = Job(self.job_counter, APPLICATIONS[jobs["job_model"].model_name], jobs["job_arrival_time"])
                         print(jobs)
                         job_temp = Job(self.job_counter, APPLICATIONS[jobs["application"]],
-                                       jobs["job_arrival_time"])
+                                       jobs["job_arrival_time"], self.time)
                         if job_temp.application.name == "ncf":
                             job_temp.target_batch_size = 32768
                         jobs["tracked_metrics"]["pollux_metrics"] = job_temp

@@ -144,7 +144,7 @@ def main(args):
             accepted_jobs = admission_policy.accept(new_jobs, cluster_state, job_state)
             job_state.add_new_jobs(accepted_jobs)
             # prune jobs - get rid of finished jobs
-            utils.prune_jobs(job_state, cluster_state, blox_instance)
+            utils.prune_jobs(job_state, cluster_state, blox_instance) # XY message to author: some operations in this call overlaps with those in "blox_instance.update_metrics"
 
             ### XY: call Pollux scheduler_placement
             # Input: job_state, cluster_state
@@ -163,7 +163,7 @@ def main(args):
 
             utils.collect_cluster_job_metrics(job_state, cluster_state)
             # check if we have finished every job to track
-            utils.track_finished_jobs(job_state, cluster_state, blox_instance)
+            utils.track_finished_jobs(job_state, cluster_state, blox_instance) # XY message to author: some operations in this call overlaps with those in "blox_instance.update_metrics"
             # execute jobs
             blox_instance.exec_jobs(to_launch, to_suspend, cluster_state, job_state)
 

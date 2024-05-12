@@ -11,7 +11,7 @@ class Job(object):
 
     pretrain = {}
 
-    def __init__(self, name, application, submission_time,
+    def __init__(self, name, application, submission_time, current_time,
                  target_num_replicas=None, target_batch_size=None):
         self.name = name
         self.application = application
