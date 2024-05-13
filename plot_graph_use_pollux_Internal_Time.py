@@ -95,6 +95,7 @@ plt.bar(indexes + bar_width, values_b, bar_width, label='Pollux-Blox Implementat
 # Adding labels
 plt.xlabel('Scheduling Interval')
 plt.ylabel('Avg JCT (hours)')
+plt.title('Using Pollux Job Objects Internal Time\nCount for Blox Implementation')
 # plt.title('Comparison of a and b')
 plt.xticks(indexes + bar_width / 2, keys)
 plt.ylim(0.0, 1.0)
