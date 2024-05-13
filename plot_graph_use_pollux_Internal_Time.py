@@ -102,7 +102,7 @@ plt.ylim(0.0, 1.0)
 # Adding legend
 plt.legend()
 
-plt.savefig('pollux_Job_rec.png', dpi=2400)
+plt.savefig('plot_use_pollux_job_internal_time.png', dpi=2400)
 
 # Showing plot
 plt.tight_layout()
