@@ -9,7 +9,6 @@ import pandas as pd
 import time
 from concurrent import futures
 
-
 from typing import Tuple, List
 from schedulers.pollux_exe.job import *
 from schedulers.pollux_exe.applications import *
@@ -30,7 +29,7 @@ class JobState(object):
         # dict of active jobs
         self.active_jobs = dict()
         """
-        XY: dict of dict, jid -> job info, which include
+        active_jobs is a dict that maps jid -> job info, which itself is a dict that includes:
         "tracked_metrics": dict
             "pollux_metrics": job.Job() object for pollux job # XY added
             "per_iter_time": float - mean updated
@@ -50,7 +49,7 @@ class JobState(object):
         """
         # count number of accepted jobs
         self.job_counter = 0
-        self.job_completion_stats = dict() # XY: used when job finishes
+        self.job_completion_stats = dict() # used when job finishes
         self.job_responsiveness_stats = dict()
         self.cluster_stats = dict()
         self.custom_metrics = dict()
@@ -150,7 +149,6 @@ class JobState(object):
                         Create pollux.job.Job object, decide how to refer to model name, the options of which include
                         "bert", "cifar10", "ncf", "imagenet", "deepspeech2", "yolov3"
                         """
-                        # job_temp = Job(self.job_counter, APPLICATIONS[jobs["job_model"].model_name], jobs["job_arrival_time"])
                         print(jobs)
                         job_temp = Job(self.job_counter, APPLICATIONS[jobs["application"]],
                                        jobs["job_arrival_time"], self.time)
@@ -161,9 +159,8 @@ class JobState(object):
                     jobs["time_since_scheduled"] = 0
                     jobs["job_priority"] = 999
                     jobs["previously_launched"] = False
-                    self.active_jobs[self.job_counter] = jobs # XY: this has "submit_time" key
+                    self.active_jobs[self.job_counter] = jobs
                     self.active_jobs[self.job_counter]["is_running"] = False
-
                     self.job_counter += 1
                 except IndexError:
                     # remove the job counter

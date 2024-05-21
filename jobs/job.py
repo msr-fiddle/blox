@@ -114,7 +114,6 @@ class Job:
         self.best_metric = None
         self.progress = 0.0
         self.epoch = 0
-        # End of Pollux Params
 
         self.cpu_val = {0:1, 1:2, 2:3, 3:4, 4:5, 5:6, 6:9, 7:12, 8:24}
         self.mem_val = {0:20.83, 1:62.5, 2:125, 3:187.5, 4:250}

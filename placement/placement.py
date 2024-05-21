@@ -10,7 +10,7 @@ class JobPlacement(object):
     @staticmethod
     def copy_arguments(function):
         def function_wrapper(
-            self, job_state, cluster_state, new_job_schedule, **kwargs # XY: note the order of arguments changed here
+            self, job_state, cluster_state, new_job_schedule, **kwargs
         ):
             return function(
                 self,
@@ -39,7 +39,7 @@ class JobPlacement(object):
         # gpu_df
 
         """
-        job_order = new_job_schedule["job_order"] # XY: this determines the format of job_to_terminate
+        job_order = new_job_schedule["job_order"]
         scheduler = new_job_schedule.get("scheduler")
         jobs_to_terminate = list()
         job_to_launch = dict()
@@ -163,7 +163,7 @@ class JobPlacement(object):
                     )
 
                     # first checking if there are free GPUs
-                    free_gpus = find_free_GPUs(gpu_df) # XY: this determines the format of "job_to_launch"
+                    free_gpus = find_free_GPUs(gpu_df)
                     if place_consolidated:
                         placement, found = self._consolidated_placement(job, free_gpus)
                     else:
@@ -262,7 +262,7 @@ class JobPlacement(object):
         gpus_for_job = list()
         found = False
         for node in free_gpus:
-            gpus_for_job.extend(free_gpus[node][:numGPUs_needed]) # XY: should an updated number be used here rather than numGPUs_needed?
+            gpus_for_job.extend(free_gpus[node][:numGPUs_needed])
             if len(gpus_for_job) == numGPUs_needed:
                 found = True
                 break

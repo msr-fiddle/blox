@@ -44,7 +44,7 @@ class BloxManager(object):
         self.server, self.rmserver = launch_server(
             rm_server_rpc_port=args.central_scheduler_port,
             simulator_rpc_port=args.simulator_rpc_port,
-        ) # XY: launch rm_servor
+        )
         self.time = 0
         self.terminate = False
         return None
@@ -116,7 +116,7 @@ class BloxManager(object):
         if_simulation = list()
 
 
-        # XY: update Pollux specific metrics
+        # update Pollux specific metrics
         if job_state.scheduler_name == "Pollux":
             # find nodes used by more than one jobs
             interfere_nodes = set(idx for idx in range(cluster_state.node_counter)
@@ -182,7 +182,7 @@ class BloxManager(object):
                                     job_state.job_runtime_stats[jid] = copy.deepcopy(
                                         job_state.active_jobs[jid]
                                     )
-                                    # XY: the lines below tracks completion_time and submission_time as maintained in the Pollux Job object
+                                    # track completion_time and submission_time as maintained in the Pollux Job object
                                     if job_state.scheduler_name == "Pollux":
                                         del job_state.job_runtime_stats[jid]["tracked_metrics"]["pollux_metrics"]
                                         job_state.job_runtime_stats[jid]["completion_time_pollux"] = \
@@ -557,7 +557,7 @@ def launch_server(
         server : GRPC server object
         rmserver : The class object to work with rmserver
     """
-    rmserver = rm_serve.RMServer(simulator_rpc_port=simulator_rpc_port) # XY: grpc_server_rm.RMServer; this class has methods that call the simulator server
-    server = rm_serve.start_server(rmserver, rm_server_rpc_port=rm_server_rpc_port) # XY: grpc_server_rm.start_server; this starts a rm_server which has the rmserver as its servicer
+    rmserver = rm_serve.RMServer(simulator_rpc_port=simulator_rpc_port)
+    server = rm_serve.start_server(rmserver, rm_server_rpc_port=rm_server_rpc_port)
     print("Server started")
     return server, rmserver

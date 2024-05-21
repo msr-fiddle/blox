@@ -46,8 +46,8 @@ class ClusterState(object):
         )
         self.time = 0
         self.cluster_stats = dict()
-        # XY: added for Pollux
-        self.allocations = dict()
+
+        self.allocations = dict() # added for Pollux
 
     # def get_new_nodes(self):
     # """

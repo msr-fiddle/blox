@@ -89,7 +89,7 @@ def parse_args(parser):
 
 def main(args):
     # The scheduler runs consolidated placement, with las scheduler and accept all placement policy
-    placement_policy = placement.JobPlacement(args) # XY: seems nothing done at init
+    placement_policy = placement.JobPlacement(args)
     # Running LAS scheduling policy
     scheduling_policy = schedulers.Las(args)
     admission_policy = admission_control.acceptAll(args)
@@ -97,7 +97,7 @@ def main(args):
         # for simulation we get the config from the simulator
         # The config helps in providing file names and intialize
         blox_instance = BloxManager(args)
-        new_config = blox_instance.rmserver.get_new_sim_config() # XY: calls simulator server to get sim_config, i.e., simulator_simple.GetConfig
+        new_config = blox_instance.rmserver.get_new_sim_config()
         print(f"New config {new_config}")
         if args.scheduler_name == "":
             # terminate the blox instance before exiting
@@ -130,7 +130,7 @@ def main(args):
                 break
             blox_instance.update_cluster(cluster_state)
             blox_instance.update_metrics(cluster_state, job_state)
-            new_jobs = blox_instance.pop_wait_queue(args.simulate) # XY: will call blox manager, which will call simulator server to GetJobs, will get a dict of job_to_run
+            new_jobs = blox_instance.pop_wait_queue(args.simulate)
             # get simulator jobs
             accepted_jobs = admission_policy.accept(new_jobs, cluster_state, job_state)
             job_state.add_new_jobs(accepted_jobs)
