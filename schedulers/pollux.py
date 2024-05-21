@@ -1,9 +1,9 @@
 import sys
 sys.path.append("..")
-from .pollux_exe.utils import NodeInfo
+from .pollux_lib.utils import NodeInfo
 from .scheduler_policy import SchedulingPolicy
-from .pollux_exe.pollux_engine import PolluxPolicy
-from .pollux_exe.utils import JobInfo
+from .pollux_lib.pollux_engine import PolluxPolicy
+from .pollux_lib.utils import JobInfo
 import pandas as pd
 from operator import getitem
 

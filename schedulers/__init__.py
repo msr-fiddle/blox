@@ -4,4 +4,4 @@ from .pollux import *
 from .srtf import *
 from .optimus import *
 from .tiresias import *
-from .pollux_exe import *
+from .pollux_lib import *

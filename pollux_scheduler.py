@@ -14,7 +14,7 @@ import admission_control
 from blox import ClusterState, JobState, BloxManager
 import blox.utils as utils
 
-from schedulers.pollux_exe.utils import update_allocation_info
+from schedulers.pollux_lib.utils import update_allocation_info
 def parse_args(parser):
     """
     parser : argparse.ArgumentParser
