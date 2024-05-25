@@ -4,7 +4,7 @@ import json
 import grpc
 import argparse
 import numpy as np
-from workload import Workload
+from workload_pollux.workload import Workload
 from concurrent import futures
 from typing import Tuple
 
@@ -98,9 +98,15 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         """
         # get new job config
         try:
+            print(f"length of simulator_config is {len(self.simulator_config)}")
             job_config = self.simulator_config.pop(0)
+            
             # setup new workload
+            # import ipdb
+            #
+            # ipdb.set_trace()
             self.workload = self._generate_workload(job_config)
+            print("self.workload finished")
             job_config_send = rm_pb2.JsonResponse()
             job_config_send.response = json.dumps(job_config)
             self.setup_cluster()
@@ -110,6 +116,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
             print("Job config {}".format(job_config))
             return job_config_send
         except IndexError:
+            print("IndexError occured")
             # list empty signal to terminate
             job_config = dict()
             job_config["scheduler"] = ""
@@ -134,6 +141,12 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         while True:
             try:
                 if self.prev_job is None:
+                    # XY: check if there are more jobs to run
+                    if self.workload.job_id >= self.workload.total_jobs:
+                        print("no more jobs to add")
+                        valid_jobs = rm_pb2.JsonResponse()
+                        valid_jobs.response = json.dumps(job_to_run_dict)
+                        return valid_jobs
                     new_job = self.workload.generate_next_job(self.prev_job_time)
                     new_job_dict = self._clean_sim_job(new_job.__dict__)
                 if self.prev_job is not None:
@@ -145,6 +158,10 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
                     )
                 )
                 if new_job_dict["job_arrival_time"] <= simulator_time:
+                    if new_job_dict.get("job_mem_demand"):
+                        del new_job_dict["job_mem_demand"]
+                    if new_job_dict.get("job_mem_demand_orig"):
+                        del new_job_dict["job_mem_demand_orig"]
                     print("In getting more jobs")
                     job_to_run_dict[jcounter] = new_job_dict
                     self.prev_job_time = new_job_dict["job_arrival_time"]
@@ -152,7 +169,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
                     jcounter += 1
                 if new_job_dict["job_arrival_time"] > simulator_time:
                     # no more jobs for next time
-                    print("returning previos job")
+                    print("returning previous job")
                     valid_jobs = rm_pb2.JsonResponse()
                     valid_jobs.response = json.dumps(job_to_run_dict)
                     self.prev_job = new_job_dict
@@ -297,11 +314,12 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         new_job["simulation"] = True
         new_job["submit_time"] = new_job["job_arrival_time"]
         # temporary fix not sure why this is happening though
+        # TODO: Different in Saurabh's version
         if "logger" in new_job:
             new_job.pop("logger")
         if "job_task" in new_job:
             new_job.pop("job_task")
-        if "job_model" in new_job:
+        if "job_model" in new_job: 
             new_job.pop("job_model")
 
         new_job["num_GPUs"] = new_job["job_gpu_demand"]
@@ -316,11 +334,13 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         """
         Generate workload for a given config
         """
+        print("GENERATE WORKLOAD is called!")
         # set the random seed before generating the workload
         random.seed(self.random_seed)
         # print("After random seed")
         return Workload(
             self.cluster_job_log,
+            scheduler=self.schedulers[0],
             jobs_per_hour=workload_config["load"],
             exponential=self.exponential,
             multigpu=self.multigpu,
@@ -362,6 +382,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
         for _ in range(self.number_of_machines):
             count += 1
             request_to_rm = rm_pb2.RegisterRequest()
+            # XY: the node attributes below are used as arguments (dict form) in cluster_state.update
             request_to_rm.ipaddr = ""
             request_to_rm.numGPUs = self.gpus_per_machine
             request_to_rm.gpuUUIDs = "\n".join(
@@ -371,6 +392,7 @@ class SimulatorRunner(simulator_pb2_grpc.SimServerServicer):
             request_to_rm.numCPUcores = self.num_cpu_cores
             request_to_rm.numaAvailable = self.is_numa_available
             request_to_rm.cpuMaping[0] = 0
+            # request_to_rm.preemptible = False
             with grpc.insecure_channel(self.ipaddr_rm) as channel:
                 stub = rm_pb2_grpc.RMServerStub(channel)
                 response = stub.RegisterWorker(request_to_rm)
@@ -398,20 +420,23 @@ def parse_args(parser):
     parser.add_argument(
         "--cluster-job-log",
         type=str,
-        default="",
+        default=None, # ""
         help="Name of the cluster log file to run",
     )
-    parser.add_argument("--jobs-per-hour", type=int, default=5, help="Jobs per hour")
+    parser.add_argument("--jobs-per-hour", type=int, default=9, help="Jobs per hour")
     parser.add_argument(
-        "--start-job-track", type=int, default=3000, help="Start ID of job to track"
+        "--start-job-track", type=int, default=0, help="Start ID of job to track"
     )
 
     parser.add_argument(
-        "--end-job-track", type=int, default=4000, help="End ID of job to track"
+        "--end-job-track", type=int, default=159, help="End ID of job to track\n if using Pollux workload, set this to (num_jobs - 1)"
     )
     parser.add_argument(
         "--scheduler", type=str, default="Fifo", help="Name of the scheduler"
     )
+    # XY: added to match Pollux simulation setting
+    parser.add_argument("--num-gpus", type=int, default=4, help="number of GPUs per node")
+    parser.add_argument("--num-nodes", type=int, default=16, help="min number of nodes in the cluster")
     parser.add_argument(
         "--exp-prefix",
         type=str,
@@ -439,11 +464,13 @@ def launch_server(args) -> grpc.Server:
             np.arange(args.jobs_per_hour, args.jobs_per_hour + 1, 1.0).tolist(),
             (args.start_job_track, args.end_job_track),
             [
-                "Las",
+                "Pollux",
             ],
             ["Place"],
             ["AcceptAll"],
             exp_prefix=args.exp_prefix,
+            number_of_machines=args.num_nodes,
+            gpus_per_machine=args.num_gpus,
         ),
         server,
     )

@@ -231,6 +231,10 @@ def prune_jobs(job_state: JobState, cluster_state: ClusterState, blr: BloxManage
                                 job_state.job_runtime_stats[jid] = copy.deepcopy(
                                     job_state.active_jobs[jid]
                                 )
+                                if job_state.scheduler_name == "Pollux":
+                                    del job_state.job_runtime_stats[jid]["tracked_metrics"]["pollux_metrics"]
+                                    job_state.job_runtime_stats[jid]["completion_time_pollux"] = job_state.active_jobs[jid]["tracked_metrics"]["pollux_metrics"].completion_time
+                                    job_state.job_runtime_stats[jid]["submission_time_pollux"] = job_state.active_jobs[jid]["tracked_metrics"]["pollux_metrics"].submission_time
 
                             jid_to_terminate.append(jid)
                             # delete GPU utilization

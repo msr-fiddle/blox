@@ -47,6 +47,8 @@ class ClusterState(object):
         self.time = 0
         self.cluster_stats = dict()
 
+        self.allocations = dict() # added for Pollux
+
     # def get_new_nodes(self):
     # """
     # Fetch any new nodes which have arrived at the scheduler

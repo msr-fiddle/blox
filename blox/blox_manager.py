@@ -115,6 +115,27 @@ class BloxManager(object):
         ipaddress_to_fetch_from = list()
         if_simulation = list()
 
+
+        # update Pollux specific metrics
+        if job_state.scheduler_name == "Pollux":
+            # find nodes used by more than one jobs
+            interfere_nodes = set(idx for idx in range(cluster_state.node_counter)
+                                  if sum(len(set(val)) > 1 and idx in val
+                                         for key, val in cluster_state.allocations.items()) > 1)
+
+            # update job_state.active_jobs["tracked_metrics"]["pollux_metrics"]
+            for jid in job_state.active_jobs:
+                job = job_state.active_jobs[jid]["tracked_metrics"]["pollux_metrics"]
+                alloc_set = set(cluster_state.allocations.get(job.name, []))
+                interference = 0.0
+                if len(alloc_set) > 1 and any(idx in interfere_nodes for idx in alloc_set):
+                    interference = job_state.interference
+                job.step(job_state.round_duration, interference=interference)
+
+            # this dict is the same of self.allocation in Pollux repo
+            cluster_state.allocations = {k: v for k, v in cluster_state.allocations.items() if
+                                        k in job_state.active_jobs}
+
         for jid in job_state.active_jobs:
             if job_state.active_jobs[jid]["is_running"] == True:
                 job_id_to_fetch.append(jid)
@@ -161,6 +182,13 @@ class BloxManager(object):
                                     job_state.job_runtime_stats[jid] = copy.deepcopy(
                                         job_state.active_jobs[jid]
                                     )
+                                    # track completion_time and submission_time as maintained in the Pollux Job object
+                                    if job_state.scheduler_name == "Pollux":
+                                        del job_state.job_runtime_stats[jid]["tracked_metrics"]["pollux_metrics"]
+                                        job_state.job_runtime_stats[jid]["completion_time_pollux"] = \
+                                        job_state.active_jobs[jid]["tracked_metrics"]["pollux_metrics"].completion_time
+                                        job_state.job_runtime_stats[jid]["submission_time_pollux"] = \
+                                        job_state.active_jobs[jid]["tracked_metrics"]["pollux_metrics"].submission_time
 
                                 jid_to_terminate.append(jid)
                                 # delete GPU utilization

@@ -10,6 +10,8 @@ import time
 from concurrent import futures
 
 from typing import Tuple, List
+from schedulers.pollux_lib.job import *
+from schedulers.pollux_lib.applications import *
 
 from blox_manager import BloxManager
 
@@ -26,9 +28,28 @@ class JobState(object):
         # self.blr = blox_resource_manager
         # dict of active jobs
         self.active_jobs = dict()
+        """
+        active_jobs is a dict that maps jid -> job info, which itself is a dict that includes:
+        "tracked_metrics": dict
+            "pollux_metrics": job.Job() object for pollux job # XY added
+            "per_iter_time": float - mean updated
+            "attained_service": float - additively updated
+            "iter num": int - additively updated
+            "attained_service_scheduler": - updated using "round_duration" * "numGPUs"   
+            "job_exit": optional(boolean)
+        "time_since_scheduled": int
+        "job_priority": int
+        "previously_launched": boolean
+        "is_running": boolean
+        "suspended": int
+        "simulation": boolean
+        "running_ip_address": 
+        "num_GPUs"  
+        "submit_time"
+        """
         # count number of accepted jobs
         self.job_counter = 0
-        self.job_completion_stats = dict()
+        self.job_completion_stats = dict() # used when job finishes
         self.job_responsiveness_stats = dict()
         self.cluster_stats = dict()
         self.custom_metrics = dict()
@@ -36,6 +57,10 @@ class JobState(object):
         self.finished_job = dict()  # keys are ids of the jobs which have finished
         self.job_ids_to_track = list(range(args.start_id_track, args.stop_id_track + 1))
         self.time = 0
+        self.scheduler_name = args.scheduler_name
+        if self.scheduler_name == "Pollux":
+            self.interference = args.interference
+            self.round_duration = args.round_duration
 
     # def get_new_jobs(self):
     # """
@@ -118,6 +143,18 @@ class JobState(object):
                         for p, v in zip(params_to_track, default_values_param):
                             tracking_dict[p] = v
                         jobs["tracked_metrics"] = tracking_dict
+
+                    if self.scheduler_name == "Pollux":
+                        """
+                        Create pollux.job.Job object, decide how to refer to model name, the options of which include
+                        "bert", "cifar10", "ncf", "imagenet", "deepspeech2", "yolov3"
+                        """
+                        print(jobs)
+                        job_temp = Job(self.job_counter, APPLICATIONS[jobs["application"]],
+                                       jobs["job_arrival_time"], self.time)
+                        if job_temp.application.name == "ncf":
+                            job_temp.target_batch_size = 32768
+                        jobs["tracked_metrics"]["pollux_metrics"] = job_temp
 
                     jobs["time_since_scheduled"] = 0
                     jobs["job_priority"] = 999

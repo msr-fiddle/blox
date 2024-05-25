@@ -7,5 +7,8 @@ __pycache__/
 *pb2*.py
 
 *.pickle
+*.DS_Store
 
+.idea/
+venv/
 

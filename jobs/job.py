@@ -37,6 +37,10 @@ class Job:
         job_queueing_delay=0,
         cluster_id=0,
         job_priority=0,
+        name=None,
+        application=None,
+        target_num_replicas=None,
+        target_batch_size=None,
         iter_is_duration=False):
         # logger handle
         self.logger = logging.getLogger(__name__)
@@ -92,6 +96,24 @@ class Job:
         self.attained_service_time = 0
         self.lease_extended = False
         self.job_command = None
+
+        # Pollux Params
+        self.name = name
+        self.application = application
+        self.target_num_replicas = target_num_replicas
+        self.target_batch_size = target_batch_size
+        self.completion_time = None
+        self.current_time = 0
+        self.rescale_time = 0
+        self.placement = ()
+        self.atomic_bsz = 0
+        self.accum_steps = 0
+        self.profile = {}
+        self.perf_params = None
+        self.grad_params = None
+        self.best_metric = None
+        self.progress = 0.0
+        self.epoch = 0
 
         self.cpu_val = {0:1, 1:2, 2:3, 3:4, 4:5, 5:6, 6:9, 7:12, 8:24}
         self.mem_val = {0:20.83, 1:62.5, 2:125, 3:187.5, 4:250}
