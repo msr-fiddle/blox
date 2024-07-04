@@ -249,7 +249,7 @@ class ConsolidatedPlacement(object):
                 # found a node with more GPUs then needed
                 if min_more_GPUs > len(free_gpus[node]):
                     min_more_GPUs = len(free_gpus[node])
-                    node_with_min_moRE_gpUs = node
+                    node_with_min_more_GPUs = node
         if node_with_min_more_GPUs is not None:
             # only extracting the GPUs we need
             return (free_gpus[node_with_min_more_GPUs][:numGPUs_needed], True)

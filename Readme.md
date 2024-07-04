@@ -42,6 +42,27 @@ For an example users should look at `las_scheduler.py` which implements Least At
 
 ### Running Blox
 
+#### Installation
+Blox uses gRpc, Matplotlib to communicate and Plot several collected Metric.
+We suggest the users to create a virtual environment to install the dependencies.
+```
+pip install grpcio
+pip install matplotlib
+pip install pandas==1.3.0
+pip install grpcio-tools
+
+pip install protobuf==4.21.1
+cd blox/deployment
+mkdir grpc_stubs
+make
+```
+
+#### Prepare the trace
+
+Take philly trace as an example, download the trace from [here](https://github.com/msr-fiddle/philly-traces/blob/master/trace-data.tar.gz) and unpack it.
+
+You can get a file named `job_cluster_log` which will be used in the following examples.
+
 Blox has two modes for running. One real cluster workload and second simulator. 
 
 ##### Simulation Mode
@@ -87,15 +108,6 @@ PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python python node_manager.py --ipaddr ip
 
 ### Details for reproducing results for artifacts
 These are instructions for reproducing artifacts for Blox.
-#### Installation 
-Blox uses gRpc, Matplotlib to communicate and Plot several collected Metric. 
-We suggest the users to create a virtual environment to install the dependencies.
-```
-pip install grpcio
-pip install matplotlib
-pip install pandas==1.3.0
-pip install grpcio-tools
-```
 
 ###### Running Blox Code
 To perform simulation.

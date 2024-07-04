@@ -48,7 +48,7 @@ class SchedulingPolicy(object):
             gpu_df: Contains GPU dataframe.
 
         Returns:
-                "order_job" : Mandatory key, list of dicts of jobs in the
+                "order_job" : Mandatory key, list of dicts of jobs
                                  in the order they are supposed to run.
                 "run_all_jobs": Some scheduler will only output the jobs to
                                     run which will fit on the GPU or expecting
